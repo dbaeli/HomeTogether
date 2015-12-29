@@ -1,0 +1,22 @@
+{
+  "occupant": {
+    "preferences": [
+      {
+        "color": "#FFE8BA",
+        "brightness": 1,
+        "power": "on"
+      },
+      {
+        "color": "#FFFFFF",
+        "brightness": 0.5,
+        "power": "on"
+      },
+      {
+        "color": "#000000",
+        "brightness": 0.0,
+        "power": "off"
+      }
+    ]
+  },
+  "tvState": false
+}

@@ -1,0 +1,998 @@
+[
+  {
+    "version": "1.2.0"
+  },
+  {
+    "activated": true,
+    "metadata": {
+      "label": "Turn on light if there is someone inside the room"
+    },
+    "properties": {},
+    "children": [
+      {
+        "activated": true,
+        "metadata": {
+          "label": ""
+        },
+        "properties": {
+          "statusCondition": "failsIfAnyFails",
+          "retryPolicy": "propagateToAll"
+        },
+        "children": [
+          {
+            "activated": true,
+            "metadata": {
+              "label": ""
+            },
+            "properties": {
+              "name": "CheckPresence",
+              "inputParams": [
+                {
+                  "key": "presence",
+                  "type": "entityKnowledge",
+                  "value": "presence"
+                },
+                {
+                  "key": "id",
+                  "type": "entityKnowledge",
+                  "value": "roomId"
+                }
+              ],
+              "outputParams": [
+                {
+                  "key": "result",
+                  "type": "entityKnowledge",
+                  "value": "presence"
+                }
+              ]
+            },
+            "children": [],
+            "id": "6845415c-d065-4461-85b4-a76614ed5e03",
+            "type": "action"
+          },
+          {
+            "activated": true,
+            "metadata": {
+              "label": ""
+            },
+            "properties": {
+              "active": "true"
+            },
+            "children": [
+              {
+                "activated": true,
+                "metadata": {
+                  "label": ""
+                },
+                "properties": {
+                  "op1": {
+                    "type": "entityKnowledge",
+                    "value": "presence.player"
+                  },
+                  "op2": {
+                    "type": "boolean",
+                    "value": "true"
+                  },
+                  "op": "=="
+                },
+                "children": [
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {
+                      "active": "true"
+                    },
+                    "children": [
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "op1": {
+                            "type": "entityKnowledge",
+                            "value": "presence.occupant"
+                          },
+                          "op2": {
+                            "type": "boolean",
+                            "value": "true"
+                          },
+                          "op": "=="
+                        },
+                        "children": [
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "active": "true"
+                            },
+                            "children": [
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "op1": {
+                                    "type": "entityKnowledge",
+                                    "value": "outsideLightIntensity.value"
+                                  },
+                                  "op2": {
+                                    "type": "real",
+                                    "value": "0.5"
+                                  },
+                                  "op": "<="
+                                },
+                                "children": [
+                                  {
+                                    "activated": true,
+                                    "metadata": {
+                                      "label": ""
+                                    },
+                                    "properties": {},
+                                    "children": [
+                                      {
+                                        "activated": true,
+                                        "metadata": {
+                                          "label": ""
+                                        },
+                                        "properties": {
+                                          "destination": "settings",
+                                          "op": {
+                                            "type": "entityKnowledge",
+                                            "value": "mixedSettings[0]"
+                                          }
+                                        },
+                                        "children": [],
+                                        "id": "8bb9e666-e12f-4943-b811-15e9679d24fa",
+                                        "type": "set"
+                                      },
+                                      {
+                                        "activated": true,
+                                        "metadata": {
+                                          "label": ""
+                                        },
+                                        "properties": {
+                                          "behavior": {
+                                            "type": "uriPath",
+                                            "value": "src/decision/RoomPreferences.bt"
+                                          },
+                                          "inputParams": [
+                                            {
+                                              "key": "light",
+                                              "type": "entityKnowledge",
+                                              "value": "roomLightId"
+                                            },
+                                            {
+                                              "key": "settings",
+                                              "type": "entityKnowledge",
+                                              "value": "mixedSettings[0]"
+                                            },
+                                            {
+                                              "key": "room",
+                                              "type": "entityKnowledge",
+                                              "value": "roomId"
+                                            },
+                                            {
+                                              "key": "reason",
+                                              "type": "string",
+                                              "value": "there are 2 people inside"
+                                            },
+                                            {
+                                              "key": "presence",
+                                              "type": "string",
+                                              "value": "mixed"
+                                            }
+                                          ]
+                                        },
+                                        "children": [],
+                                        "id": "984b9159-3d47-43f9-baa3-9af9b132c98d",
+                                        "type": "embedded"
+                                      }
+                                    ],
+                                    "id": "587bd3e0-8129-4e85-a635-d8f5b7e2e62d",
+                                    "type": "sequence"
+                                  }
+                                ],
+                                "id": "acefa393-1531-4bf0-8c22-8592f0958088",
+                                "type": "condition"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "op1": {
+                                    "type": "entityKnowledge",
+                                    "value": "outsideLightIntensity.value"
+                                  },
+                                  "op2": {
+                                    "type": "real",
+                                    "value": "0.5"
+                                  },
+                                  "op": ">"
+                                },
+                                "children": [
+                                  {
+                                    "activated": true,
+                                    "metadata": {
+                                      "label": ""
+                                    },
+                                    "properties": {
+                                      "op1": {
+                                        "type": "entityKnowledge",
+                                        "value": "outsideLightIntensity.value"
+                                      },
+                                      "op2": {
+                                        "type": "real",
+                                        "value": "1"
+                                      },
+                                      "op": "<="
+                                    },
+                                    "children": [
+                                      {
+                                        "activated": true,
+                                        "metadata": {
+                                          "label": ""
+                                        },
+                                        "properties": {},
+                                        "children": [
+                                          {
+                                            "activated": true,
+                                            "metadata": {
+                                              "label": ""
+                                            },
+                                            "properties": {
+                                              "destination": "settings",
+                                              "op": {
+                                                "type": "entityKnowledge",
+                                                "value": "mixedSettings[1]"
+                                              }
+                                            },
+                                            "children": [],
+                                            "id": "21777642-4d9c-4930-90ae-c1bf4560583d",
+                                            "type": "set"
+                                          },
+                                          {
+                                            "activated": true,
+                                            "metadata": {
+                                              "label": ""
+                                            },
+                                            "properties": {
+                                              "behavior": {
+                                                "type": "uriPath",
+                                                "value": "src/decision/RoomPreferences.bt"
+                                              },
+                                              "inputParams": [
+                                                {
+                                                  "key": "light",
+                                                  "type": "entityKnowledge",
+                                                  "value": "roomLightId"
+                                                },
+                                                {
+                                                  "key": "settings",
+                                                  "type": "entityKnowledge",
+                                                  "value": "mixedSettings[1]"
+                                                },
+                                                {
+                                                  "key": "room",
+                                                  "type": "entityKnowledge",
+                                                  "value": "roomId"
+                                                },
+                                                {
+                                                  "key": "reason",
+                                                  "type": "string",
+                                                  "value": "there are 2 people inside"
+                                                },
+                                                {
+                                                  "key": "presence",
+                                                  "type": "string",
+                                                  "value": "mixed"
+                                                }
+                                              ]
+                                            },
+                                            "children": [],
+                                            "id": "1198285b-4898-47af-be33-0891afaf441f",
+                                            "type": "embedded"
+                                          }
+                                        ],
+                                        "id": "7ff9e3a7-32f9-491c-950b-0ff0b45748a2",
+                                        "type": "sequence"
+                                      }
+                                    ],
+                                    "id": "a11de0f0-aa78-48d7-a09d-f721c7f7e609",
+                                    "type": "condition"
+                                  }
+                                ],
+                                "id": "fcb6681e-5855-4e33-8f62-51c556e140f0",
+                                "type": "condition"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "activated": true,
+                                    "metadata": {
+                                      "label": ""
+                                    },
+                                    "properties": {
+                                      "destination": "settings",
+                                      "op": {
+                                        "type": "entityKnowledge",
+                                        "value": "mixedSettings[2]"
+                                      }
+                                    },
+                                    "children": [],
+                                    "id": "81df2462-d0b7-46ac-9e4c-46ffea6859cc",
+                                    "type": "set"
+                                  },
+                                  {
+                                    "activated": true,
+                                    "metadata": {
+                                      "label": ""
+                                    },
+                                    "properties": {
+                                      "behavior": {
+                                        "type": "uriPath",
+                                        "value": "src/decision/RoomPreferences.bt"
+                                      },
+                                      "inputParams": [
+                                        {
+                                          "key": "light",
+                                          "type": "entityKnowledge",
+                                          "value": "roomLightId"
+                                        },
+                                        {
+                                          "key": "settings",
+                                          "type": "entityKnowledge",
+                                          "value": "mixedSettings[2]"
+                                        },
+                                        {
+                                          "key": "room",
+                                          "type": "entityKnowledge",
+                                          "value": "roomId"
+                                        },
+                                        {
+                                          "key": "reason",
+                                          "type": "string",
+                                          "value": "there are 2 people inside"
+                                        },
+                                        {
+                                          "key": "presence",
+                                          "type": "string",
+                                          "value": "mixed"
+                                        }
+                                      ]
+                                    },
+                                    "children": [],
+                                    "id": "fbd88690-4bf3-4d9b-8e84-59044a70990d",
+                                    "type": "embedded"
+                                  }
+                                ],
+                                "id": "14d096f8-1b78-400e-9cff-ebedf9aea4d6",
+                                "type": "sequence"
+                              }
+                            ],
+                            "id": "3633316c-acbf-4ef0-9de5-d58dffece1df",
+                            "type": "priority"
+                          }
+                        ],
+                        "id": "6edb69c1-a522-45f1-9b23-7245a18ac080",
+                        "type": "condition"
+                      },
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "active": "true"
+                        },
+                        "children": [
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "op1": {
+                                "type": "entityKnowledge",
+                                "value": "outsideLightIntensity.value"
+                              },
+                              "op2": {
+                                "type": "real",
+                                "value": "0.5"
+                              },
+                              "op": "<="
+                            },
+                            "children": [
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "activated": true,
+                                    "metadata": {
+                                      "label": ""
+                                    },
+                                    "properties": {
+                                      "destination": "settings",
+                                      "op": {
+                                        "type": "entityKnowledge",
+                                        "value": "player.preferences[0]"
+                                      }
+                                    },
+                                    "children": [],
+                                    "id": "fe9a1297-69ce-4c7c-9493-38a74fa9fc12",
+                                    "type": "set"
+                                  },
+                                  {
+                                    "activated": true,
+                                    "metadata": {
+                                      "label": ""
+                                    },
+                                    "properties": {
+                                      "behavior": {
+                                        "type": "uriPath",
+                                        "value": "src/decision/RoomPreferences.bt"
+                                      },
+                                      "inputParams": [
+                                        {
+                                          "key": "light",
+                                          "type": "entityKnowledge",
+                                          "value": "roomLightId"
+                                        },
+                                        {
+                                          "key": "settings",
+                                          "type": "entityKnowledge",
+                                          "value": "player.preferences[0]"
+                                        },
+                                        {
+                                          "key": "room",
+                                          "type": "entityKnowledge",
+                                          "value": "roomId"
+                                        },
+                                        {
+                                          "key": "reason",
+                                          "type": "string",
+                                          "value": "you are inside"
+                                        },
+                                        {
+                                          "key": "presence",
+                                          "type": "string",
+                                          "value": "player"
+                                        }
+                                      ]
+                                    },
+                                    "children": [],
+                                    "id": "6f308885-cd66-4c46-8a6e-191dc93f096c",
+                                    "type": "embedded"
+                                  }
+                                ],
+                                "id": "49db13fd-25e1-4183-8a4c-e1bd7d4191d1",
+                                "type": "sequence"
+                              }
+                            ],
+                            "id": "396a6326-25c4-4339-86f5-a773b7bba5ea",
+                            "type": "condition"
+                          },
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "op1": {
+                                "type": "entityKnowledge",
+                                "value": "outsideLightIntensity.value"
+                              },
+                              "op2": {
+                                "type": "real",
+                                "value": "0.5"
+                              },
+                              "op": ">"
+                            },
+                            "children": [
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "op1": {
+                                    "type": "entityKnowledge",
+                                    "value": "outsideLightIntensity.value"
+                                  },
+                                  "op2": {
+                                    "type": "real",
+                                    "value": "1"
+                                  },
+                                  "op": "<="
+                                },
+                                "children": [
+                                  {
+                                    "activated": true,
+                                    "metadata": {
+                                      "label": ""
+                                    },
+                                    "properties": {},
+                                    "children": [
+                                      {
+                                        "activated": true,
+                                        "metadata": {
+                                          "label": ""
+                                        },
+                                        "properties": {
+                                          "destination": "settings",
+                                          "op": {
+                                            "type": "entityKnowledge",
+                                            "value": "player.preferences[1]"
+                                          }
+                                        },
+                                        "children": [],
+                                        "id": "243ce1d4-7b60-43ed-91d0-185baaa6e4db",
+                                        "type": "set"
+                                      },
+                                      {
+                                        "activated": true,
+                                        "metadata": {
+                                          "label": ""
+                                        },
+                                        "properties": {
+                                          "behavior": {
+                                            "type": "uriPath",
+                                            "value": "src/decision/RoomPreferences.bt"
+                                          },
+                                          "inputParams": [
+                                            {
+                                              "key": "light",
+                                              "type": "entityKnowledge",
+                                              "value": "roomLightId"
+                                            },
+                                            {
+                                              "key": "settings",
+                                              "type": "entityKnowledge",
+                                              "value": "player.preferences[1]"
+                                            },
+                                            {
+                                              "key": "room",
+                                              "type": "entityKnowledge",
+                                              "value": "roomId"
+                                            },
+                                            {
+                                              "key": "reason",
+                                              "type": "string",
+                                              "value": "you are inside"
+                                            },
+                                            {
+                                              "key": "presence",
+                                              "type": "string",
+                                              "value": "player"
+                                            }
+                                          ]
+                                        },
+                                        "children": [],
+                                        "id": "9f3c15eb-fa7b-445d-9bdc-6d461555256f",
+                                        "type": "embedded"
+                                      }
+                                    ],
+                                    "id": "e6c00646-6a26-4ffc-a497-3c14d3c9cc09",
+                                    "type": "sequence"
+                                  }
+                                ],
+                                "id": "bddfc19a-2842-4a96-b13c-95fc70cecd80",
+                                "type": "condition"
+                              }
+                            ],
+                            "id": "d88be17c-ecc5-4616-ad19-edd8c99e4ded",
+                            "type": "condition"
+                          },
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {},
+                            "children": [
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "destination": "settings",
+                                  "op": {
+                                    "type": "entityKnowledge",
+                                    "value": "player.preferences[2]"
+                                  }
+                                },
+                                "children": [],
+                                "id": "0f5257ba-19e3-4702-a946-5cf48486d19e",
+                                "type": "set"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "behavior": {
+                                    "type": "uriPath",
+                                    "value": "src/decision/RoomPreferences.bt"
+                                  },
+                                  "inputParams": [
+                                    {
+                                      "key": "light",
+                                      "type": "entityKnowledge",
+                                      "value": "roomLightId"
+                                    },
+                                    {
+                                      "key": "settings",
+                                      "type": "entityKnowledge",
+                                      "value": "player.preferences[2]"
+                                    },
+                                    {
+                                      "key": "room",
+                                      "type": "entityKnowledge",
+                                      "value": "roomId"
+                                    },
+                                    {
+                                      "key": "reason",
+                                      "type": "string",
+                                      "value": "you are inside"
+                                    },
+                                    {
+                                      "key": "presence",
+                                      "type": "string",
+                                      "value": "player"
+                                    }
+                                  ]
+                                },
+                                "children": [],
+                                "id": "710a37a7-3f11-423f-8cb6-2c0fe1ed95be",
+                                "type": "embedded"
+                              }
+                            ],
+                            "id": "883160bf-08c8-4ad0-a3da-952b34b814de",
+                            "type": "sequence"
+                          }
+                        ],
+                        "id": "d9f14767-3f36-465f-b985-ffcd8b423213",
+                        "type": "priority"
+                      }
+                    ],
+                    "id": "69914bab-0568-4dfb-91c3-004116a906cf",
+                    "type": "priority"
+                  }
+                ],
+                "id": "ed54d416-2bb0-426e-81c6-5dd0279b950d",
+                "type": "condition"
+              },
+              {
+                "activated": true,
+                "metadata": {
+                  "label": ""
+                },
+                "properties": {
+                  "op1": {
+                    "type": "entityKnowledge",
+                    "value": "presence.occupant"
+                  },
+                  "op2": {
+                    "type": "boolean",
+                    "value": "true"
+                  },
+                  "op": "=="
+                },
+                "children": [
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {
+                      "active": "true"
+                    },
+                    "children": [
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "op1": {
+                            "type": "entityKnowledge",
+                            "value": "outsideLightIntensity.value"
+                          },
+                          "op2": {
+                            "type": "real",
+                            "value": "0.5"
+                          },
+                          "op": "<="
+                        },
+                        "children": [
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {},
+                            "children": [
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "destination": "settings",
+                                  "op": {
+                                    "type": "globalKnowledge",
+                                    "value": "occupant.preferences[0]"
+                                  }
+                                },
+                                "children": [],
+                                "id": "a2523739-7c39-4e8b-9b21-6cb39210587e",
+                                "type": "set"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "behavior": {
+                                    "type": "uriPath",
+                                    "value": "src/decision/RoomPreferences.bt"
+                                  },
+                                  "inputParams": [
+                                    {
+                                      "key": "light",
+                                      "type": "entityKnowledge",
+                                      "value": "roomLightId"
+                                    },
+                                    {
+                                      "key": "settings",
+                                      "type": "globalKnowledge",
+                                      "value": "occupant.preferences[0]"
+                                    },
+                                    {
+                                      "key": "room",
+                                      "type": "entityKnowledge",
+                                      "value": "roomId"
+                                    },
+                                    {
+                                      "key": "reason",
+                                      "type": "string",
+                                      "value": "there is someone inside"
+                                    },
+                                    {
+                                      "key": "presence",
+                                      "type": "string",
+                                      "value": "occupant"
+                                    }
+                                  ]
+                                },
+                                "children": [],
+                                "id": "fdac0139-ebe6-4469-8313-6f09aed84540",
+                                "type": "embedded"
+                              }
+                            ],
+                            "id": "d07d665b-81c1-48b7-a4ba-1983587e65c8",
+                            "type": "sequence"
+                          }
+                        ],
+                        "id": "8b16c255-fee0-4a74-8caf-3937dd949068",
+                        "type": "condition"
+                      },
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "op1": {
+                            "type": "entityKnowledge",
+                            "value": "outsideLightIntensity.value"
+                          },
+                          "op2": {
+                            "type": "real",
+                            "value": "0.5"
+                          },
+                          "op": ">"
+                        },
+                        "children": [
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "op1": {
+                                "type": "entityKnowledge",
+                                "value": "outsideLightIntensity.value"
+                              },
+                              "op2": {
+                                "type": "real",
+                                "value": "1"
+                              },
+                              "op": "<="
+                            },
+                            "children": [
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "activated": true,
+                                    "metadata": {
+                                      "label": ""
+                                    },
+                                    "properties": {
+                                      "destination": "settings",
+                                      "op": {
+                                        "type": "globalKnowledge",
+                                        "value": "occupant.preferences[1]"
+                                      }
+                                    },
+                                    "children": [],
+                                    "id": "004516e4-02f3-4f41-b1be-c96b00527d44",
+                                    "type": "set"
+                                  },
+                                  {
+                                    "activated": true,
+                                    "metadata": {
+                                      "label": ""
+                                    },
+                                    "properties": {
+                                      "behavior": {
+                                        "type": "uriPath",
+                                        "value": "src/decision/RoomPreferences.bt"
+                                      },
+                                      "inputParams": [
+                                        {
+                                          "key": "light",
+                                          "type": "entityKnowledge",
+                                          "value": "roomLightId"
+                                        },
+                                        {
+                                          "key": "settings",
+                                          "type": "globalKnowledge",
+                                          "value": "occupant.preferences[1]"
+                                        },
+                                        {
+                                          "key": "room",
+                                          "type": "entityKnowledge",
+                                          "value": "roomId"
+                                        },
+                                        {
+                                          "key": "reason",
+                                          "type": "string",
+                                          "value": "there is someone inside"
+                                        },
+                                        {
+                                          "key": "presence",
+                                          "type": "string",
+                                          "value": "occupant"
+                                        }
+                                      ]
+                                    },
+                                    "children": [],
+                                    "id": "57228309-826a-41d8-89cc-ad032442f125",
+                                    "type": "embedded"
+                                  }
+                                ],
+                                "id": "6dfa8686-8437-4f7e-aa72-87174a0afde7",
+                                "type": "sequence"
+                              }
+                            ],
+                            "id": "436658ae-725f-42bc-90f8-b214ef809d31",
+                            "type": "condition"
+                          }
+                        ],
+                        "id": "7e75f71e-793b-444f-994f-fe73fef6c15c",
+                        "type": "condition"
+                      },
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {},
+                        "children": [
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "destination": "settings",
+                              "op": {
+                                "type": "globalKnowledge",
+                                "value": "occupant.preferences[2]"
+                              }
+                            },
+                            "children": [],
+                            "id": "38cbf752-8b88-43cd-8da7-dbc70af30123",
+                            "type": "set"
+                          },
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "behavior": {
+                                "type": "uriPath",
+                                "value": "src/decision/RoomPreferences.bt"
+                              },
+                              "inputParams": [
+                                {
+                                  "key": "light",
+                                  "type": "entityKnowledge",
+                                  "value": "roomLightId"
+                                },
+                                {
+                                  "key": "settings",
+                                  "type": "globalKnowledge",
+                                  "value": "occupant.preferences[2]"
+                                },
+                                {
+                                  "key": "room",
+                                  "type": "entityKnowledge",
+                                  "value": "roomId"
+                                },
+                                {
+                                  "key": "reason",
+                                  "type": "string",
+                                  "value": "there is someone inside"
+                                },
+                                {
+                                  "key": "presence",
+                                  "type": "string",
+                                  "value": "occupant"
+                                }
+                              ]
+                            },
+                            "children": [],
+                            "id": "858e9026-61df-4e3c-b50d-a95147d8b9fb",
+                            "type": "embedded"
+                          }
+                        ],
+                        "id": "410c019c-bdb8-446f-8303-d82107d1a1a2",
+                        "type": "sequence"
+                      }
+                    ],
+                    "id": "76bc00cc-4f8b-4d06-a8aa-59b81a09e911",
+                    "type": "priority"
+                  }
+                ],
+                "id": "5c6fd57c-eb13-4280-b7e5-6eccdc637024",
+                "type": "condition"
+              }
+            ],
+            "id": "9598c65d-00e3-49cb-8057-f5fb6568c3d0",
+            "type": "priority"
+          }
+        ],
+        "id": "688a039d-b0cf-4afb-b9c6-82d8f2ed93a9",
+        "type": "parallel"
+      }
+    ],
+    "id": "9785089c-b034-4180-9bf9-46333585ab01"
+  }
+]

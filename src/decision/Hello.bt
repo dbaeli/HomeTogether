@@ -1,0 +1,85 @@
+[
+  {
+    "version": "1.2.0"
+  },
+  {
+    "activated": true,
+    "metadata": {
+      "label": ""
+    },
+    "properties": {},
+    "children": [
+      {
+        "activated": true,
+        "metadata": {
+          "label": ""
+        },
+        "properties": {},
+        "children": [
+          {
+            "activated": true,
+            "metadata": {
+              "label": ""
+            },
+            "properties": {
+              "name": "Log",
+              "inputParams": [
+                {
+                  "key": "message",
+                  "type": "string",
+                  "value": "here come the logs"
+                }
+              ],
+              "outputParams": []
+            },
+            "children": [],
+            "id": "90217356-22b8-462b-9f2d-a3044ed8fa7e",
+            "type": "action"
+          },
+          {
+            "activated": true,
+            "metadata": {
+              "label": ""
+            },
+            "properties": {
+              "name": "Log",
+              "inputParams": [
+                {
+                  "key": "message",
+                  "type": "string",
+                  "value": "Test cancel"
+                },
+                {
+                  "key": "cancel",
+                  "type": "boolean",
+                  "value": "true"
+                }
+              ],
+              "outputParams": []
+            },
+            "children": [],
+            "id": "fee4b9a4-ed18-4b66-bf43-1d94385caa4b",
+            "type": "action"
+          },
+          {
+            "activated": true,
+            "metadata": {
+              "label": ""
+            },
+            "properties": {
+              "name": "PreventCancel",
+              "inputParams": [],
+              "outputParams": []
+            },
+            "children": [],
+            "id": "3a9eb7ae-9d68-422d-80e8-cd7d397fc4f8",
+            "type": "action"
+          }
+        ],
+        "id": "6d497cd9-1525-451f-b172-71d4382da105",
+        "type": "sequence"
+      }
+    ],
+    "id": "5ab5751a-8773-4be5-a90c-3a441a704e0b"
+  }
+]

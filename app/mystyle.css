@@ -1,0 +1,86 @@
+.highlight
+{
+    display: none;
+    color: #FF0000;
+    background-color: #FF0000;
+    opacity: 0.4;
+    position: absolute;
+}
+.occupant
+{
+    display: none;
+    color: #0000AF;
+    background-color: #0000FF;
+    opacity: 0.4;
+    position: absolute;
+    pointer-events:none;
+    transition: 0.2s linear;
+}
+.light
+{
+    display:block;
+    position:absolute;
+    text-align: center;
+    pointer-events:none;
+    width:20;
+    transition: 0.2s linear;
+}
+.chatOdd
+{
+    width: 100%;
+    background-color: lightgrey;
+}
+
+.chatEven
+{
+    width: 100%;
+    background-color: white;
+}
+
+.chatAlert
+{
+    width: 100%;
+    background-color: LightCoral ;
+    font-weight: bold;  
+}
+
+.mask
+{
+    margin-top:-100px;
+    margin-left: 50%;
+    height:100px;
+    width:50px;
+    border-radius: 0 100px 100px 0;
+    background:grey;
+    pointer-events:none;
+    opacity:0.9;
+    transform-origin: 0px;
+    -ms-transform-origin: 0px;
+    -webkit-transform-origin: 0px;
+    transition: 0.8s ease-in-out;
+    -ms-transform: rotate(144deg);
+    -webkit-transform: rotate(144deg);
+    transform: rotate(144deg);
+}
+
+.mask.night
+{
+    -ms-transform: rotate(234deg);
+    -webkit-transform: rotate(234deg);
+    transform: rotate(234deg);
+}
+
+.mask.day
+{
+    -ms-transform: rotate(54deg);
+    -webkit-transform: rotate(54deg);
+    transform: rotate(54deg);
+}
+
+.room
+{
+    margin-left: 15;
+    margin-top: 5;
+    position: absolute;
+    font-weight: 900;
+}

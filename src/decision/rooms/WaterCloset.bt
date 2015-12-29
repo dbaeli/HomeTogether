@@ -1,0 +1,58 @@
+[
+  {
+    "version": "1.2.0"
+  },
+  {
+    "activated": true,
+    "metadata": {
+      "label": ""
+    },
+    "properties": {},
+    "children": [
+      {
+        "activated": true,
+        "metadata": {
+          "label": ""
+        },
+        "properties": {},
+        "children": [
+          {
+            "activated": true,
+            "metadata": {
+              "label": ""
+            },
+            "properties": {
+              "destination": "roomId",
+              "op": {
+                "type": "integer",
+                "value": "4"
+              }
+            },
+            "children": [],
+            "id": "2b4e5572-462f-4a88-8687-7dd4eb84f872",
+            "type": "set"
+          },
+          {
+            "activated": true,
+            "metadata": {
+              "label": ""
+            },
+            "properties": {
+              "behavior": {
+                "type": "uriPath",
+                "value": "src/decision/Room.bt"
+              },
+              "inputParams": []
+            },
+            "children": [],
+            "id": "a33ad901-7b75-4eb2-884b-2e3957868193",
+            "type": "embedded"
+          }
+        ],
+        "id": "296bb4b8-810d-4390-b76f-db85094aa00b",
+        "type": "sequence"
+      }
+    ],
+    "id": "d94f253b-a6fb-4cc0-8e6b-dc09013d00c1"
+  }
+]

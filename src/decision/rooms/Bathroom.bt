@@ -1,0 +1,333 @@
+[
+  {
+    "version": "1.2.0"
+  },
+  {
+    "activated": true,
+    "metadata": {
+      "label": ""
+    },
+    "properties": {},
+    "children": [
+      {
+        "activated": true,
+        "metadata": {
+          "label": ""
+        },
+        "properties": {},
+        "children": [
+          {
+            "activated": true,
+            "metadata": {
+              "label": ""
+            },
+            "properties": {
+              "destination": "roomId",
+              "op": {
+                "type": "integer",
+                "value": "3"
+              }
+            },
+            "children": [],
+            "id": "d1d6b4a0-7eaf-4488-a9c5-8a55558e80aa",
+            "type": "set"
+          },
+          {
+            "activated": true,
+            "metadata": {
+              "label": ""
+            },
+            "properties": {
+              "active": "true"
+            },
+            "children": [
+              {
+                "activated": true,
+                "metadata": {
+                  "label": "If player is inside the bathroom"
+                },
+                "properties": {
+                  "op1": {
+                    "type": "entityKnowledge",
+                    "value": "presence.player"
+                  },
+                  "op2": {
+                    "type": "boolean",
+                    "value": "true"
+                  },
+                  "op": "=="
+                },
+                "children": [
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {},
+                    "children": [
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": "Normal 'room' behavior during 15s"
+                        },
+                        "properties": {
+                          "statusCondition": "succeedsIfAnySucceeds",
+                          "retryPolicy": "propagateToRunning"
+                        },
+                        "children": [
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "name": "Wait",
+                              "inputParams": [
+                                {
+                                  "key": "time",
+                                  "type": "integer",
+                                  "value": "15"
+                                }
+                              ],
+                              "outputParams": []
+                            },
+                            "children": [],
+                            "id": "9dc8a83e-ca93-4d6f-a4e0-4b4a556bc161",
+                            "type": "action"
+                          },
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "behavior": {
+                                "type": "uriPath",
+                                "value": "src/decision/Room.bt"
+                              },
+                              "inputParams": []
+                            },
+                            "children": [],
+                            "id": "130e25bc-30e2-4672-91b7-a425d5f28df4",
+                            "type": "embedded"
+                          }
+                        ],
+                        "id": "27c9b211-7ef5-4a23-a86c-08d267ac8942",
+                        "type": "parallel"
+                      },
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": "Then trigger the visual alarm"
+                        },
+                        "properties": {
+                          "statusCondition": "failsIfAnyFails",
+                          "retryPolicy": "propagateToAll"
+                        },
+                        "children": [
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": "As long as the player is inside"
+                            },
+                            "properties": {
+                              "name": "CheckPresence",
+                              "inputParams": [
+                                {
+                                  "key": "presence",
+                                  "type": "entityKnowledge",
+                                  "value": "presence"
+                                },
+                                {
+                                  "key": "id",
+                                  "type": "entityKnowledge",
+                                  "value": "roomId"
+                                }
+                              ],
+                              "outputParams": [
+                                {
+                                  "key": "result",
+                                  "type": "entityKnowledge",
+                                  "value": "presence"
+                                }
+                              ]
+                            },
+                            "children": [],
+                            "id": "7413f397-374a-4868-9218-e5e0aaebc529",
+                            "type": "action"
+                          },
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {},
+                            "children": [
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "behavior": {
+                                    "type": "uriPath",
+                                    "value": "src/decision/embedded/SetLightState.bt"
+                                  },
+                                  "inputParams": [
+                                    {
+                                      "key": "settings.brightness",
+                                      "type": "integer",
+                                      "value": "1"
+                                    },
+                                    {
+                                      "key": "settings.color",
+                                      "type": "string",
+                                      "value": "#FF0000"
+                                    },
+                                    {
+                                      "key": "settings.power",
+                                      "type": "string",
+                                      "value": "on"
+                                    },
+                                    {
+                                      "key": "light",
+                                      "type": "entityKnowledge",
+                                      "value": "roomLightId"
+                                    },
+                                    {
+                                      "key": "room",
+                                      "type": "entityKnowledge",
+                                      "value": "roomId"
+                                    }
+                                  ]
+                                },
+                                "children": [],
+                                "id": "7810672a-f23b-449f-a859-b9c5599165bd",
+                                "type": "embedded"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "name": "Wait",
+                                  "inputParams": [
+                                    {
+                                      "key": "time",
+                                      "type": "real",
+                                      "value": "0.1"
+                                    }
+                                  ],
+                                  "outputParams": []
+                                },
+                                "children": [],
+                                "id": "3f3e9570-aa51-49d6-b2cb-c98cfdc8e1ac",
+                                "type": "action"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "behavior": {
+                                    "type": "uriPath",
+                                    "value": "src/decision/embedded/SetLightState.bt"
+                                  },
+                                  "inputParams": [
+                                    {
+                                      "key": "settings.brightness",
+                                      "type": "integer",
+                                      "value": "1"
+                                    },
+                                    {
+                                      "key": "settings.color",
+                                      "type": "string",
+                                      "value": "#0000FF"
+                                    },
+                                    {
+                                      "key": "settings.power",
+                                      "type": "string",
+                                      "value": "on"
+                                    },
+                                    {
+                                      "key": "light",
+                                      "type": "entityKnowledge",
+                                      "value": "roomLightId"
+                                    },
+                                    {
+                                      "key": "room",
+                                      "type": "entityKnowledge",
+                                      "value": "roomId"
+                                    }
+                                  ]
+                                },
+                                "children": [],
+                                "id": "099ea84b-84c1-4086-a011-cd6bc371458a",
+                                "type": "embedded"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "name": "Wait",
+                                  "inputParams": [
+                                    {
+                                      "key": "time",
+                                      "type": "real",
+                                      "value": "0.1"
+                                    }
+                                  ],
+                                  "outputParams": []
+                                },
+                                "children": [],
+                                "id": "848b1111-fe13-459d-befd-e5417acbf471",
+                                "type": "action"
+                              }
+                            ],
+                            "id": "26a1571d-f849-4aa6-b969-1b44146a6904",
+                            "type": "sequence"
+                          }
+                        ],
+                        "id": "74114059-7ab8-42e3-b03d-e6f1c9e26c66",
+                        "type": "parallel"
+                      }
+                    ],
+                    "id": "3d50d260-d5b0-4bce-b92a-3b1d19e0e834",
+                    "type": "sequence"
+                  }
+                ],
+                "id": "fb6605eb-ca3e-49fc-86d1-a8f651b03e36",
+                "type": "condition"
+              },
+              {
+                "activated": true,
+                "metadata": {
+                  "label": ""
+                },
+                "properties": {
+                  "behavior": {
+                    "type": "uriPath",
+                    "value": "src/decision/Room.bt"
+                  },
+                  "inputParams": []
+                },
+                "children": [],
+                "id": "2942c7ca-3cf9-4d78-969f-54a5cd0e2d6f",
+                "type": "embedded"
+              }
+            ],
+            "id": "2836e4c7-892a-488b-bf3b-0e2ee00e9613",
+            "type": "priority"
+          }
+        ],
+        "id": "457ea2df-fcd9-4dcc-9065-ba2c1391e9cf",
+        "type": "sequence"
+      }
+    ],
+    "id": "2a93d75b-f6ce-466a-ab9e-9952309cd569"
+  }
+]

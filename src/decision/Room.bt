@@ -1,0 +1,449 @@
+[
+  {
+    "version": "1.2.0"
+  },
+  {
+    "activated": true,
+    "metadata": {
+      "label": ""
+    },
+    "properties": {},
+    "children": [
+      {
+        "activated": true,
+        "metadata": {
+          "label": ""
+        },
+        "properties": {},
+        "children": [
+          {
+            "activated": true,
+            "metadata": {
+              "label": ""
+            },
+            "properties": {
+              "channel": {
+                "type": "string",
+                "value": "Rooms"
+              },
+              "mode": "subscribe"
+            },
+            "children": [],
+            "id": "56c10d8c-1a34-4923-a7ef-978cf33d8332",
+            "type": "subscribeMessage"
+          },
+          {
+            "activated": true,
+            "metadata": {
+              "label": ""
+            },
+            "properties": {
+              "statusCondition": "failsIfAnyFails",
+              "retryPolicy": "propagateToAll"
+            },
+            "children": [
+              {
+                "activated": true,
+                "metadata": {
+                  "label": ""
+                },
+                "properties": {},
+                "children": [
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {
+                      "active": "true"
+                    },
+                    "children": [
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": "Checks if somebody is in the room"
+                        },
+                        "properties": {
+                          "behavior": {
+                            "type": "uriPath",
+                            "value": "src/decision/RoomPresence.bt"
+                          },
+                          "inputParams": []
+                        },
+                        "children": [],
+                        "id": "40a9bc60-1e60-45f0-a637-f9e596739a97",
+                        "type": "embedded"
+                      },
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "active": "false"
+                        },
+                        "children": [
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {},
+                            "children": [
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "op1": {
+                                    "type": "entityKnowledge",
+                                    "value": "canceled"
+                                  },
+                                  "op2": {
+                                    "type": "boolean",
+                                    "value": "true"
+                                  },
+                                  "op": "=="
+                                },
+                                "children": [],
+                                "id": "3d9996ba-d94b-4885-9f59-44a438003d14",
+                                "type": "condition"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "destination": "canceled",
+                                  "op": {
+                                    "type": "boolean",
+                                    "value": "false"
+                                  }
+                                },
+                                "children": [],
+                                "id": "10cf5523-0921-4113-a619-04c886958cc6",
+                                "type": "set"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "name": "Stall",
+                                  "inputParams": [],
+                                  "outputParams": []
+                                },
+                                "children": [],
+                                "id": "1a2f11a7-4156-45bc-b6cf-7d44424518f1",
+                                "type": "action"
+                              }
+                            ],
+                            "id": "1fdb507a-c9a3-4d93-bebb-eb8f108cc610",
+                            "type": "sequence"
+                          },
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": "Turn off the light otherwise"
+                            },
+                            "properties": {},
+                            "children": [
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": "Store settings in case of ulterior cancellation"
+                                },
+                                "properties": {
+                                  "behavior": {
+                                    "type": "uriPath",
+                                    "value": "src/decision/embedded/StoreSettings.bt"
+                                  },
+                                  "inputParams": [
+                                    {
+                                      "key": "settings",
+                                      "type": "entityKnowledge",
+                                      "value": "settings"
+                                    },
+                                    {
+                                      "key": "light",
+                                      "type": "entityKnowledge",
+                                      "value": "roomLightId"
+                                    },
+                                    {
+                                      "key": "room",
+                                      "type": "entityKnowledge",
+                                      "value": "roomId"
+                                    }
+                                  ]
+                                },
+                                "children": [],
+                                "id": "6fb98499-7d69-497d-8b87-e9825a9000c9",
+                                "type": "embedded"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "name": "Log",
+                                  "inputParams": [
+                                    {
+                                      "key": "message",
+                                      "type": "string",
+                                      "value": "Turning off light in room {a} because there is nobody inside anymore."
+                                    },
+                                    {
+                                      "key": "a",
+                                      "type": "entityKnowledge",
+                                      "value": "roomId"
+                                    },
+                                    {
+                                      "key": "cancel",
+                                      "type": "boolean",
+                                      "value": "true"
+                                    }
+                                  ],
+                                  "outputParams": []
+                                },
+                                "children": [],
+                                "id": "cd15debc-eaf1-411f-83c2-46904b830fb8",
+                                "type": "action"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "behavior": {
+                                    "type": "uriPath",
+                                    "value": "src/decision/embedded/SetLightState.bt"
+                                  },
+                                  "inputParams": [
+                                    {
+                                      "key": "light",
+                                      "type": "entityKnowledge",
+                                      "value": "roomLightId"
+                                    },
+                                    {
+                                      "key": "settings.color",
+                                      "type": "string",
+                                      "value": "#000000"
+                                    },
+                                    {
+                                      "key": "room",
+                                      "type": "entityKnowledge",
+                                      "value": "roomId"
+                                    },
+                                    {
+                                      "key": "settings.brightness",
+                                      "type": "real",
+                                      "value": "0"
+                                    },
+                                    {
+                                      "key": "settings.power",
+                                      "type": "string",
+                                      "value": "off"
+                                    }
+                                  ]
+                                },
+                                "children": [],
+                                "id": "269bf370-7b66-4dd4-9d58-8a8ebd4fcd4b",
+                                "type": "embedded"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "name": "Stall",
+                                  "inputParams": [],
+                                  "outputParams": []
+                                },
+                                "children": [],
+                                "id": "9aa73399-47cb-485c-acf3-ae6926e62423",
+                                "type": "action"
+                              }
+                            ],
+                            "id": "260b01b9-833c-4d63-9b2b-ce9212d1e5a1",
+                            "type": "sequence"
+                          }
+                        ],
+                        "id": "09d9322c-a2a2-49c5-bb72-bfa5392abc3b",
+                        "type": "priority"
+                      }
+                    ],
+                    "id": "2215f4ea-91dc-4dde-bc04-61e92c3bea51",
+                    "type": "priority"
+                  }
+                ],
+                "id": "1bb9e34a-ae13-405c-ba1d-155db5e9a07c",
+                "type": "success"
+              },
+              {
+                "activated": true,
+                "metadata": {
+                  "label": "retrieve light intensity value"
+                },
+                "properties": {},
+                "children": [
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {
+                      "channel": {
+                        "type": "string",
+                        "value": "Rooms"
+                      },
+                      "sender": "",
+                      "content": "night"
+                    },
+                    "children": [],
+                    "id": "267fc98c-45d7-4d6f-a2f9-972350301a9c",
+                    "type": "receiveMessage"
+                  }
+                ],
+                "id": "d181da0f-7db4-474f-8219-c91e69c032a3",
+                "type": "success"
+              },
+              {
+                "activated": true,
+                "metadata": {
+                  "label": ""
+                },
+                "properties": {
+                  "name": "Stall",
+                  "inputParams": [],
+                  "outputParams": []
+                },
+                "children": [],
+                "id": "e6e408a9-b334-477d-884f-f24179c63015",
+                "type": "action"
+              },
+              {
+                "activated": true,
+                "metadata": {
+                  "label": "Handle cancellation"
+                },
+                "properties": {
+                  "active": "false"
+                },
+                "children": [
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {
+                      "op1": {
+                        "type": "entityKnowledge",
+                        "value": "cancel"
+                      },
+                      "op2": {
+                        "type": "boolean",
+                        "value": "false"
+                      },
+                      "op": "=="
+                    },
+                    "children": [],
+                    "id": "368ca1ff-46dd-4a4c-99db-4f8ab279a44b",
+                    "type": "condition"
+                  },
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {},
+                    "children": [
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "destination": "canceled",
+                          "op": {
+                            "type": "boolean",
+                            "value": "true"
+                          }
+                        },
+                        "children": [],
+                        "id": "9bba8839-0c6d-44fa-9291-1105c5e0c4ba",
+                        "type": "set"
+                      },
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": "Restore previous settings"
+                        },
+                        "properties": {
+                          "behavior": {
+                            "type": "uriPath",
+                            "value": "src/decision/embedded/SetLightState.bt"
+                          },
+                          "inputParams": [
+                            {
+                              "key": "settings",
+                              "type": "entityKnowledge",
+                              "value": "tmpSettings"
+                            },
+                            {
+                              "key": "light",
+                              "type": "entityKnowledge",
+                              "value": "roomLightId"
+                            },
+                            {
+                              "key": "room",
+                              "type": "entityKnowledge",
+                              "value": "roomId"
+                            }
+                          ]
+                        },
+                        "children": [],
+                        "id": "c1acf7a4-038d-452a-909d-faf3336854af",
+                        "type": "embedded"
+                      },
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "destination": "cancel",
+                          "op": {
+                            "type": "boolean",
+                            "value": "false"
+                          }
+                        },
+                        "children": [],
+                        "id": "4e47067a-90e4-4cf8-bd22-5f12daa1b001",
+                        "type": "set"
+                      }
+                    ],
+                    "id": "ba7973e7-b926-48e6-a507-98d198b81884",
+                    "type": "sequence"
+                  }
+                ],
+                "id": "90b881d3-c467-4361-ada9-e2900a1ac0f4",
+                "type": "priority"
+              }
+            ],
+            "id": "f184a3a5-f8ef-4932-8378-d1a9ad2dd459",
+            "type": "parallel"
+          }
+        ],
+        "id": "25b31cc6-3395-4f26-b431-c7043a5003d4",
+        "type": "sequence"
+      }
+    ],
+    "id": "493d91f9-404e-409a-ad59-5d2fe0c762bc"
+  }
+]

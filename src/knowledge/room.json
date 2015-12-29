@@ -1,0 +1,61 @@
+{
+  "roomId": "",
+  "roomLightId": "",
+  "player": {
+    "preferences": [
+      {
+        "color": "#FFE8BA",
+        "brightness": 1,
+        "power": "on"
+      },
+      {
+        "color": "#FFE8BA",
+        "brightness": 0.7,
+        "power": "on"
+      },
+      {
+        "color": "#000000",
+        "brightness": 0.0,
+        "power": "off"
+      }
+    ]
+  },
+  "mixedSettings": [
+    {
+      "color": "#9474DC",
+      "brightness": 0.7,
+      "power": "on"
+    },
+    {
+      "color": "#9474DC",
+      "brightness": 0.3,
+      "power": "on"
+    },
+    {
+      "color": "#000000",
+      "brightness": 0.0,
+      "power": "off"
+    }
+  ],
+  "settings": {
+    "color": "#000000",
+    "brightness": 0,
+    "power": "off"
+  },
+  "currentNightValue": false,
+  "night": {
+    "value": false
+  },
+  "presence": {
+    "occupant": false,
+    "player": false
+  },
+  "cancel": false,
+  "canceled": false,
+  "outsideLightIntensity": {
+    "value": 2.5  
+  },
+  "bypassTV": true,
+  "dimFactor": 1,
+  "tvOn": false
+}
