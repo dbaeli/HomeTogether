@@ -58,7 +58,7 @@ export default React.createClass({
   setLifxState: function(color) {
     let r = {};
     r.duration = 1;
-    r.color = color.hex;
+    r.color = `#${color.hex}`;
     r.power = 'on';
     r.brightness = color.rgb.a;
     return LiFXRequest({

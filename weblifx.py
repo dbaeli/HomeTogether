@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 from lifxlan import *
 
@@ -107,6 +107,8 @@ def setLightState(light_id):
 		(r,g,b) = hex2rgb(color)
 		print r,g,b
 		hue,saturation,brightness = rgb2HSB( (r,g,b) )
+		if "brightness" in json_data:
+			brightness = json_data["brightness"]
 	else:
 		color = color.split(' ')
 		hue = float(color[0].split(':')[1])/360.0
