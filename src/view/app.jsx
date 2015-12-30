@@ -14,7 +14,6 @@ import Reflux from 'reflux';
 import DayAndNight from './components/dayAndNight';
 import Webcam from './components/webcam';
 
-
 import HomeK from '../knowledge/home.json';
 import RoomK from '../knowledge/room.json';
 import OccupantK from '../knowledge/occupant.json';
@@ -91,7 +90,7 @@ export default React.createClass({
     .then(() => this.state.instance.createAgent('src/decision/rooms/Bedroom.bt', RoomK))
     .then(() => registerActions(this.state.instance))
     .then(() => {
-      this.state.instance.update(1);
+      this.state.instance.update(100);
       this.setState({started: true});
     })
     .catch((err) => {

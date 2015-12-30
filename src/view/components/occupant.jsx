@@ -4,6 +4,33 @@ import Character from './character';
 
 import gisele from '../static/gisele.png';
 
+const POSITION_FROM_ROOM = {
+  0: {
+    x: 266 + 25,
+    y: -300 + 25
+  },
+  1: {
+    x: 172 + 25,
+    y: -497 + 25
+  },
+  2: {
+    x: 406 + 25,
+    y: -605 + 25
+  },
+  3: {
+    x: 348 + 25,
+    y: -732 + 25
+  },
+  4: {
+    x: 559 + 25,
+    y: -769 + 25
+  },
+  5: {
+    x: 360 + 25,
+    y: -432 + 25
+  },
+};
+
 export default React.createClass({
   getInitialState: function() {
     return {
@@ -83,36 +110,7 @@ export default React.createClass({
     this.wander();
   },
   render: function() {
-    let position = {
-      x: 0,
-      y: 0
-    };
-    switch(this.state.room) {
-      case 0:
-        position.x = 266 + 25;
-        position.y = -300 + 25;
-        break;
-      case 1:
-        position.x = 172 + 25;
-        position.y = -497 + 25;
-        break;
-      case 2:
-        position.x = 406 + 25;
-        position.y = -605 + 25;
-        break;
-      case 3:
-        position.x = 348 + 25;
-        position.y = -732 + 25;
-        break;
-      case 4:
-        position.x = 559 + 25;
-        position.y = -769 + 25;
-        break;
-      case 5:
-        position.x = 360 + 25;
-        position.y = -432 + 25;
-        break;
-    }
+    let position = POSITION_FROM_ROOM[this.state.room];
     return (
       <Character x={position.x} y={position.y} image={gisele}/>
     );
