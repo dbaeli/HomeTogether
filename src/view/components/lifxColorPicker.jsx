@@ -43,8 +43,8 @@ function LiFXRequest(r) {
     headers: {},
     body: {}
   });
-  let url = 'https://api.lifx.com/v1/' + r.path;
-  // let url = 'http://localhost:5555/' + r.path;
+  // let url = 'https://api.lifx.com/v1/' + r.path;
+  let url = 'http://localhost:5555/' + r.path;
   r.headers['Content-Type'] = 'application/json; charset=utf-8';
   r.headers['accept'] = '';
   r.headers['Authorization']='Basic '+ btoa('c0a0bc7550a1fb78ee1e722268eacaba6585154db74c3f8da3a8c422c6f9053f:');
@@ -87,10 +87,9 @@ export default React.createClass({
   getInitialState: function() {
     return {color:{}};
   },
-  componentWillUpdate: function(nextProps, nextState) {
-    if (!_.isEqual(nextState, this.state))
-      setTimeout(() => {this.getLifxState(); console.log('updating lifx state'); this.forceUpdate();}, 5000);
-  },
+  // componentWillUpdate: function(nextProps, nextState) {
+  //   setTimeout(() => {this.getLifxState(); console.log('updating lifx state'); this.forceUpdate();}, 5000);
+  // },
   componentDidMount: function() {
     this.getLifxState();
   },
