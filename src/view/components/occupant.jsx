@@ -1,95 +1,120 @@
 import React from 'react';
 import {ActionStore} from '../../actions/actionStore';
+import Character from './character';
 
-let lastId;
-let id = 1;
+import gisele from '../static/gisele.png';
 
 export default React.createClass({
+  getInitialState: function() {
+    return {
+      room: 1
+    };
+  },
   wander: function() {
     let playerLoc = ActionStore.getPlayerLocation();
-    if (!_.isUndefined(lastId)) {
-      let i = document.getElementById('occ'+lastId);
-      i.style.display = 'none';
-    }
+    let newRoom;
     if (playerLoc == '0' || playerLoc == '1') {
-      switch (lastId) {
+      switch (this.state.room) {
         case 0:
-          id = 1;
+          newRoom = 1;
           break;
         case 1:
-          id = 0;
+          newRoom = 0;
           break;
         case 2:
-          id = 1;
+          newRoom = 1;
           break;
         case 3:
-          id = 2;
+          newRoom = 2;
           break;
         case 4:
-          id = 2;
+          newRoom = 2;
           break;
       }
-    }    
+    }
     else if (playerLoc !== 'out' && playerLoc !== '') {
-      switch (lastId) {
+      switch (this.state.room) {
         case 0:
-          id = 1;
+          newRoom = 1;
           break;
         case 1:
-          id = 2;
+          newRoom = 2;
           break;
         case 2:
-          id = 5;
+          newRoom = 5;
           break;
         case 3:
-          id = 2;
+          newRoom = 2;
           break;
         case 4:
-          id = 2;
+          newRoom = 2;
           break;
       }
     }
     else {
-      switch (lastId) {
+      switch (this.state.room) {
         case 0:
-          id = 1;
+          newRoom = 1;
           break;
         case 1:
-          id = _.sample([0,0,2]);
+          newRoom = _.sample([0,0,2]);
           break;
         case 2:
-          id = _.sample([1,1,1,3,4,5]);
+          newRoom = _.sample([1,1,1,3,4,5]);
           break;
         case 3:
-          id = 2;
+          newRoom = 2;
           break;
         case 4:
-          id = 2;
+          newRoom = 2;
           break;
         case 5:
-          id = 2;
+          newRoom = 2;
           break;
       }
     }
-    let d = document.getElementById('occ'+id);
-    d.style.display = 'block';
-    lastId = id;
-    this.props.onUpdateLocation(String(id));
+    this.setState({
+      room: newRoom
+    });
+    this.props.onUpdateLocation(String(newRoom));
     setTimeout(()=>this.wander(), _.random(6,12)*1000);
   },
   componentDidMount() {
     this.wander();
   },
   render: function() {
+    let position = {
+      x: 0,
+      y: 0
+    };
+    switch(this.state.room) {
+      case 0:
+        position.x = 266 + 25;
+        position.y = -300 + 25;
+        break;
+      case 1:
+        position.x = 172 + 25;
+        position.y = -497 + 25;
+        break;
+      case 2:
+        position.x = 406 + 25;
+        position.y = -605 + 25;
+        break;
+      case 3:
+        position.x = 348 + 25;
+        position.y = -732 + 25;
+        break;
+      case 4:
+        position.x = 559 + 25;
+        position.y = -769 + 25;
+        break;
+      case 5:
+        position.x = 360 + 25;
+        position.y = -432 + 25;
+        break;
+    }
     return (
-      <div>
-        <div id="occ0" className="occupant" style={{left:'102px',top:'447px', height:'187', width:'230'}}/>
-        <div id="occ1" className="occupant" style={{left:'13px',top:'13px', height:'434', width:'319'}}/>
-        <div id="occ2" className="occupant" style={{left:'332px',top:'156px', height:'80', width:'306'}}/>
-        <div id="occ3" className="occupant" style={{left:'346px',top:'13px', height:'129', width:'200'}}/>
-        <div id="occ4" className="occupant" style={{left:'561px',top:'13px', height:'129', width:'77'}}/>
-        <div id="occ5" className="occupant" style={{left:'346px',top:'251px', height:'195', width:'292'}}/>
-      </div>
+      <Character x={position.x} y={position.y} image={gisele}/>
     );
   }
 });
