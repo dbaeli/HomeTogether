@@ -118,7 +118,7 @@ def setLightState(light_id):
 	saturation = saturation * 65535;
 	brightness = brightness * 65535;
 
-	bulb.set_color([hue,saturation,brightness,0]);
+	bulb.set_color([hue,saturation,brightness,3500]);
 
 	return {}
 

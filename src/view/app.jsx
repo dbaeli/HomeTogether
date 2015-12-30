@@ -104,7 +104,7 @@ export default React.createClass({
       return (
         <Grid style={{textAlign:'center', marginTop:'50px'}}>
           <Row style={{height:90}}>
-            <h3><img src='./favicons/craft-ai.gif'/><span style={{verticalAlign:'middle'}}>&nbsp;craft ai - CES&nbsp;demo</span></h3>
+            <h3><img src='/favicons/craft-ai.gif'/><span style={{verticalAlign:'middle'}}>&nbsp;craft ai - CES&nbsp;demo</span></h3>
           </Row>
           <Row>
             <Col xs={4}></Col>
