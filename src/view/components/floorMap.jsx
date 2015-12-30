@@ -4,8 +4,7 @@ import {ActionStore} from '../../actions/actionStore';
 import Character from './character';
 
 import home from '../static/home_.png';
-import tvOff from '../static/tv_off.png';
-import tvOn from '../static/tv_on.png';
+import tv from '../static/tv.png';
 import player from '../static/player.png';
 
 const POSITION_FROM_ROOM = {
@@ -65,17 +64,34 @@ export default React.createClass({
   },
   renderPlayer: function() {
     if (_.isUndefined(this.state.room)) {
-      console.log("OUTSIDE")
       return (
         <div/>
       );
     }
     else {
-      console.log("THIS STATE ROOM", this.state.room);
       let position = POSITION_FROM_ROOM[this.state.room];
-      console.log("position", position)
       return (
         <Character x={position.x} y={position.y} image={player}/>
+      );
+    }
+  },
+  renderTv: function() {
+    if (this.state.TV) {
+      return (
+        <img
+          src={tv}
+          style={{
+            position: 'absolute',
+            left: '120px',
+            top: '491px',
+            height: '98px',
+            zIndex: 10
+          }} />
+      );
+    }
+    else {
+      return (
+        <div/>
       );
     }
   },
@@ -93,7 +109,7 @@ export default React.createClass({
           <area shape="rect" id={5} coords="346,251,637,445" onClick={e=>this.roomSelected(e.target.id)} alt="bedroom" />
         </map>
         { this.renderPlayer() }
-        <img style={{position:'relative', top:'-150px',left:'400px'}} src={this.state.TV === true ? tvOn : tvOff}/>
+        { this.renderTv() }
       </div>
     );
   }
