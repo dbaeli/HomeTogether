@@ -76,7 +76,6 @@ var app = express();
 app.use(express.static('./app/'));
 
 app.use(webpackDevMiddleware(compiler, {
-  publicPath: config.output.publicPath,
   historyApiFallback: true,
   stats: {
     colors: true

@@ -6,19 +6,16 @@ dotenv.load();
 
 module.exports = {
   devtool: 'eval',
-  entry: [
-    'webpack-dev-server/client?http://localhost:4444',
-    'webpack/hot/only-dev-server',
-    './src/main'
-  ],
+  entry: {
+    main: './src/main',
+    lifx: './src/lifx'
+  },
   output: {
-    path: path.join(__dirname, 'app'),
-    filename: 'bundle.js',
+    path: path.join(__dirname),
+    filename: '[name]/bundle.js',
     publicPath: '/'
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
     new webpack.ProvidePlugin({
       'es6-promise': 'es6-promise',
       'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'
