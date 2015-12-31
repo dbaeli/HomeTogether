@@ -25,7 +25,11 @@ module.exports = {
       __CRAFT_APP_SECRET__: JSON.stringify(process.env.CRAFT_APP_SECRET),
       __CRAFT_PROJECT_OWNER__: JSON.stringify(process.env.CRAFT_PROJECT_OWNER),
       __CRAFT_PROJECT_NAME__: JSON.stringify(process.env.CRAFT_PROJECT_NAME),
-      __CRAFT_PROJECT_VERSION__: JSON.stringify(process.env.CRAFT_PROJECT_VERSION)
+      __CRAFT_PROJECT_VERSION__: JSON.stringify(process.env.CRAFT_PROJECT_VERSION),
+      __LI_MIN__: JSON.stringify(process.env.LI_MIN),
+      __LI_NIGHT_MAX__: JSON.stringify(process.env.LI_NIGHT_MAX),
+      __LI_DAY_MIN__: JSON.stringify(process.env.LI_DAY_MIN),
+      __LI_MAX__: JSON.stringify(process.env.LI_MAX)
     })
   ],
   resolve: {
@@ -37,11 +41,11 @@ module.exports = {
     ],
     loaders: [{
       test: /\.jsx?$/,
-      loaders: ['react-hot', 'babel'],
+      loaders: ['babel'],
       exclude: /node_modules/
     }, {
       test: /\.css?$/,
-      loaders: ['style', 'raw']
+      loaders: ['style', 'css']
     }, {
       test: /\.(png|svg|eot|ttf|woff)$/,
       loaders: ['url']

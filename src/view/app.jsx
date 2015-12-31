@@ -53,26 +53,7 @@ export default React.createClass({
   componentWillMount() {
     this.n = -50;
 
-    (() => {
-      if (_.isUndefined(navigator) ||
-          _.isUndefined(navigator.mediaDevices) ||
-          _.isUndefined(navigator.mediaDevices.enumerateDevices) ||
-          _.isUndefined(navigator.mediaDevices.getUserMedia) // Accessed by navigator.mediaDevices.enumerateDevices
-      ) {
-        console.log("Unable to access media devices, not using the webcam for luminosity");
-        return new Promise(resolve => resolve([]));
-      }
-      else {
-        return navigator.mediaDevices.enumerateDevices();
-      }
-    })()
-    .then(devices => {
-      if (_.some(devices, item => item.kind === 'videoinput'))
-        this.setState({streaming: true});
-      else
-        this.forceUpdate();
-      return craftai(craftConf);
-    })
+    craftai(craftConf)
     .then(instance => {
       this.setState( {instance: instance} ) ;
       setCurrentInstance(instance);
@@ -90,7 +71,7 @@ export default React.createClass({
     .then(() => this.state.instance.createAgent('src/decision/rooms/Bedroom.bt', RoomK))
     .then(() => registerActions(this.state.instance))
     .then(() => {
-      this.state.instance.update(1);
+      this.state.instance.update(10);
       this.setState({started: true});
     })
     .catch((err) => {
@@ -133,7 +114,7 @@ export default React.createClass({
             </Col>
             <Col xs={5}>
               <ChatHistory id='hist' placeholder='No message...' instance={this.state.instance}/>
-              <DayAndNight streaming={this.state.streaming} onUpdateNight={(val) => this.updateNight(val)}/>
+              <DayAndNight onUpdateNight={(val) => this.updateNight(val)}/>
               <ColorPicker />
             </Col>
           </Row>
