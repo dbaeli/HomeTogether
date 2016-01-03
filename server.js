@@ -73,18 +73,20 @@ config.historyApiFallback= true;
 var compiler = webpack(config);
 var app = express();
 
+if (process.env.NODE_ENV !== 'production') {
+  app.use(webpackDevMiddleware(compiler, {
+    historyApiFallback: true,
+    stats: {
+      colors: true
+    }
+  }));
+}
+
 app.use(express.static('./app/'));
 
 app.get('/', function(req, res, next) {
   res.redirect('/main/');
 });
-
-app.use(webpackDevMiddleware(compiler, {
-  historyApiFallback: true,
-  stats: {
-    colors: true
-  }
-}));
 
 app.use(bodyParser.json());
 

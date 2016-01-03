@@ -6,7 +6,8 @@
   "main": "server.js",
   "scripts": {
     "dev": "node server.js",
-    "dist": "set NODE_ENV=production && webpack -p",
+    "dist": "export NODE_ENV=production && webpack -p",
+    "start": "npm run dist && export NODE_ENV=production && node server.js",
     "lint": "eslint -c ./.eslintrc src/**"
   },
   "dependencies": {
