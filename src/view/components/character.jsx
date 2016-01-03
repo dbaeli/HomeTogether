@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import { Motion, presets, spring } from 'react-motion';
 
 const CHARACTER_DEFAULT_STYLE = {
   borderRadius: 99,
@@ -17,13 +18,21 @@ const CHARACTER_DEFAULT_STYLE = {
 export default React.createClass({
   render: function() {
     return (
-      <img
-        src={this.props.image}
-        style={_.extend(_.clone(CHARACTER_DEFAULT_STYLE), {
-          WebkitTransform: `translate3d(${this.props.x - CHARACTER_DEFAULT_STYLE.width / 2}px, ${this.props.y - CHARACTER_DEFAULT_STYLE.height / 2}px, 0)`,
-          transform: `translate3d(${this.props.x - CHARACTER_DEFAULT_STYLE.width / 2}px, ${this.props.y - CHARACTER_DEFAULT_STYLE.height / 2}px, 0)`,
-          zIndex: 12
-        })} />
+      <Motion
+        style={{
+          x: spring(this.props.x - CHARACTER_DEFAULT_STYLE.width / 2, presets.noWobble),
+          y: spring(this.props.y - CHARACTER_DEFAULT_STYLE.height / 2, presets.noWobble)
+        }}>
+        { interpolatedStyle => (
+          <img
+            src={this.props.image}
+            style={_.extend(_.clone(CHARACTER_DEFAULT_STYLE), {
+              WebkitTransform: `translate3d(${interpolatedStyle.x}px, ${interpolatedStyle.y}px, 0)`,
+              transform: `translate3d(${interpolatedStyle.x}px, ${interpolatedStyle.y}px, 0)`,
+              zIndex: 12
+            })} />
+        )}
+      </Motion>
     );
   }
 });
