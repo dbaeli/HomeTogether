@@ -21,6 +21,8 @@ module.exports = {
       'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'
     }),
     new webpack.DefinePlugin({
+      __CRAFT_HTTP_API_URL__: JSON.stringify(process.env.CRAFT_HTTP_API_URL),
+      __CRAFT_WS_API_URL__: JSON.stringify(process.env.CRAFT_WS_API_URL),
       __CRAFT_APP_ID__: JSON.stringify(process.env.CRAFT_APP_ID),
       __CRAFT_APP_SECRET__: JSON.stringify(process.env.CRAFT_APP_SECRET),
       __CRAFT_PROJECT_OWNER__: JSON.stringify(process.env.CRAFT_PROJECT_OWNER),
