@@ -75,6 +75,10 @@ var app = express();
 
 app.use(express.static('./app/'));
 
+app.get('/', function(req, res, next) {
+  res.redirect('/main/');
+});
+
 app.use(webpackDevMiddleware(compiler, {
   historyApiFallback: true,
   stats: {
