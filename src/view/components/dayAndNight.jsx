@@ -75,7 +75,7 @@ export default React.createClass({
   render: function() {
     const SLIDER_MARKS = {};
     SLIDER_MARKS[LI_MIN] = 'night';
-    SLIDER_MARKS[(LI_NIGHT_MAX + LI_DAY_MIN) / 2] = '';
+    SLIDER_MARKS[(LI_NIGHT_MAX + LI_DAY_MIN) / 2.5] = '';
     SLIDER_MARKS[LI_MAX] = 'day';
 
     console.log('this.state.lightIntensity', this.state.lightIntensity);
