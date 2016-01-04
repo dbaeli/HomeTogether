@@ -303,7 +303,7 @@
                         "value": "Rooms"
                       },
                       "sender": "",
-                      "content": "night"
+                      "content": "outsideLightIntensity"
                     },
                     "children": [],
                     "id": "267fc98c-45d7-4d6f-a2f9-972350301a9c",
