@@ -42,10 +42,6 @@
     "brightness": 0,
     "power": "off"
   },
-  "currentNightValue": false,
-  "night": {
-    "value": false
-  },
   "presence": {
     "occupant": false,
     "player": false

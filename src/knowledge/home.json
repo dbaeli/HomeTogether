@@ -1,7 +1,4 @@
 {
-  "night": {
-    "value": false
-  },
   "cancel": false,
   "outsideLightIntensity": {
     "value": 2.5
