@@ -5,8 +5,7 @@ export const devices = {
   updateLights : Reflux.createAction(),
   updateLightIntensity : Reflux.createAction(),
   updatePresence : Reflux.createAction(),
-  updateTVState : Reflux.createAction(),
-  updateIsNight: Reflux.createAction()
+  updateTVState : Reflux.createAction()
 };
 
 let initPres = {};
@@ -18,7 +17,7 @@ _.map(['0', '1', '2', '3', '4', '5'], val =>{
 
 export var ActionStore = Reflux.createStore({
   listenables: devices,
-  settings: {lights:{}, presence: initPres, tvState:false, night: false},
+  settings: {lights:{}, presence: initPres, tvState:false},
 
   onUpdateLights: function(id, color, brightness) {
     this.settings.lights[id]={color: color, brightness: brightness};
@@ -26,10 +25,6 @@ export var ActionStore = Reflux.createStore({
   },
   onUpdateLightIntensity: function(val) {
     this.settings.lightIntensity = val;
-    this.trigger(this.settings);
-  },
-  onUpdateIsNight: function(val) {
-    this.settings.night = val;
     this.trigger(this.settings);
   },
   onUpdatePresence: function(entity, id) {
@@ -46,9 +41,6 @@ export var ActionStore = Reflux.createStore({
   onUpdateTVState: function(val) {
     this.settings.tvState = val;
     this.trigger(this.settings);
-  },
-  getIsNight: function() {
-    return this.settings.night;
   },
   getPresence: function(id) {
     return this.settings.presence[id];

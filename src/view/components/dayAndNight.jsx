@@ -19,7 +19,6 @@ const LI_MAX = _.isUndefined(__LI_MAX__) ? 2.5 : Number(__LI_MAX__);
 export default React.createClass({
   getInitialState: function() {
     return {
-      night: false,
       lightIntensity: LI_MAX,
       streaming: false
     }
@@ -63,12 +62,9 @@ export default React.createClass({
   },
   handleLightIntensityChange(lightIntensity) {
     lightIntensity = Math.max(Math.min(lightIntensity, LI_MAX), LI_MIN);
-    let night = lightIntensity < LI_NIGHT_MAX;
-    devices.updateIsNight(night);
     devices.updateLightIntensity(lightIntensity);
-    this.props.onUpdateNight(lightIntensity);
+    this.props.onUpdateLightIntensity(lightIntensity);
     this.setState({
-      night: night,
       lightIntensity: lightIntensity
     });
   },

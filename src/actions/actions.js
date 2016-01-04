@@ -408,7 +408,7 @@ function CheckDeviceValue(requestId, agentId, input, success, failure) {
       if (!_.isEqual(out.value, val)) {
         if (input.device === 'light_sensor1'){
           out.value = parseFloat(out.value === true ? 0.0 : 2.5);
-          devices.updateIsNight(out.value);
+          devices.updateLightIntensity(out.value);
         }
         return success(out);
       }

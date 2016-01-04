@@ -37,10 +37,8 @@ function registerActions(instance) {
 }
 
 export default React.createClass({
-  updateNight: function(val) {
-    return Promise.all(
-      _.map([0,1,2,3,4,5,6], a => this.state.instance.updateAgentKnowledge(a, {outsideLightIntensity: {value:val}}, 'merge'))
-    )
+  updateLight: function(val) {
+    return this.state.instance.updateAgentKnowledge(0, {outsideLightIntensity: {value:val}}, 'merge');
   },
   updateTV: function(val) {
     devices.updateTVState(val);
@@ -113,7 +111,7 @@ export default React.createClass({
             </Col>
             <Col xs={5}>
               <ChatHistory id='hist' placeholder='No message...' instance={this.state.instance}/>
-              <DayAndNight onUpdateNight={(val) => this.updateNight(val)}/>
+              <DayAndNight onUpdateLightIntensity={(val) => this.updateLight(val)}/>
               <ColorPicker />
             </Col>
           </Row>
