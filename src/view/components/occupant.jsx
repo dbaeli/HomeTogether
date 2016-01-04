@@ -57,6 +57,9 @@ export default React.createClass({
         case 4:
           newRoom = 2;
           break;
+        case 5:
+          newRoom = 2;
+          break;
       }
     }
     else if (playerLoc !== 'out' && playerLoc !== '') {
@@ -75,6 +78,9 @@ export default React.createClass({
           break;
         case 4:
           newRoom = 2;
+          break;
+        case 5:
+          newRoom = 5;
           break;
       }
     }
