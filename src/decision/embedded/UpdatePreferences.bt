@@ -519,6 +519,22 @@
             ],
             "id": "bcb301dc-6a0e-459e-9606-3083ca32a848",
             "type": "priority"
+          },
+          {
+            "activated": true,
+            "metadata": {
+              "label": ""
+            },
+            "properties": {
+              "destination": "dimBrightness",
+              "op": {
+                "type": "entityKnowledge",
+                "value": "tmpSettings.brightness"
+              }
+            },
+            "children": [],
+            "id": "b268517d-9028-4064-9317-9169c2acc60d",
+            "type": "set"
           }
         ],
         "id": "5abff2aa-1b91-4c01-9231-83706b758d3e",
