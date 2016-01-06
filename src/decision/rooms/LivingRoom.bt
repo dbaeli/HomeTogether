@@ -38,22 +38,6 @@
               "label": ""
             },
             "properties": {
-              "destination": "roomLightId",
-              "op": {
-                "type": "string",
-                "value": "5"
-              }
-            },
-            "children": [],
-            "id": "91a4a099-b90e-4ce7-a6ec-83d52a97d0f8",
-            "type": "set"
-          },
-          {
-            "activated": true,
-            "metadata": {
-              "label": ""
-            },
-            "properties": {
               "destination": "dimFactor",
               "op": {
                 "type": "real",
