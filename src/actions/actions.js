@@ -20,10 +20,10 @@ export var actionTable = {
   'GetDeviceLogs':{'start':GetDeviceLogs},
   'GetDeviceValue':{'start':GetDeviceValue},
   'GetLightIntensity':{'start':GetLightIntensity,'cancel':cancelCheck},
-  'LiFXCheckState':{'start':LiFXCheckState,'cancel':cancelCheck},
+  'LiFXCheckState':{'start':MockLightCheckState,'cancel':cancelCheck},
   'LiFXEffect':{'start':LiFXEffect},
-  'LiFXGetState':{'start':LiFXGetState},
-  'LiFXSetState':{'start':LiFXSetState},
+  'LiFXGetState':{'start':MockLightGetState},
+  'LiFXSetState':{'start':MockLightSetState},
   'Log':{'start':Log},
   'MockLightCheckState':{'start':MockLightCheckState,'cancel':cancelCheck},
   'MockLightGetState':{'start':MockLightGetState},
@@ -339,88 +339,92 @@ function ResetCancel(requestId, agentId, input, success, failure) {
 }
 
 function SetDeviceValue(requestId, agentId, input, success, failure) {
-  return fetch(format('/devices/{device}/attributes/{attribute}/value', {device:input.device, attribute:input.attribute}), {
-    method: 'post',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      value: input.value
-    })
-  })
-  .then(function(res) {
-    if ((res.status == 200) || (res.status == 202) ) {
-      success();
-    }
-    else {
-      failure();
-    }
-  })
-  .catch(ex => {
-    console.log('action SetDeviceValue [' + requestId + '] failed:', ex);
-    failure();
-  });
+  setTimeout( ()=> success(), 5000 );
+  // return fetch(format('/devices/{device}/attributes/{attribute}/value', {device:input.device, attribute:input.attribute}), {
+  //   method: 'post',
+  //   headers: {
+  //     'Accept': 'application/json',
+  //     'Content-Type': 'application/json'
+  //   },
+  //   body: JSON.stringify({
+  //     value: input.value
+  //   })
+  // })
+  // .then(function(res) {
+  //   if ((res.status == 200) || (res.status == 202) ) {
+  //     success();
+  //   }
+  //   else {
+  //     failure();
+  //   }
+  // })
+  // .catch(ex => {
+  //   console.log('action SetDeviceValue [' + requestId + '] failed:', ex);
+  //   failure();
+  // });
 }
 
 function GetDeviceValue(requestId, agentId, input, success, failure) {
-  return fetch(format('/devices/{device}/attributes/{attribute}/value', {device:input.device, attribute:input.attribute}), {
-    method: 'get'
-  })
-  .then(res => res.json())
-  .then(json => success(json))
-  .catch(ex => {
-    console.log('action GetDeviceValue [' + requestId + '] failed:', ex);
-    failure();
-  });
+  setTimeout( ()=> failure(), 5000 );
+  // return fetch(format('/devices/{device}/attributes/{attribute}/value', {device:input.device, attribute:input.attribute}), {
+  //   method: 'get'
+  // })
+  // .then(res => res.json())
+  // .then(json => success(json))
+  // .catch(ex => {
+  //   console.log('action GetDeviceValue [' + requestId + '] failed:', ex);
+  //   failure();
+  // });
 }
 
 function GetDeviceLogs(requestId, agentId, input, success, failure) {
-  return fetch(format('/devices/{device}/attributes/{attribute}/logs', {device:input.device, attribute:input.attribute}), {
-    method: 'get'
-  })
-  .then(res => res.json())
-  .then(json => {
-    let out = {value:_.first(json.logs)};
-    out.value.value = (out.value.value.toLowerCase() === 'true');
-    return success(out);
-  })
-  .catch(ex => {
-    console.log('action GetDeviceLogs [' + requestId + '] failed:', ex);
-    failure();
-  });
+  setTimeout( ()=> success(), 5000 );
+  // return fetch(format('/devices/{device}/attributes/{attribute}/logs', {device:input.device, attribute:input.attribute}), {
+  //   method: 'get'
+  // })
+  // .then(res => res.json())
+  // .then(json => {
+  //   let out = {value:_.first(json.logs)};
+  //   out.value.value = (out.value.value.toLowerCase() === 'true');
+  //   return success(out);
+  // })
+  // .catch(ex => {
+  //   console.log('action GetDeviceLogs [' + requestId + '] failed:', ex);
+  //   failure();
+  // });
 }
 
 function CheckDeviceValue(requestId, agentId, input, success, failure) {
-  let getValue = function (input, success) {
-    return fetch(format('/devices/{device}/attributes/{attribute}/logs', {device:input.device, attribute:input.attribute}), {
-      method: 'get'
-    })
-    .then(res => res.json())
-    .then(json => {
-      let out = _.first(json.logs);
-      out.value = out.value.toLowerCase() === 'true';
-      let val = input.value;
-      if (val == 0.0)
-        val = true;
-      else if (val == 2.5)
-        val = false;
-      if (!_.isEqual(out.value, val)) {
-        if (input.device === 'light_sensor1'){
-          out.value = parseFloat(out.value === true ? 0.0 : 2.5);
-          devices.updateLightIntensity(out.value);
-        }
-        return success(out);
-      }
-      else
-        timeout[requestId] = window.setTimeout(() => getValue(input, success), 5000);
-    })
-    .catch(ex => {
-      console.log('action CheckDeviceValue [' + requestId + '] failed:', ex);
-      failure({value: input.value});
-    });
-  }
-  getValue(input, success);
+  setTimeout( ()=> failure({value: input.value}), 5000 );
+  // let getValue = function (input, success) {
+  //   return fetch(format('/devices/{device}/attributes/{attribute}/logs', {device:input.device, attribute:input.attribute}), {
+  //     method: 'get'
+  //   })
+  //   .then(res => res.json())
+  //   .then(json => {
+  //     let out = _.first(json.logs);
+  //     out.value = out.value.toLowerCase() === 'true';
+  //     let val = input.value;
+  //     if (val == 0.0)
+  //       val = true;
+  //     else if (val == 2.5)
+  //       val = false;
+  //     if (!_.isEqual(out.value, val)) {
+  //       if (input.device === 'light_sensor1'){
+  //         out.value = parseFloat(out.value === true ? 0.0 : 2.5);
+  //         devices.updateLightIntensity(out.value);
+  //       }
+  //       return success(out);
+  //     }
+  //     else
+  //       timeout[requestId] = window.setTimeout(() => getValue(input, success), 5000);
+  //   })
+  //   .catch(ex => {
+  //     console.log('action CheckDeviceValue [' + requestId + '] failed:', ex);
+  //     failure({value: input.value});
+  //   });
+  // }
+  // getValue(input, success);
 }
 
 function GetLightIntensity(requestId, agentId, input, success, failure) {
