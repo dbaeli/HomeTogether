@@ -24,7 +24,7 @@ export default React.createClass({
     return {color:{}, location:'out'}
   },
   handleChange(val) {
-    if (loc !== 'out' && loc !== '' && loc !== '0') {
+    if (loc !== 'out' && loc !== '' ) {
       devices.updateLights(loc, '#' + val.hex, val.rgb.a)
     }
   },
@@ -43,20 +43,8 @@ export default React.createClass({
     this.setState(res);
   },
   render: function() {
-    let display = this.state.location !== 'out' && this.state.location !== '' && this.state.location !== '0';
-    if (this.state.location === '0') {
-      return (
-        <Row>
-        <Col xs={7}>
-        <h4>Use the LiFX application to change the light color</h4>
-        </Col>
-        <Col xs={2}>
-          <h4>Room&nbsp;0<br />settings</h4>
-        </Col>
-        </Row>
-        );
-    }
-    else return (
+    let display = this.state.location !== 'out' && this.state.location !== '' ;
+    return (
       <Row style={display ? {display:'block'} : {display:'none'}}>
         <Col xs={7}>
           <ColorPicker style={{marginRight: -5}} color={this.state.color.rgb} onChangeComplete={this.handleChange} type='chrome' />

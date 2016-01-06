@@ -68,7 +68,7 @@ export default React.createClass({
     .then(() => this.state.instance.createAgent('src/decision/rooms/Bedroom.bt', RoomK))
     .then(() => registerActions(this.state.instance))
     .then(() => {
-      this.state.instance.update(10);
+      this.state.instance.update(0);
       this.setState({started: true});
     })
     .catch((err) => {
