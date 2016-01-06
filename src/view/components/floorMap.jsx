@@ -3,7 +3,7 @@ import _ from 'lodash';
 import {ActionStore} from '../../actions/actionStore';
 import Character from './character';
 
-import home from '../static/home.png';
+import home from '../static/Home.png';
 import tv from '../static/tv.png';
 import player from '../static/player.png';
 
