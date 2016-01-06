@@ -41,7 +41,7 @@
               "destination": "roomLightId",
               "op": {
                 "type": "string",
-                "value": "d073d501f676"
+                "value": "5"
               }
             },
             "children": [],
