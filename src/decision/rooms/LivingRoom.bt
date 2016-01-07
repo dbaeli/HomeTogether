@@ -169,7 +169,7 @@
                         "type": "sequence"
                       },
                       {
-                        "activated": true,
+                        "activated": false,
                         "metadata": {
                           "label": ""
                         },
