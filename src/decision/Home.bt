@@ -70,7 +70,7 @@
                         "type": "action"
                       },
                       {
-                        "activated": true,
+                        "activated": false,
                         "metadata": {
                           "label": ""
                         },
