@@ -131,7 +131,17 @@
                         "metadata": {
                           "label": ""
                         },
-                        "properties": {},
+                        "properties": {
+                          "op1": {
+                            "type": "entityKnowledge",
+                            "value": "bypassTV"
+                          },
+                          "op2": {
+                            "type": "boolean",
+                            "value": "false"
+                          },
+                          "op": "=="
+                        },
                         "children": [
                           {
                             "activated": true,
@@ -139,91 +149,23 @@
                               "label": ""
                             },
                             "properties": {
-                              "active": "false"
-                            },
-                            "children": [
-                              {
-                                "activated": true,
-                                "metadata": {
-                                  "label": ""
-                                },
-                                "properties": {
-                                  "op1": {
-                                    "type": "entityKnowledge",
-                                    "value": "bypassTV"
-                                  },
-                                  "op2": {
-                                    "type": "boolean",
-                                    "value": "true"
-                                  },
-                                  "op": "=="
-                                },
-                                "children": [],
-                                "id": "5bc9414a-1ae9-4a29-becf-2c20ec56783e",
-                                "type": "condition"
+                              "op1": {
+                                "type": "entityKnowledge",
+                                "value": "dimBrightness"
                               },
-                              {
-                                "activated": true,
-                                "metadata": {
-                                  "label": ""
-                                },
-                                "properties": {
-                                  "op1": {
-                                    "type": "entityKnowledge",
-                                    "value": "dimBrightness"
-                                  },
-                                  "op2": {
-                                    "type": "integer",
-                                    "value": "0"
-                                  },
-                                  "op": ">"
-                                },
-                                "children": [],
-                                "id": "0113f185-eadc-4dba-8dd1-eb14d1b5ee18",
-                                "type": "condition"
-                              }
-                            ],
-                            "id": "192b3108-c1fb-4aec-be59-fdd1990a3d22",
-                            "type": "priority"
-                          },
-                          {
-                            "activated": true,
-                            "metadata": {
-                              "label": ""
-                            },
-                            "properties": {
-                              "name": "Log",
-                              "inputParams": [
-                                {
-                                  "key": "message",
-                                  "type": "string",
-                                  "value": "Turning on light in room {room} because {reason}."
-                                },
-                                {
-                                  "key": "room",
-                                  "type": "behaviorParams",
-                                  "value": "room"
-                                },
-                                {
-                                  "key": "cancel",
-                                  "type": "boolean",
-                                  "value": "true"
-                                },
-                                {
-                                  "key": "reason",
-                                  "type": "behaviorParams",
-                                  "value": "reason"
-                                }
-                              ],
-                              "outputParams": []
+                              "op2": {
+                                "type": "integer",
+                                "value": "0"
+                              },
+                              "op": "=="
                             },
                             "children": [],
-                            "id": "7cc1b837-a081-45fc-b4b2-523bb65a7105",
-                            "type": "action"
+                            "id": "0113f185-eadc-4dba-8dd1-eb14d1b5ee18",
+                            "type": "condition"
                           }
                         ],
-                        "id": "17247577-0c77-4f44-8530-1f867ca0f61c",
-                        "type": "sequence"
+                        "id": "5bc9414a-1ae9-4a29-becf-2c20ec56783e",
+                        "type": "condition"
                       },
                       {
                         "activated": true,
@@ -231,39 +173,74 @@
                           "label": ""
                         },
                         "properties": {
-                          "name": "Compute",
+                          "name": "Log",
                           "inputParams": [
                             {
-                              "key": "expression",
+                              "key": "message",
                               "type": "string",
-                              "value": "{b}*{f}"
+                              "value": "Turning on light in room {room} because {reason}."
                             },
                             {
-                              "key": "b",
+                              "key": "room",
                               "type": "behaviorParams",
-                              "value": "settings.brightness"
+                              "value": "room"
                             },
                             {
-                              "key": "f",
-                              "type": "entityKnowledge",
-                              "value": "dimFactor"
+                              "key": "cancel",
+                              "type": "boolean",
+                              "value": "true"
+                            },
+                            {
+                              "key": "reason",
+                              "type": "behaviorParams",
+                              "value": "reason"
                             }
                           ],
-                          "outputParams": [
-                            {
-                              "key": "result",
-                              "type": "entityKnowledge",
-                              "value": "dimBrightness"
-                            }
-                          ]
+                          "outputParams": []
                         },
                         "children": [],
-                        "id": "8d0e4041-828c-463b-be4d-11f4e2dc782f",
+                        "id": "7cc1b837-a081-45fc-b4b2-523bb65a7105",
                         "type": "action"
                       }
                     ],
                     "id": "bf0490d1-b5af-476f-821c-5a02e111d51c",
                     "type": "priority"
+                  },
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {
+                      "name": "Compute",
+                      "inputParams": [
+                        {
+                          "key": "expression",
+                          "type": "string",
+                          "value": "{b}*{f}"
+                        },
+                        {
+                          "key": "b",
+                          "type": "behaviorParams",
+                          "value": "settings.brightness"
+                        },
+                        {
+                          "key": "f",
+                          "type": "entityKnowledge",
+                          "value": "dimFactor"
+                        }
+                      ],
+                      "outputParams": [
+                        {
+                          "key": "result",
+                          "type": "entityKnowledge",
+                          "value": "dimBrightness"
+                        }
+                      ]
+                    },
+                    "children": [],
+                    "id": "8d0e4041-828c-463b-be4d-11f4e2dc782f",
+                    "type": "action"
                   },
                   {
                     "activated": true,
