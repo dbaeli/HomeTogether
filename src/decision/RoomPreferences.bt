@@ -131,18 +131,61 @@
                         "metadata": {
                           "label": ""
                         },
-                        "properties": {
-                          "op1": {
-                            "type": "entityKnowledge",
-                            "value": "bypassTV"
-                          },
-                          "op2": {
-                            "type": "boolean",
-                            "value": "true"
-                          },
-                          "op": "=="
-                        },
+                        "properties": {},
                         "children": [
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "active": "false"
+                            },
+                            "children": [
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "op1": {
+                                    "type": "entityKnowledge",
+                                    "value": "bypassTV"
+                                  },
+                                  "op2": {
+                                    "type": "boolean",
+                                    "value": "true"
+                                  },
+                                  "op": "=="
+                                },
+                                "children": [],
+                                "id": "5bc9414a-1ae9-4a29-becf-2c20ec56783e",
+                                "type": "condition"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "op1": {
+                                    "type": "entityKnowledge",
+                                    "value": "dimBrightness"
+                                  },
+                                  "op2": {
+                                    "type": "integer",
+                                    "value": "0"
+                                  },
+                                  "op": ">"
+                                },
+                                "children": [],
+                                "id": "0113f185-eadc-4dba-8dd1-eb14d1b5ee18",
+                                "type": "condition"
+                              }
+                            ],
+                            "id": "192b3108-c1fb-4aec-be59-fdd1990a3d22",
+                            "type": "priority"
+                          },
                           {
                             "activated": true,
                             "metadata": {
@@ -179,8 +222,8 @@
                             "type": "action"
                           }
                         ],
-                        "id": "5bc9414a-1ae9-4a29-becf-2c20ec56783e",
-                        "type": "condition"
+                        "id": "17247577-0c77-4f44-8530-1f867ca0f61c",
+                        "type": "sequence"
                       },
                       {
                         "activated": true,
