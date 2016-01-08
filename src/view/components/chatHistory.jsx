@@ -6,7 +6,7 @@ import { Button } from 'react-bootstrap';
 
 var ChatMessage = React.createClass({
   cancelLast: function() {
-    console.log( "Cancelling" );
+    console.log( 'Cancelling' );
     chatHistoryStore.cancelMessage( this.props.idx );
     this.props.instance.updateAgentKnowledge( this.props.messageSender, {cancel:true},'merge')
     .catch((err) => {
@@ -16,10 +16,10 @@ var ChatMessage = React.createClass({
   render: function() {
     return (
       <div className={this.props.messageColor}>
-        <small className="left clearfix">
+        <small className='left clearfix'>
           <span>{this.props.messageContent}
           {this.props.messageCancel ? 
-            <Button style={{float:"right"}} bsStyle="primary" bsSize="xsmall" onClick={this.cancelLast}>-</Button>:
+            <Button style={{float:'right', lineHeight:1, fontWeight:900}} bsStyle='primary' bsSize='xsmall' onClick={this.cancelLast}>-</Button>:
             void 0
           }
           </span>
@@ -34,8 +34,8 @@ exports = module.exports = React.createClass({
   render: function() {
     return (
       <div>
-        <div className="panel panel-primary" style={{height: '320px', overflowY: 'auto', overflowX: 'hidden'}}>
-          <span className="chat">
+        <div className='panel panel-primary' style={{height: '180px', overflowY: 'auto', overflowX: 'hidden'}}>
+          <span className='chat'>
             {
               this.state.messages.length == 0 ? (
                 <h3><em>{this.props.placeholder}</em></h3>

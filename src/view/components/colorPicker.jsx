@@ -57,7 +57,7 @@ export default React.createClass({
         );
     }
     else return (
-      <Row style={display ? {display:'block'} : {display:'none'}}>
+      <Row style={display ? {marginTop:20, display:'block'} : {display:'none'}}>
         <Col xs={7}>
           <ColorPicker style={{marginRight: -5}} color={this.state.color.rgb} onChangeComplete={this.handleChange} type='chrome' />
         </Col>

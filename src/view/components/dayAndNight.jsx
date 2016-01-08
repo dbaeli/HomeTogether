@@ -2,9 +2,7 @@ import _ from 'lodash';
 import {devices, ActionStore} from '../../actions/actionStore';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Slider from 'rc-slider';
-
-import 'rc-slider/assets/index.css';
+import dayNight from '../static/day_night.png';
 
 const VIDEO_WIDTH = 320;
 const VIDEO_HEIGHT = 240;
@@ -56,9 +54,13 @@ export default React.createClass({
     let data = context.getImageData(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT).data;
     let colorSum = _(data).chunk(4).reduce((colorSum, i) => colorSum + Math.floor((i[0]+i[1]+i[2])/3), 0);
     let brightness = (colorSum / (VIDEO_WIDTH * VIDEO_HEIGHT) / 100).toFixed(1);
-    console.log(`Brightness retrieved from webcam = ${brightness}`);
     this.handleLightIntensityChange(brightness);
     setTimeout(() => this.readBrightnessFromCamera(), VIDEO_SAMPLING_INTERVAL);
+  },
+  handleInputChange(event) {
+    if (!_.isUndefined(event)) {
+      this.handleLightIntensityChange(parseFloat(event.target.value));
+    }
   },
   handleLightIntensityChange(lightIntensity) {
     lightIntensity = Math.max(Math.min(lightIntensity, LI_MAX), LI_MIN);
@@ -69,37 +71,23 @@ export default React.createClass({
     });
   },
   render: function() {
-    const SLIDER_MARKS = {};
-    SLIDER_MARKS[LI_MIN] = 'night';
-    SLIDER_MARKS[(LI_NIGHT_MAX + LI_DAY_MIN) / 2.5] = '';
-    SLIDER_MARKS[LI_MAX] = 'day';
+    let val = this.state.lightIntensity >= 1 ? Math.ceil(this.state.lightIntensity) : this.state.lightIntensity;
 
     console.log('this.state.lightIntensity', this.state.lightIntensity);
-
     return (
-      <div style={{height:40}}>
+      <div className={val < 0.5 ? 'background night' : ( val >= 2 ? 'background day' : 'background dusk')}>
         <video ref='video' style={{display:'none'}}></video>
         <canvas ref='canvas' width={VIDEO_WIDTH} height={VIDEO_HEIGHT} style={{display:'none'}}></canvas>
-        {
-          this.state.streaming ? (
-            <Slider
-              min={LI_MIN}
-              max={LI_MAX}
-              marks={SLIDER_MARKS}
-              step={null}
-              disabled
-              included
-              value={ this.state.lightIntensity } />
-          ) : (
-            <Slider
-              min={LI_MIN}
-              max={LI_MAX}
-              marks={SLIDER_MARKS}
-              step={null}
-              onAfterChange={v => this.handleLightIntensityChange(v)}
-              defaultValue={LI_MAX} />
-          )
-        }
+        <div style={{textAlign:'center', height:50}}>
+          <div className={val < 0.5 ? 'icon focus' : 'icon'} style={{left:'11%'}}><i className='fa fa-moon-o'/></div>
+          <div className={val >= 2 ? 'icon focus' : 'icon'} style={{left:'86%'}}><i className='fa fa-sun-o'/></div>
+        </div>
+        <input disabled={this.state.streaming ? true : false} style={{width:'70%',marginLeft:'16%', marginTop:-48}} type='range' value={val} min='0' max='2' step='1' onChange={this.handleInputChange} list='ticks' />
+        <datalist id='ticks'>
+          <option>0</option>
+          <option>1</option>
+          <option>2</option>
+        </datalist>
       </div>
     );
   }

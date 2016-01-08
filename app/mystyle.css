@@ -44,43 +44,63 @@
     font-weight: bold;  
 }
 
-.mask
-{
-    margin-top:-100px;
-    margin-left: 50%;
-    height:100px;
-    width:50px;
-    border-radius: 0 100px 100px 0;
-    background:grey;
-    pointer-events:none;
-    opacity:0.9;
-    transform-origin: 0px;
-    -ms-transform-origin: 0px;
-    -webkit-transform-origin: 0px;
-    transition: 0.8s ease-in-out;
-    -ms-transform: rotate(144deg);
-    -webkit-transform: rotate(144deg);
-    transform: rotate(144deg);
-}
-
-.mask.night
-{
-    -ms-transform: rotate(234deg);
-    -webkit-transform: rotate(234deg);
-    transform: rotate(234deg);
-}
-
-.mask.day
-{
-    -ms-transform: rotate(54deg);
-    -webkit-transform: rotate(54deg);
-    transform: rotate(54deg);
-}
-
 .room
 {
     margin-left: 15;
     margin-top: 5;
     position: absolute;
     font-weight: 900;
+}
+
+.icon
+{
+    pointer-events: none;
+    font-size: 2em;
+    position: absolute;
+    transition: 0.4s ease-in-out;
+}
+
+.icon.focus
+{
+    transform: scale(1.5);
+    -ms-transform: scale(1.5);
+    -webkit-transform: scale(1.5);
+    color: orange;
+}
+
+.background
+{
+    padding-top:1;
+    height:40;
+    transition: 0.4s ease-in-out;
+}
+
+.background.night
+{
+    transition: 0.4s ease-in-out;
+    background: black; /* For browsers that do not support gradients */    
+    background: -webkit-radial-gradient(circle black 20%, white 70%, white); /* Safari 5.1 to 6.0 */
+    background: -o-radial-gradient(black 20%, white 70%, white); /* For Opera 11.6 to 12.0 */
+    background: -moz-radial-gradient(black 20%, white 70%, white); /* For Firefox 3.6 to 15 */
+    background: radial-gradient(black 20%, white 70%, white); /* Standard syntax (must be last) */
+}
+
+.background.dusk
+{
+    transition: 0.4s ease-in-out;
+    background: #537692; /* For browsers that do not support gradients */    
+    background: -webkit-radial-gradient(#537692 20%, white 70%, white); /* Safari 5.1 to 6.0 */
+    background: -o-radial-gradient(#537692 20%, white 70%, white); /* For Opera 11.6 to 12.0 */
+    background: -moz-radial-gradient(#537692 20%, white 70%, white); /* For Firefox 3.6 to 15 */
+    background: radial-gradient(#537692 20%, white 70%, white); /* Standard syntax (must be last) */
+}
+
+.background.day
+{
+    transition: 0.4s ease-in-out;
+    background: #008DFF; /* For browsers that do not support gradients */    
+    background: -webkit-radial-gradient(#008DFF 20%, white 70% white); /* Safari 5.1 to 6.0 */
+    background: -o-radial-gradient(#008DFF 20%, white 70%, white); /* For Opera 11.6 to 12.0 */
+    background: -moz-radial-gradient(#008DFF 20%, white 70%, white); /* For Firefox 3.6 to 15 */
+    background: radial-gradient(#008DFF 20%, white 70%, white); /* Standard syntax (must be last) */
 }
