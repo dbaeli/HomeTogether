@@ -138,7 +138,76 @@
                           },
                           "op2": {
                             "type": "boolean",
-                            "value": "false"
+                            "value": "true"
+                          },
+                          "op": "=="
+                        },
+                        "children": [],
+                        "id": "5bc9414a-1ae9-4a29-becf-2c20ec56783e",
+                        "type": "condition"
+                      },
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "name": "Compute",
+                          "inputParams": [
+                            {
+                              "key": "expression",
+                              "type": "string",
+                              "value": "{b}*{f}"
+                            },
+                            {
+                              "key": "b",
+                              "type": "behaviorParams",
+                              "value": "settings.brightness"
+                            },
+                            {
+                              "key": "f",
+                              "type": "entityKnowledge",
+                              "value": "dimFactor"
+                            }
+                          ],
+                          "outputParams": [
+                            {
+                              "key": "result",
+                              "type": "entityKnowledge",
+                              "value": "dimBrightness"
+                            }
+                          ]
+                        },
+                        "children": [],
+                        "id": "8d0e4041-828c-463b-be4d-11f4e2dc782f",
+                        "type": "action"
+                      }
+                    ],
+                    "id": "20b17051-d22a-47bd-8ffc-3ee8901435b1",
+                    "type": "priority"
+                  },
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {
+                      "active": "false"
+                    },
+                    "children": [
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "op1": {
+                            "type": "entityKnowledge",
+                            "value": "dimFactor"
+                          },
+                          "op2": {
+                            "type": "integer",
+                            "value": "0"
                           },
                           "op": "=="
                         },
@@ -151,20 +220,20 @@
                             "properties": {
                               "op1": {
                                 "type": "entityKnowledge",
-                                "value": "dimBrightness"
+                                "value": "bypassTV"
                               },
                               "op2": {
-                                "type": "integer",
-                                "value": "0"
+                                "type": "boolean",
+                                "value": "false"
                               },
                               "op": "=="
                             },
                             "children": [],
-                            "id": "0113f185-eadc-4dba-8dd1-eb14d1b5ee18",
+                            "id": "ce3ec8d1-491a-41ab-9ed7-eae5262c0d7c",
                             "type": "condition"
                           }
                         ],
-                        "id": "5bc9414a-1ae9-4a29-becf-2c20ec56783e",
+                        "id": "0113f185-eadc-4dba-8dd1-eb14d1b5ee18",
                         "type": "condition"
                       },
                       {
@@ -205,42 +274,6 @@
                     ],
                     "id": "bf0490d1-b5af-476f-821c-5a02e111d51c",
                     "type": "priority"
-                  },
-                  {
-                    "activated": true,
-                    "metadata": {
-                      "label": ""
-                    },
-                    "properties": {
-                      "name": "Compute",
-                      "inputParams": [
-                        {
-                          "key": "expression",
-                          "type": "string",
-                          "value": "{b}*{f}"
-                        },
-                        {
-                          "key": "b",
-                          "type": "behaviorParams",
-                          "value": "settings.brightness"
-                        },
-                        {
-                          "key": "f",
-                          "type": "entityKnowledge",
-                          "value": "dimFactor"
-                        }
-                      ],
-                      "outputParams": [
-                        {
-                          "key": "result",
-                          "type": "entityKnowledge",
-                          "value": "dimBrightness"
-                        }
-                      ]
-                    },
-                    "children": [],
-                    "id": "8d0e4041-828c-463b-be4d-11f4e2dc782f",
-                    "type": "action"
                   },
                   {
                     "activated": true,
