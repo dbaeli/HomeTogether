@@ -113,6 +113,22 @@
                               "label": ""
                             },
                             "properties": {
+                              "destination": "bypassTV",
+                              "op": {
+                                "type": "boolean",
+                                "value": "false"
+                              }
+                            },
+                            "children": [],
+                            "id": "5845e67d-a97a-4985-a65b-c88c05e6de13",
+                            "type": "set"
+                          },
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
                               "name": "Log",
                               "inputParams": [
                                 {
@@ -131,22 +147,6 @@
                             "children": [],
                             "id": "692de42d-8021-442b-b4da-340b82a8cda5",
                             "type": "action"
-                          },
-                          {
-                            "activated": true,
-                            "metadata": {
-                              "label": ""
-                            },
-                            "properties": {
-                              "destination": "bypassTV",
-                              "op": {
-                                "type": "boolean",
-                                "value": "false"
-                              }
-                            },
-                            "children": [],
-                            "id": "5845e67d-a97a-4985-a65b-c88c05e6de13",
-                            "type": "set"
                           },
                           {
                             "activated": true,
