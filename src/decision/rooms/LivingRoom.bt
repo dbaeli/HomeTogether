@@ -139,7 +139,7 @@
                                 {
                                   "key": "cancel",
                                   "type": "boolean",
-                                  "value": "true"
+                                  "value": "false"
                                 }
                               ],
                               "outputParams": []
