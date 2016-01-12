@@ -14,28 +14,29 @@ export function setCurrentInstance( instance ) {
 }
 
 export var actionTable = {
-  'CheckDeviceValue':{'start':CheckDeviceValue,'cancel':cancelCheck},
+  'CheckDeviceValue':{'start':(!_.isUndefined(__ZIPABOX_USER__) ? CheckDeviceValue : DoNothing),'cancel':cancelCheck},
   'CheckPresence':{'start':CheckPresence,'cancel':cancelCheck},
   'Compute':{'start':Compute},
-  'GetDeviceLogs':{'start':GetDeviceLogs},
-  'GetDeviceValue':{'start':GetDeviceValue},
-  'GetLightIntensity':{'start':GetLightIntensity,'cancel':cancelCheck},
-  'LiFXCheckState':{'start':LiFXCheckState,'cancel':cancelCheck},
-  'LiFXEffect':{'start':LiFXEffect},
-  'LiFXGetState':{'start':LiFXGetState},
-  'LiFXSetState':{'start':LiFXSetState},
+  'GetDeviceLogs':{'start':(!_.isUndefined(__ZIPABOX_USER__) ? GetDeviceLogs : DoNothing)},
+  'GetDeviceValue':{'start':(!_.isUndefined(__ZIPABOX_USER__) ? GetDeviceValue : DoNothing)},
+  'GetLightIntensity':{'start':(!_.isUndefined(__ZIPABOX_USER__) ? GetLightIntensity : DoNothing),'cancel':cancelCheck},
+  'LiFXCheckState':{'start':(!_.isUndefined(__LIFX_TOKEN__) ? LiFXCheckState : MockLightCheckState),'cancel':cancelCheck},
+  'LiFXEffect':{'start':(!_.isUndefined(__LIFX_TOKEN__) ? LiFXEffect : LiFXSetState)},
+  'LiFXGetState':{'start':(!_.isUndefined(__LIFX_TOKEN__) ? LiFXGetState : MockLightGetState)},
+  'LiFXSetState':{'start':(!_.isUndefined(__LIFX_TOKEN__) ? LiFXSetState : MockLightSetState)},
   'Log':{'start':Log},
   'MockLightCheckState':{'start':MockLightCheckState,'cancel':cancelCheck},
   'MockLightGetState':{'start':MockLightGetState},
   'MockLightSetState':{'start':MockLightSetState},
   'PreventCancel':{'start':PreventCancel},
   'ResetCancel':{'start':ResetCancel},
-  'SetDeviceValue':{'start':SetDeviceValue},
-  'SetLightState':{'start':SetLightState},
+  'SetDeviceValue':{'start':(!_.isUndefined(__ZIPABOX_USER__) ? SetDeviceValue : DoNothing)},
   'TVSwitched':{'start':TVSwitched}
 };
 
 let timeout = {};
+
+// Helpers for conversions between LIFX color values and web colors.
 
 function hsl2rgb(H, S, L) {
 /*
@@ -157,71 +158,14 @@ function LiFXRequest(r) {
   let url = 'http://localhost:5555/' + r.path;
   r.headers['Content-Type'] = 'application/json; charset=utf-8';
   r.headers['accept'] = '';
-  r.headers['Authorization']='Basic '+ btoa('c0a0bc7550a1fb78ee1e722268eacaba6585154db74c3f8da3a8c422c6f9053f:');
+  r.headers['Authorization']='Basic '+ btoa(__LIFX_TOKEN__);
   return fetch(url, {method: r.method,
     headers:r.headers,
     body: r.body
   });
 }
 
-function TVSwitched(requestId, agentId, input, success, failure) {
-  let initialState = ActionStore.getTVState();
-  let check = function (success) {
-    let currentState = ActionStore.getTVState();
-    if (initialState !== currentState) {
-      success({result: currentState});
-    }
-    else
-      timeout[requestId] = window.setTimeout(() => check(success), 500);
-  }
-  check(success);
-}
-
-function CheckPresence(requestId, agentId, input, success, failure) {
-  let check = function (input, success) {
-    let presence = ActionStore.getPresence(input.id);
-    if (!_.isEqual(presence, input.presence)) {
-      success({result: presence});
-    }
-    else
-      timeout[requestId] = window.setTimeout(() => check(input, success), 500);
-  }
-  check(input, success);
-}
-
-function MockLightGetState(requestId, agentId, input, success, failure) {
-  let out = ActionStore.getLightState(input.id);
-  if (_.isUndefined(out))
-    out = {color: "#000000", brightness: 0};
-  success({settings: out});
-}
-
-function MockLightCheckState(requestId, agentId, input, success, failure) {
-  let getLightState = function (input, success) {
-    let out = ActionStore.getLightState(input.id);
-    if (_.isUndefined(out))
-      out = {color: "#000000", brightness: 0};
-    if (!_.isUndefined(input.settings.power))
-      out.power = input.settings.power;
-    if (!_.isUndefined(input.settings.bypassTV))
-      out.bypassTV = input.settings.bypassTV;
-    if (!_.isEqual(out, input.settings)) {
-      success({settings: out});
-    }
-    else
-      timeout[requestId] = window.setTimeout(() => getLightState(input, success), 2000);
-  }
-  getLightState(input, success);
-}
-
-function MockLightSetState(requestId, agentId, input, success, failure) {
-  let brightness = _.isUndefined(input.brightness) ? 0.5 : input.brightness;
-  if (input.power == 'off') {
-    brightness = 0;
-  }
-  devices.updateLights(input.id, input.color, brightness);
-  success();
-}
+// LIFX Actions: only available if a __LIFX_TOKEN__ has been set in the environment variables (will fall back to the 'mockLight' actions otherwise)
 
 function LiFXSetState(requestId, agentId, input, success, failure) {
   let r = {};
@@ -310,58 +254,7 @@ function LiFXEffect(requestId, agentId, input, success, failure) {
   });
 }
 
-function Compute(requestId, agentId, input, success, failure) {
-  let res = eval(format( input.expression, input ));
-  success({result:res});
-}
-
-function SetLightState(requestId, agentId, input, success, failure) {
-  success();
-}
-
-function Log(requestId, agentId, input, success, failure) {
-  console.log ('LOG FROM CRAFT :', format( input.message, input ) );
-  if( _.isUndefined(input.cancel) || input.cancel === false )
-    chatHistoryStore.addCraftMessage( agentId, format( input.message, input ) );
-  else
-    chatHistoryStore.addCancelMessage( agentId, format( input.message, input ) );
-  success();
-}
-
-function PreventCancel(requestId, agentId, input, success, failure) {
-  chatHistoryStore.cancelMessage();
-  success(); 
-}
-
-function ResetCancel(requestId, agentId, input, success, failure) {
-  currentInstance.updateInstanceKnowledge({cancel:false},'merge')
-  success(); 
-}
-
-function SetDeviceValue(requestId, agentId, input, success, failure) {
-  return fetch(format('/devices/{device}/attributes/{attribute}/value', {device:input.device, attribute:input.attribute}), {
-    method: 'post',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      value: input.value
-    })
-  })
-  .then(function(res) {
-    if ((res.status == 200) || (res.status == 202) ) {
-      success();
-    }
-    else {
-      failure();
-    }
-  })
-  .catch(ex => {
-    console.log('action SetDeviceValue [' + requestId + '] failed:', ex);
-    failure();
-  });
-}
+// ZIPATO Actions: only available if a __ZIPABOX_USER__ has been set in the environment variables (will run indefinitely otherwise)
 
 function GetDeviceValue(requestId, agentId, input, success, failure) {
   return fetch(format('/devices/{device}/attributes/{attribute}/value', {device:input.device, attribute:input.attribute}), {
@@ -423,6 +316,107 @@ function CheckDeviceValue(requestId, agentId, input, success, failure) {
   getValue(input, success);
 }
 
+function DoNothing(requestId, agentId, input, success, failure) {
+  // Do nothing (obviously)
+}
+
+// Generic actions
+
+function Compute(requestId, agentId, input, success, failure) {
+  let res = eval(format( input.expression, input ));
+  success({result:res});
+}
+
+function Log(requestId, agentId, input, success, failure) {
+  console.log ('LOG FROM CRAFT :', format( input.message, input ) );
+  if( _.isUndefined(input.cancel) || input.cancel === false )
+    chatHistoryStore.addCraftMessage( agentId, format( input.message, input ) );
+  else
+    chatHistoryStore.addCancelMessage( agentId, format( input.message, input ) );
+  success();
+}
+
+function PreventCancel(requestId, agentId, input, success, failure) {
+  chatHistoryStore.cancelMessage();
+  success(); 
+}
+
+function ResetCancel(requestId, agentId, input, success, failure) {
+  currentInstance.updateInstanceKnowledge({cancel:false},'merge')
+  success(); 
+}
+
+function SetDeviceValue(requestId, agentId, input, success, failure) {
+  return fetch(format('/devices/{device}/attributes/{attribute}/value', {device:input.device, attribute:input.attribute}), {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      value: input.value
+    })
+  })
+  .then(function(res) {
+    if ((res.status == 200) || (res.status == 202) ) {
+      success();
+    }
+    else {
+      failure();
+    }
+  })
+  .catch(ex => {
+    console.log('action SetDeviceValue [' + requestId + '] failed:', ex);
+    failure();
+  });
+}
+
+function CheckPresence(requestId, agentId, input, success, failure) {
+  let check = function (input, success) {
+    let presence = ActionStore.getPresence(input.id);
+    if (!_.isEqual(presence, input.presence)) {
+      success({result: presence});
+    }
+    else
+      timeout[requestId] = window.setTimeout(() => check(input, success), 500);
+  }
+  check(input, success);
+}
+
+function MockLightGetState(requestId, agentId, input, success, failure) {
+  let out = ActionStore.getLightState(input.room);
+  if (_.isUndefined(out))
+    out = {color: "#000000", brightness: 0};
+  success({settings: out});
+}
+
+function MockLightCheckState(requestId, agentId, input, success, failure) {
+  let getLightState = function (input, success) {
+    let out = ActionStore.getLightState(input.room);
+    if (_.isUndefined(out))
+      out = {color: "#000000", brightness: 0};
+    if (!_.isUndefined(input.settings.power))
+      out.power = input.settings.power;
+    if (!_.isUndefined(input.settings.bypassTV))
+      out.bypassTV = input.settings.bypassTV;
+    if (!_.isEqual(out, input.settings)) {
+      success({settings: out});
+    }
+    else
+      timeout[requestId] = window.setTimeout(() => getLightState(input, success), 2000);
+  }
+  getLightState(input, success);
+}
+
+function MockLightSetState(requestId, agentId, input, success, failure) {
+  let brightness = _.isUndefined(input.brightness) ? 0.5 : input.brightness;
+  if (input.power == 'off') {
+    brightness = 0;
+  }
+  devices.updateLights(input.room, input.color, brightness);
+  success();
+}
+
 function GetLightIntensity(requestId, agentId, input, success, failure) {
   let getIntensity = function (input, success) {
     let out = ActionStore.getLightIntensity();
@@ -436,4 +430,17 @@ function GetLightIntensity(requestId, agentId, input, success, failure) {
       timeout[requestId] = window.setTimeout(() => getIntensity(input, success), 2000);
   }
   getIntensity(input, success);
+}
+
+function TVSwitched(requestId, agentId, input, success, failure) {
+  let initialState = ActionStore.getTVState();
+  let check = function (success) {
+    let currentState = ActionStore.getTVState();
+    if (initialState !== currentState) {
+      success({result: currentState});
+    }
+    else
+      timeout[requestId] = window.setTimeout(() => check(success), 500);
+  }
+  check(success);
 }
