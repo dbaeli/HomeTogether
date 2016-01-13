@@ -115,26 +115,6 @@
                       "label": ""
                     },
                     "properties": {
-                      "name": "Log",
-                      "inputParams": [
-                        {
-                          "key": "message",
-                          "type": "string",
-                          "value": "next, send message"
-                        }
-                      ],
-                      "outputParams": []
-                    },
-                    "children": [],
-                    "id": "5d0060ea-b171-4afb-8982-5b84844d9170",
-                    "type": "action"
-                  },
-                  {
-                    "activated": true,
-                    "metadata": {
-                      "label": ""
-                    },
-                    "properties": {
                       "statusCondition": "succeedsIfAnySucceeds",
                       "retryPolicy": "propagateToAll"
                     },
