@@ -142,43 +142,7 @@
                           },
                           "op": "=="
                         },
-                        "children": [
-                          {
-                            "activated": true,
-                            "metadata": {
-                              "label": ""
-                            },
-                            "properties": {
-                              "name": "Log",
-                              "inputParams": [
-                                {
-                                  "key": "message",
-                                  "type": "string",
-                                  "value": "Turning on light in room {room} because {reason}."
-                                },
-                                {
-                                  "key": "room",
-                                  "type": "behaviorParams",
-                                  "value": "room"
-                                },
-                                {
-                                  "key": "cancel",
-                                  "type": "boolean",
-                                  "value": "true"
-                                },
-                                {
-                                  "key": "reason",
-                                  "type": "behaviorParams",
-                                  "value": "reason"
-                                }
-                              ],
-                              "outputParams": []
-                            },
-                            "children": [],
-                            "id": "7cc1b837-a081-45fc-b4b2-523bb65a7105",
-                            "type": "action"
-                          }
-                        ],
+                        "children": [],
                         "id": "5bc9414a-1ae9-4a29-becf-2c20ec56783e",
                         "type": "condition"
                       },
@@ -216,6 +180,95 @@
                         },
                         "children": [],
                         "id": "8d0e4041-828c-463b-be4d-11f4e2dc782f",
+                        "type": "action"
+                      }
+                    ],
+                    "id": "20b17051-d22a-47bd-8ffc-3ee8901435b1",
+                    "type": "priority"
+                  },
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {
+                      "active": "false"
+                    },
+                    "children": [
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "op1": {
+                            "type": "entityKnowledge",
+                            "value": "dimFactor"
+                          },
+                          "op2": {
+                            "type": "integer",
+                            "value": "0"
+                          },
+                          "op": "=="
+                        },
+                        "children": [
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "op1": {
+                                "type": "entityKnowledge",
+                                "value": "bypassTV"
+                              },
+                              "op2": {
+                                "type": "boolean",
+                                "value": "false"
+                              },
+                              "op": "=="
+                            },
+                            "children": [],
+                            "id": "ce3ec8d1-491a-41ab-9ed7-eae5262c0d7c",
+                            "type": "condition"
+                          }
+                        ],
+                        "id": "0113f185-eadc-4dba-8dd1-eb14d1b5ee18",
+                        "type": "condition"
+                      },
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "name": "Log",
+                          "inputParams": [
+                            {
+                              "key": "message",
+                              "type": "string",
+                              "value": "Turning on light in room {room} because {reason}."
+                            },
+                            {
+                              "key": "room",
+                              "type": "behaviorParams",
+                              "value": "room"
+                            },
+                            {
+                              "key": "cancel",
+                              "type": "boolean",
+                              "value": "true"
+                            },
+                            {
+                              "key": "reason",
+                              "type": "behaviorParams",
+                              "value": "reason"
+                            }
+                          ],
+                          "outputParams": []
+                        },
+                        "children": [],
+                        "id": "7cc1b837-a081-45fc-b4b2-523bb65a7105",
                         "type": "action"
                       }
                     ],

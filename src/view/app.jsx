@@ -48,7 +48,7 @@ export default React.createClass({
     return {instance:null, started:false, devices: ActionStore.getInitialState(), streaming: false, failure: false}
   },
   componentWillMount() {
-    this.n = -50;
+    this.n = 0;
 
     craftai(craftConf)
     .then(instance => {

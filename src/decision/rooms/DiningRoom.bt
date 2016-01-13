@@ -54,7 +54,8 @@
               "label": ""
             },
             "properties": {
-              "active": "true"
+              "statusCondition": "failsIfAnyFails",
+              "retryPolicy": "propagateToAll"
             },
             "children": [
               {
@@ -63,15 +64,7 @@
                   "label": ""
                 },
                 "properties": {
-                  "op1": {
-                    "type": "entityKnowledge",
-                    "value": "tvOn"
-                  },
-                  "op2": {
-                    "type": "boolean",
-                    "value": "true"
-                  },
-                  "op": "=="
+                  "active": "true"
                 },
                 "children": [
                   {
@@ -80,8 +73,15 @@
                       "label": ""
                     },
                     "properties": {
-                      "statusCondition": "failsIfAnyFails",
-                      "retryPolicy": "propagateToAll"
+                      "op1": {
+                        "type": "entityKnowledge",
+                        "value": "tvOn"
+                      },
+                      "op2": {
+                        "type": "boolean",
+                        "value": "true"
+                      },
+                      "op": "=="
                     },
                     "children": [
                       {
@@ -123,7 +123,7 @@
                                 {
                                   "key": "cancel",
                                   "type": "boolean",
-                                  "value": "true"
+                                  "value": "false"
                                 }
                               ],
                               "outputParams": []
@@ -151,96 +151,57 @@
                         ],
                         "id": "a23632c1-c898-4538-a06f-e97eb8686881",
                         "type": "sequence"
-                      },
-                      {
-                        "activated": true,
-                        "metadata": {
-                          "label": ""
-                        },
-                        "properties": {
-                          "op1": {
-                            "type": "entityKnowledge",
-                            "value": "bypassTV"
-                          },
-                          "op2": {
-                            "type": "boolean",
-                            "value": "false"
-                          },
-                          "op": "=="
-                        },
-                        "children": [],
-                        "id": "293f0257-3406-469e-8321-279d6029083b",
-                        "type": "condition"
-                      },
-                      {
-                        "activated": true,
-                        "metadata": {
-                          "label": ""
-                        },
-                        "properties": {},
-                        "children": [
-                          {
-                            "activated": true,
-                            "metadata": {
-                              "label": ""
-                            },
-                            "properties": {
-                              "op1": {
-                                "type": "entityKnowledge",
-                                "value": "cancel"
-                              },
-                              "op2": {
-                                "type": "boolean",
-                                "value": "true"
-                              },
-                              "op": "=="
-                            },
-                            "children": [
-                              {
-                                "activated": true,
-                                "metadata": {
-                                  "label": ""
-                                },
-                                "properties": {},
-                                "children": [],
-                                "id": "e5f457cd-5ec9-4639-9ca1-91587f74b07c",
-                                "type": "success"
-                              }
-                            ],
-                            "id": "6ef62793-bd5d-438e-9eca-c3d56ee548de",
-                            "type": "until"
-                          }
-                        ],
-                        "id": "87102535-7297-47a6-b44c-6fe5ee6138e0",
-                        "type": "failure"
-                      },
-                      {
-                        "activated": true,
-                        "metadata": {
-                          "label": ""
-                        },
-                        "properties": {
-                          "name": "TVSwitched",
-                          "inputParams": [],
-                          "outputParams": [
-                            {
-                              "key": "result",
-                              "type": "entityKnowledge",
-                              "value": "tvOn"
-                            }
-                          ]
-                        },
-                        "children": [],
-                        "id": "5d01f250-22ac-4504-beac-86e8f8524124",
-                        "type": "action"
                       }
                     ],
-                    "id": "29e56160-f99c-4e62-8c93-aa0584eb0cd4",
-                    "type": "parallel"
+                    "id": "566224e5-93ad-4e87-8ed4-9de6f2e09c0a",
+                    "type": "condition"
+                  },
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {},
+                    "children": [
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "destination": "bypassTV",
+                          "op": {
+                            "type": "boolean",
+                            "value": "true"
+                          }
+                        },
+                        "children": [],
+                        "id": "6c34e75b-b5cd-4bb7-945e-971bf45a7df9",
+                        "type": "set"
+                      },
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "behavior": {
+                            "type": "uriPath",
+                            "value": "src/decision/Room.bt"
+                          },
+                          "inputParams": []
+                        },
+                        "children": [],
+                        "id": "a33ad901-7b75-4eb2-884b-2e3957868193",
+                        "type": "embedded"
+                      }
+                    ],
+                    "id": "7caf51a7-63d5-4203-ad66-093eac24607c",
+                    "type": "sequence"
                   }
                 ],
-                "id": "566224e5-93ad-4e87-8ed4-9de6f2e09c0a",
-                "type": "condition"
+                "id": "e6d3d4bd-dacf-4526-8ef6-f678342b9462",
+                "type": "priority"
               },
               {
                 "activated": true,
@@ -248,69 +209,23 @@
                   "label": ""
                 },
                 "properties": {
-                  "statusCondition": "failsIfAnyFails",
-                  "retryPolicy": "propagateToAll"
+                  "name": "TVSwitched",
+                  "inputParams": [],
+                  "outputParams": [
+                    {
+                      "key": "result",
+                      "type": "entityKnowledge",
+                      "value": "tvOn"
+                    }
+                  ]
                 },
-                "children": [
-                  {
-                    "activated": true,
-                    "metadata": {
-                      "label": ""
-                    },
-                    "properties": {
-                      "destination": "bypassTV",
-                      "op": {
-                        "type": "boolean",
-                        "value": "true"
-                      }
-                    },
-                    "children": [],
-                    "id": "6c34e75b-b5cd-4bb7-945e-971bf45a7df9",
-                    "type": "set"
-                  },
-                  {
-                    "activated": true,
-                    "metadata": {
-                      "label": ""
-                    },
-                    "properties": {
-                      "name": "TVSwitched",
-                      "inputParams": [],
-                      "outputParams": [
-                        {
-                          "key": "result",
-                          "type": "entityKnowledge",
-                          "value": "tvOn"
-                        }
-                      ]
-                    },
-                    "children": [],
-                    "id": "223d035c-a7e4-4c56-9ffa-4dd1b543c493",
-                    "type": "action"
-                  },
-                  {
-                    "activated": true,
-                    "metadata": {
-                      "label": ""
-                    },
-                    "properties": {
-                      "behavior": {
-                        "type": "uriPath",
-                        "value": "src/decision/Room.bt"
-                      },
-                      "inputParams": []
-                    },
-                    "children": [],
-                    "id": "a33ad901-7b75-4eb2-884b-2e3957868193",
-                    "type": "embedded"
-                  }
-                ],
-                "id": "5cb33242-781f-43cd-9ef9-f05e93ba1404",
-                "type": "parallel"
+                "children": [],
+                "id": "223d035c-a7e4-4c56-9ffa-4dd1b543c493",
+                "type": "action"
               }
             ],
-            "id": "e6d3d4bd-dacf-4526-8ef6-f678342b9462",
-            "type": "priority"
+            "id": "5cb33242-781f-43cd-9ef9-f05e93ba1404",
+            "type": "parallel"
           }
         ],
         "id": "978ae362-37a0-4420-943f-4262aaf44640",

@@ -24,9 +24,9 @@ export default React.createClass({
     return {color:{}, location:'out'}
   },
   handleChange(val) {
-    if (loc !== 'out' && loc !== '' ) {
-      devices.updateLights(loc, '#' + val.hex, val.rgb.a)
-    }
+    if (loc !== 'out' && loc !== '')
+      if (loc !== '0' || _.isUndefined(__LIFX_TOKEN__))
+        devices.updateLights(loc, '#' + val.hex, val.rgb.a)
   },
   shouldComponentUpdate: function(nextProps, nextState) {
     loc = ActionStore.getPlayerLocation();
@@ -43,16 +43,30 @@ export default React.createClass({
     this.setState(res);
   },
   render: function() {
-    let display = this.state.location !== 'out' && this.state.location !== '' ;
-    return (
-      <Row style={display ? {display:'block'} : {display:'none'}}>
+    if (this.state.location === '0' && !_.isUndefined(__LIFX_TOKEN__)) {
+      return (
+        <Row>
         <Col xs={7}>
-          <ColorPicker style={{marginRight: -5}} color={this.state.color.rgb} onChangeComplete={this.handleChange} type='chrome' />
+        <h4>Use the LiFX application to change the light color</h4>
         </Col>
         <Col xs={2}>
-          <h4>Room&nbsp;{this.state.location}<br />settings</h4>
+          <h4>Room&nbsp;0<br />settings</h4>
         </Col>
-      </Row>
-   );
+        </Row>
+        );
+    }
+    else if (this.state.location !== 'out' && this.state.location !== '')
+      return (
+        <Row style={{marginTop:20, display:'block'}}>
+          <Col xs={7}>
+            <ColorPicker style={{marginRight: -5}} color={this.state.color.rgb} onChangeComplete={this.handleChange} type='chrome' />
+          </Col>
+          <Col xs={2}>
+            <h4>Room&nbsp;{this.state.location}<br />settings</h4>
+          </Col>
+        </Row>
+      );
+    else
+      return (<div></div>)
   }
 });

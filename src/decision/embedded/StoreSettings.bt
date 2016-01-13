@@ -44,7 +44,7 @@
                   "name": "MockLightGetState",
                   "inputParams": [
                     {
-                      "key": "id",
+                      "key": "room",
                       "type": "behaviorParams",
                       "value": "room"
                     }
@@ -77,6 +77,11 @@
                   "key": "id",
                   "type": "behaviorParams",
                   "value": "light"
+                },
+                {
+                  "key": "room",
+                  "type": "behaviorParams",
+                  "value": "room"
                 }
               ],
               "outputParams": [

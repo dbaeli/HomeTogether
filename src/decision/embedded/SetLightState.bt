@@ -54,7 +54,7 @@
                       "value": "settings.brightness"
                     },
                     {
-                      "key": "id",
+                      "key": "room",
                       "type": "behaviorParams",
                       "value": "room"
                     }
@@ -96,6 +96,11 @@
                   "key": "power",
                   "type": "behaviorParams",
                   "value": "settings.power"
+                },
+                {
+                  "key": "room",
+                  "type": "behaviorParams",
+                  "value": "room"
                 }
               ],
               "outputParams": []
