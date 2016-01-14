@@ -98,15 +98,15 @@ export default React.createClass({
   render: function() {
     return (
       <div>
-        <img style={{position:'relative',left:'-15px'}} src={home} width="651" height="646" alt="home" useMap="#rooms" id="out" onClick={e=>this.roomSelected(e.target.id)}/>
-        <map name="rooms">
-          <area shape="rect" id={9} coords="102,447,130,633" onClick={e=>this.tvSelected(e.target.id)} alt="TV" />
-          <area shape="rect" id={0} coords="132,447,331,633" onClick={e=>this.roomSelected(e.target.id)} alt="living room" />
-          <area shape="rect" id={1} coords="13,13,331,446" onClick={e=>this.roomSelected(e.target.id)} alt="dining room"/>
-          <area shape="rect" id={2} coords="332,156,637,235" onClick={e=>this.roomSelected(e.target.id)} alt="corridor" />
-          <area shape="rect" id={3} coords="346,13,545,141" onClick={e=>this.roomSelected(e.target.id)} alt="bathroom" />
-          <area shape="rect" id={4} coords="561,13,637,141" onClick={e=>this.roomSelected(e.target.id)} alt="water closet" />
-          <area shape="rect" id={5} coords="346,251,637,445" onClick={e=>this.roomSelected(e.target.id)} alt="bedroom" />
+        <img style={{position:'relative',left:'-15px'}} src={home} width='651' height='646' alt='home' useMap='#rooms' id='out' onClick={e=>this.roomSelected(e.target.id)}/>
+        <map name='rooms'>
+          <area shape='rect' id={9} coords='102,447,130,633' onClick={e=>this.tvSelected(e.target.id)} alt='TV' />
+          <area shape='rect' id={0} coords='132,447,331,633' onClick={e=>this.roomSelected(e.target.id)} alt='living room' />
+          <area shape='rect' id={1} coords='13,13,331,446' onClick={e=>this.roomSelected(e.target.id)} alt='dining room'/>
+          <area shape='rect' id={2} coords='332,156,637,235' onClick={e=>this.roomSelected(e.target.id)} alt='corridor' />
+          <area shape='rect' id={3} coords='346,13,545,141' onClick={e=>this.roomSelected(e.target.id)} alt='bathroom' />
+          <area shape='rect' id={4} coords='561,13,637,141' onClick={e=>this.roomSelected(e.target.id)} alt='water closet' />
+          <area shape='rect' id={5} coords='346,251,637,445' onClick={e=>this.roomSelected(e.target.id)} alt='bedroom' />
         </map>
         { this.renderPlayer() }
         { this.renderTv() }

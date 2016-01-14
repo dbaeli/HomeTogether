@@ -12,7 +12,6 @@ import Light from './components/light';
 import ColorPicker from './components/colorPicker';
 import Reflux from 'reflux';
 import DayAndNight from './components/dayAndNight';
-import Webcam from './components/webcam';
 
 import HomeK from '../knowledge/home.json';
 import RoomK from '../knowledge/room.json';
