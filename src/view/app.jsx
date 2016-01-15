@@ -23,8 +23,6 @@ let craftConf = {
   version: __CRAFT_PROJECT_VERSION__,
   appId: __CRAFT_APP_ID__,
   appSecret: __CRAFT_APP_SECRET__,
-  httpApiUrl: __CRAFT_HTTP_API_URL__,
-  wsApiUrl: __CRAFT_WS_API_URL__
 };
 
 function registerActions(instance) {
@@ -56,18 +54,15 @@ export default React.createClass({
     })
     .then(() => this.state.instance.updateInstanceKnowledge(OccupantK))
     .then(() => this.state.instance.createAgent('src/decision/Home.bt', HomeK))
-    .then(agent =>  {
-      this.agentId = agent.id;
-      this.state.instance.createAgent('src/decision/rooms/LivingRoom.bt', RoomK);
-    })
-    .then(() => this.state.instance.createAgent('src/decision/rooms/DiningRoom.bt', RoomK))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/Corridor.bt', RoomK))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/Bathroom.bt', RoomK))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/WaterCloset.bt',RoomK))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/Bedroom.bt', RoomK))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/LivingRoom.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_0__) ? __LIFX_BULB_0__ : '')})))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/DiningRoom.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_1__) ? __LIFX_BULB_1__ : '')})))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/Corridor.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_2__) ? __LIFX_BULB_2__ : '')})))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/Bathroom.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_3__) ? __LIFX_BULB_3__ : '')})))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/WaterCloset.bt',_.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_4__) ? __LIFX_BULB_4__ : '')})))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/Bedroom.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_5__) ? __LIFX_BULB_5__ : '')})))
     .then(() => registerActions(this.state.instance))
     .then(() => {
-      this.state.instance.update(0);
+      this.state.instance.update(10);
       this.setState({started: true});
     })
     .catch((err) => {

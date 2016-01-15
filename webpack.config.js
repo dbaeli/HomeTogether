@@ -27,8 +27,14 @@ module.exports = {
       __CRAFT_PROJECT_OWNER__: JSON.stringify(process.env.CRAFT_PROJECT_OWNER),
       __CRAFT_PROJECT_NAME__: JSON.stringify(process.env.CRAFT_PROJECT_NAME),
       __CRAFT_PROJECT_VERSION__: JSON.stringify(process.env.CRAFT_PROJECT_VERSION),
+      __ZIPABOX_USER__: JSON.stringify(process.env.ZIPABOX_USER),
       __LIFX_TOKEN__: JSON.stringify(process.env.LIFX_TOKEN),
-      __ZIPABOX_USER__: JSON.stringify(process.env.ZIPABOX_USER)
+      __LIFX_BULB_0__: JSON.stringify(process.env.LIFX_BULB_0),
+      __LIFX_BULB_1__: JSON.stringify(process.env.LIFX_BULB_1),
+      __LIFX_BULB_2__: JSON.stringify(process.env.LIFX_BULB_2),
+      __LIFX_BULB_3__: JSON.stringify(process.env.LIFX_BULB_3),
+      __LIFX_BULB_4__: JSON.stringify(process.env.LIFX_BULB_4),
+      __LIFX_BULB_5__: JSON.stringify(process.env.LIFX_BULB_5)
     })
   ],
   resolve: {

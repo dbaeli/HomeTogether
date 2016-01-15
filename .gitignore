@@ -2,5 +2,4 @@ node_modules
 out
 *.log
 .env
-app/lifx/bundle.js
 app/main/bundle.js
