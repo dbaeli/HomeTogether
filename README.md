@@ -10,11 +10,12 @@ The following environment variables are required, for example in a `.env` file a
 - `CRAFT_PROJECT_VERSION`: The **craft ai** project name, e.g. _master_.
 - `CRAFT_APP_ID`: The **craft ai** project application id.
 - `CRAFT_APP_SECRET`: The **craft ai** project application secret.
-- `LI_MIN`: The minimum light intensity value (depends on your webcam).
-- `LI_NIGHT_MAX`: The maximum 'night' intensity value (depends on your webcam).
-- `LI_DAY_MIN`: The minimum 'day' intensity value (depends on your webcam).
-- `LI_MAX`: The maximum light intensity value (depends on your webcam).
-- `ZIPABOX_USER`: The username for the _Zipabox_ access.
+
+#### Zipabox ####
+
+Setting the following variables will enable the connection with the Zipabox API and the associated devices.
+
+- `ZIPABOX_USER`: The username for the _Zipabox_ access. 
 - `ZIPABOX_PASSWORD`: The password for the _Zipabox_ access.
 - `ZIPABOX_BLIND_DEVICE_UUID`: The _Zipabox_ device UUID for the blind.
 - `ZIPABOX_BLIND_ENDPOINT_UUID`: The _Zipabox_ endpoint UUID for the blind.
@@ -26,6 +27,11 @@ The following environment variables are required, for example in a `.env` file a
 - `ZIPABOX_MAG_DETECTOR_ENDPOINT_UUID`: The _Zipabox_ endpoint UUID for the magnetic detector.
 - `ZIPABOX_LIGHT_SENSOR_DEVICE_UUID`: The _Zipabox_ device UUID for the light sensor.
 - `ZIPABOX_LIGHT_SENSOR_ENDPOINT_UUID`: The _Zipabox_ endpoint UUID for the light sensor.
+
+#### Lifx ####
+
+It is possible to enable the connection with a LiFX light bulb by setting the environment variable LIFX_TOKEN with a valid lifx developer access token.
+
 
 To install dependencies, run
 

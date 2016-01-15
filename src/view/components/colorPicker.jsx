@@ -12,6 +12,14 @@ function hexToRGB(hex) {
 
 let loc;
 let color;
+let lifx_bulbs = [
+  __LIFX_BULB_0__,
+  __LIFX_BULB_1__,
+  __LIFX_BULB_2__,
+  __LIFX_BULB_3__,
+  __LIFX_BULB_4__,
+  __LIFX_BULB_5__
+]
 
 export default React.createClass({
   mixins: [Reflux.connect(ActionStore, 'devices')],
@@ -43,23 +51,15 @@ export default React.createClass({
     this.setState(res);
   },
   render: function() {
-    if (this.state.location === '0' && !_.isUndefined(__LIFX_TOKEN__)) {
-      return (
-        <Row>
-        <Col xs={7}>
-        <h4>Use the LiFX application to change the light color</h4>
-        </Col>
-        <Col xs={2}>
-          <h4>Room&nbsp;0<br />settings</h4>
-        </Col>
-        </Row>
-        );
-    }
-    else if (this.state.location !== 'out' && this.state.location !== '')
+    if (this.state.location !== 'out' && this.state.location !== '')
       return (
         <Row style={{marginTop:20, display:'block'}}>
-          <Col xs={7}>
-            <ColorPicker style={{marginRight: -5}} color={this.state.color.rgb} onChangeComplete={this.handleChange} type='chrome' />
+          <Col xs={7}>{
+            !_.isUndefined(lifx_bulbs[parseInt(this.state.location)]) ?
+              <h4>Use the LiFX application to change the light color</h4>
+            :
+              <ColorPicker style={{marginRight: -5}} color={this.state.color.rgb} onChangeComplete={this.handleChange} type='chrome' />
+          }
           </Col>
           <Col xs={2}>
             <h4>Room&nbsp;{this.state.location}<br />settings</h4>

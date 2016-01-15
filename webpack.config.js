@@ -6,13 +6,12 @@ dotenv.load();
 
 module.exports = {
   devtool: 'eval',
-  entry: {
-    main: './src/main',
-    lifx: './src/lifx'
-  },
+  entry: [
+    './src/main'
+  ],
   output: {
     path: path.join(__dirname, 'app'),
-    filename: '[name]/bundle.js',
+    filename: 'bundle.js',
     publicPath: '/'
   },
   plugins: [
@@ -28,12 +27,14 @@ module.exports = {
       __CRAFT_PROJECT_OWNER__: JSON.stringify(process.env.CRAFT_PROJECT_OWNER),
       __CRAFT_PROJECT_NAME__: JSON.stringify(process.env.CRAFT_PROJECT_NAME),
       __CRAFT_PROJECT_VERSION__: JSON.stringify(process.env.CRAFT_PROJECT_VERSION),
-      __LI_MIN__: JSON.stringify(process.env.LI_MIN),
-      __LI_NIGHT_MAX__: JSON.stringify(process.env.LI_NIGHT_MAX),
-      __LI_DAY_MIN__: JSON.stringify(process.env.LI_DAY_MIN),
-      __LI_MAX__: JSON.stringify(process.env.LI_MAX),
+      __ZIPABOX_USER__: JSON.stringify(process.env.ZIPABOX_USER),
       __LIFX_TOKEN__: JSON.stringify(process.env.LIFX_TOKEN),
-      __ZIPABOX_USER__: JSON.stringify(process.env.ZIPABOX_USER)
+      __LIFX_BULB_0__: JSON.stringify(process.env.LIFX_BULB_0),
+      __LIFX_BULB_1__: JSON.stringify(process.env.LIFX_BULB_1),
+      __LIFX_BULB_2__: JSON.stringify(process.env.LIFX_BULB_2),
+      __LIFX_BULB_3__: JSON.stringify(process.env.LIFX_BULB_3),
+      __LIFX_BULB_4__: JSON.stringify(process.env.LIFX_BULB_4),
+      __LIFX_BULB_5__: JSON.stringify(process.env.LIFX_BULB_5)
     })
   ],
   resolve: {
