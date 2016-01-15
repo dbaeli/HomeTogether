@@ -3,10 +3,10 @@
     "version": "0.0.1"
   },
   {
-    "homeUrl": "craft.ai/hometogether",
+    "homeUrl": "craft.ai/HomeTogether",
     "description": "",
     "actionLibraries": {
-      "google": true
+      "google": false
     }
   }
 ]
