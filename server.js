@@ -27,10 +27,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use(express.static('./app/'));
 
-app.get('/', function(req, res, next) {
-  res.redirect('/main/');
-});
-
 app.use(bodyParser.json());
 
 // Enable CORS

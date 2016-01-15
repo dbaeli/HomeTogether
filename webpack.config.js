@@ -6,12 +6,12 @@ dotenv.load();
 
 module.exports = {
   devtool: 'eval',
-  entry: {
-    main: './src/main'
-  },
+  entry: [
+    './src/main'
+  ],
   output: {
     path: path.join(__dirname, 'app'),
-    filename: '[name]/bundle.js',
+    filename: 'bundle.js',
     publicPath: '/'
   },
   plugins: [
