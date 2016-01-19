@@ -118,7 +118,7 @@
                                 {
                                   "key": "message",
                                   "type": "string",
-                                  "value": "Turning off light in living room because the TV has been turned on"
+                                  "value": "TV on: diming light in room {room}"
                                 },
                                 {
                                   "key": "cancel",
