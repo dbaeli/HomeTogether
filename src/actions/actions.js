@@ -154,8 +154,7 @@ function LiFXRequest(r) {
     body: {}
   });
 
-  //let url = 'https://api.lifx.com/v1/' + r.path;
-  let url = 'http://localhost:5555/' + r.path;
+  let url = 'https://api.lifx.com/v1/' + r.path;
   r.headers['Content-Type'] = 'application/json; charset=utf-8';
   r.headers['accept'] = '';
   r.headers['Authorization']='Basic '+ btoa(__LIFX_TOKEN__);
