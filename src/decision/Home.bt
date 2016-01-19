@@ -248,7 +248,7 @@
                                 {
                                   "key": "message",
                                   "type": "string",
-                                  "value": "It is getting dark out, closing blinds"
+                                  "value": "it is getting dark out, closing blinds"
                                 },
                                 {
                                   "key": "cancel",
@@ -332,7 +332,7 @@
                             {
                               "key": "message",
                               "type": "string",
-                              "value": "The day breaks, opening blinds"
+                              "value": "the day breaks, opening blinds"
                             },
                             {
                               "key": "cancel",
