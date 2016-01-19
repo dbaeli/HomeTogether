@@ -247,7 +247,7 @@
                             {
                               "key": "message",
                               "type": "string",
-                              "value": "Turning on light in room {room} because {reason}."
+                              "value": "{reason} room {room}: turning on light"
                             },
                             {
                               "key": "room",
