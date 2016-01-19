@@ -118,12 +118,17 @@
                                 {
                                   "key": "message",
                                   "type": "string",
-                                  "value": "Diming light in dining room because the TV has been turned on"
+                                  "value": "TV on: diming light in room {room}"
                                 },
                                 {
                                   "key": "cancel",
                                   "type": "boolean",
                                   "value": "false"
+                                },
+                                {
+                                  "key": "room",
+                                  "type": "entityKnowledge",
+                                  "value": "roomId"
                                 }
                               ],
                               "outputParams": []
