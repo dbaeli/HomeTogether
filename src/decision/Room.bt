@@ -194,7 +194,7 @@
                                     {
                                       "key": "message",
                                       "type": "string",
-                                      "value": "Turning off light in room {a} because there is nobody inside anymore."
+                                      "value": "Room {a} is empty: turning off light"
                                     },
                                     {
                                       "key": "a",
