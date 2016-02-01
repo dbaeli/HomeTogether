@@ -96,15 +96,21 @@ export default React.createClass({
       return (
         <Grid>
           <Row>
+            <Col sm={0} md={2}>
+            </Col>
             <Col sm={12} md={8}>
               <FloorMap onUpdateTV={(val)=>this.updateTV(val)} onUpdateLocation={(location) => devices.updatePresence('player', location)}/>
               <Occupant onUpdateLocation={(location) => devices.updatePresence('occupant', location)}/>
               <Light/>
             </Col>
-            <Col md={4}>
+          </Row>
+          <Row style={{marginTop:'20px'}}>
+            <Col sm={0} md={2}>
+            </Col>
+            <Col sm={12} md={8}>
               <ChatHistory id='hist' placeholder='No message...' instance={this.state.instance}/>
-              <DayAndNight onUpdateLightIntensity={(val) => this.updateLight(val)}/>
-              <ColorPicker />
+              <DayAndNight style={{marginTop:'10px'}} onUpdateLightIntensity={(val) => this.updateLight(val)}/>
+              <ColorPicker style={{marginTop:'10px'}} />
             </Col>
           </Row>
         </Grid>
