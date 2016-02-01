@@ -37,7 +37,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-
 if (!_.isUndefined(process.env.ZIPABOX_USER)) {
   zipabox.username = process.env.ZIPABOX_USER;
   zipabox.password = process.env.ZIPABOX_PASSWORD;
@@ -145,6 +144,10 @@ if (!_.isUndefined(process.env.ZIPABOX_USER)) {
       }
     });
   });
+}
+
+
+if (!_.isUndefined(process.env.SAMI_USER)) {
 }
 
 var server = app.listen(4444, function () {

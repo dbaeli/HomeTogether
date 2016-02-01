@@ -4,6 +4,7 @@ import format from 'string-format';
 import _ from 'lodash';
 import btoa from 'btoa';
 import {devices, ActionStore} from './actionStore';
+import * as samiHelper from '../lib/sami/samiHelper.js';
 
 import chatHistoryStore from '../view/components/chatHistoryStore';
 
@@ -442,4 +443,86 @@ function TVSwitched(requestId, agentId, input, success, failure) {
       timeout[requestId] = window.setTimeout(() => check(success), 500);
   }
   check(success);
+}
+
+function SetDeviceValue(requestID, agentID, params) {
+  if (_.isUndefined(params.provider)) {
+    params.provider = 'avidsen';
+  }
+  switch (params.provider) {
+    case 'avidsen':
+      return fetch(util.format('/devices/%s/attributes/%s/value', params.device, params.attribute), {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          value: params.value
+        })
+      })
+      .then(function(response) {
+        if ((response.status == 200) || (response.status == 202) ) {
+          sendSuccess(requestID);
+        }
+        else {
+          sendFailure(requestID);
+        }
+      })
+      .catch(function(ex) {
+        sendFailure(requestID);
+      });
+    break;
+    case 'sami':
+      var jsonSAMI = {};
+      _.set(jsonSAMI, params.attribute, params.value);
+      return samiHelper.sendMessageToDevice(params.device, jsonSAMI)
+      .then(function(json) {
+        if (!_.isUndefined(json.data.mid)) {
+          sendSuccess(requestID);
+        }
+        else {
+          sendFailure(requestID);
+        }
+      })
+      .catch(function(ex) {
+        sendFailure(requestID);
+      });
+    break;
+    default:
+    break;
+  }
+}
+
+function GetDeviceValue(requestID, agentID, params) {
+  if (_.isUndefined(params.provider)) {
+    params.provider = 'avidsen';
+  }
+  switch (params.provider) {
+    case 'avidsen':
+      return fetch(util.format('/devices/%s/attributes/%s/value', params.device, params.attribute), {
+        method: 'get'
+      })
+      .then(function(response) {
+        return response.json()
+      })
+      .then(function(json) {
+        return sendSuccess(requestID, JSON.stringify(json));
+      })
+      .catch(function(ex) {
+        sendFailure(requestID);
+      })
+      break;
+    case 'sami':
+      if (!_.isUndefined(samiHelper.devices[params.device].data[params.attribute])) {
+        console.log('get action sami = ' + JSON.stringify(_.pick(samiHelper.devices[params.device].data, params.attribute)));
+        sendSuccess(requestID, JSON.stringify(_.pick(samiHelper.devices[params.device].data, params.attribute)));
+      }
+      else {
+        sendFailure(requestID);
+      }
+      break;
+    default:
+      break;
+  }
 }
