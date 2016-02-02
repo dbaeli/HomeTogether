@@ -4,7 +4,7 @@ import format from 'string-format';
 import _ from 'lodash';
 import btoa from 'btoa';
 import {devices, ActionStore} from './actionStore';
-import * as samiHelper from '../lib/sami/samiHelper.js';
+import sami from '../lib/sami/samiHelper.js';
 
 import chatHistoryStore from '../view/components/chatHistoryStore';
 
@@ -15,15 +15,14 @@ export function setCurrentInstance( instance ) {
 }
 
 export var actionTable = {
-  'CheckDeviceValue':{'start':(!_.isUndefined(__ZIPABOX_USER__) ? CheckDeviceValue : DoNothing),'cancel':cancelCheck},
+  'CheckDeviceValue':{'start':CheckDeviceValue,'cancel':cancelCheck},
   'CheckPresence':{'start':CheckPresence,'cancel':cancelCheck},
   'Compute':{'start':Compute},
-  'GetDeviceLogs':{'start':(!_.isUndefined(__ZIPABOX_USER__) ? GetDeviceLogs : DoNothing)},
-  'GetDeviceValue':{'start':(!_.isUndefined(__ZIPABOX_USER__) ? GetDeviceValue : DoNothing)},
+  'GetDeviceLogs':{'start':GetDeviceLogs},
+  'GetDeviceValue':{'start':GetDeviceValue},
   'GetLightIntensity':{'start':GetLightIntensity,'cancel':cancelCheck},
   'LiFXCheckState':{'start':(!_.isUndefined(__LIFX_TOKEN__) ? LiFXCheckState : MockLightCheckState),'cancel':cancelCheck},
-  'LiFXEffect':{'start':(!_.isUndefined(__LIFX_TOKEN__) ? LiFXEffect : LiFXSetState)},
-  'LiFXGetState':{'start':(!_.isUndefined(__LIFX_TOKEN__) ? LiFXGetState : MockLightGetState)},
+  'LiFXGetState':{'start':(!_.isUndefined(__LIFX_TOKEN__) ? LiFXGetState : MockLightSetState)},
   'LiFXSetState':{'start':(!_.isUndefined(__LIFX_TOKEN__) ? LiFXSetState : MockLightSetState)},
   'Log':{'start':Log},
   'MockLightCheckState':{'start':MockLightCheckState,'cancel':cancelCheck},
@@ -31,7 +30,7 @@ export var actionTable = {
   'MockLightSetState':{'start':MockLightSetState},
   'PreventCancel':{'start':PreventCancel},
   'ResetCancel':{'start':ResetCancel},
-  'SetDeviceValue':{'start':(!_.isUndefined(__ZIPABOX_USER__) ? SetDeviceValue : DoNothing)},
+  'SetDeviceValue':{'start':SetDeviceValue},
   'TVSwitched':{'start':TVSwitched}
 };
 
@@ -256,7 +255,7 @@ function LiFXEffect(requestId, agentId, input, success, failure) {
 
 // ZIPATO Actions: only available if a __ZIPABOX_USER__ has been set in the environment variables (will run indefinitely otherwise)
 
-function GetDeviceValue(requestId, agentId, input, success, failure) {
+function GetZipatoDeviceValue(requestId, agentId, input, success, failure) {
   return fetch(format('/devices/{device}/attributes/{attribute}/value', {device:input.device, attribute:input.attribute}), {
     method: 'get'
   })
@@ -268,7 +267,7 @@ function GetDeviceValue(requestId, agentId, input, success, failure) {
   });
 }
 
-function GetDeviceLogs(requestId, agentId, input, success, failure) {
+function GetZipatoDeviceLogs(requestId, agentId, input, success, failure) {
   return fetch(format('/devices/{device}/attributes/{attribute}/logs', {device:input.device, attribute:input.attribute}), {
     method: 'get'
   })
@@ -284,7 +283,7 @@ function GetDeviceLogs(requestId, agentId, input, success, failure) {
   });
 }
 
-function CheckDeviceValue(requestId, agentId, input, success, failure) {
+function CheckZipatoDeviceValue(requestId, agentId, input, success, failure) {
   let getValue = function (input, success) {
     return fetch(format('/devices/{device}/attributes/{attribute}/logs', {device:input.device, attribute:input.attribute}), {
       method: 'get'
@@ -316,11 +315,73 @@ function CheckDeviceValue(requestId, agentId, input, success, failure) {
   getValue(input, success);
 }
 
+function SetZipatoDeviceValue(requestId, agentId, input, success, failure) {
+  return fetch(format('/devices/{device}/attributes/{attribute}/value', {device:input.device, attribute:input.attribute}), {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      value: input.value
+    })
+  })
+  .then(function(res) {
+    if ((res.status == 200) || (res.status == 202) ) {
+      success();
+    }
+    else {
+      failure();
+    }
+  })
+  .catch(ex => {
+    console.log('action SetDeviceValue [' + requestId + '] failed:', ex);
+    failure();
+  });
+}
+
 function DoNothing(requestId, agentId, input, success, failure) {
   // Do nothing (obviously)
 }
 
 // Generic actions
+
+function CheckDeviceValue(requestId, agentId, input, success, failure) {
+  if (!_.isUndefined(__ZIPABOX_USER__))
+    return CheckZipatoDeviceValue(requestId, agentId, input, success, failure);
+  else if (!_.isUndefined(__SAMI_USER__))
+    return GetSamiDeviceValue(requestId, agentId, input, success, failure);
+  else
+    return DoNothing(requestId, agentId, input, success, failure);
+}
+
+function GetDeviceLogs(requestId, agentId, input, success, failure) {
+  if (!_.isUndefined(__ZIPABOX_USER__))
+    return GetZipatoDeviceLogs(requestId, agentId, input, success, failure);
+  else if (!_.isUndefined(__SAMI_USER__))
+    return GetSamiDeviceValue(requestId, agentId, input, success, failure);
+  else
+    return DoNothing(requestId, agentId, input, success, failure);
+}
+
+function GetDeviceValue(requestId, agentId, input, success, failure) {
+  if (!_.isUndefined(__ZIPABOX_USER__))
+    return GetZipatoDeviceValue(requestId, agentId, input, success, failure);
+  else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
+    return GetSamiDeviceValue(requestId, agentId, input, success, failure);
+  else
+    return DoNothing(requestId, agentId, input, success, failure);
+}
+
+
+function SetDeviceValue(requestId, agentId, input, success, failure) {
+  if (!_.isUndefined(__ZIPABOX_USER__))
+    return SetZipatoDeviceValue(requestId, agentId, input, success, failure);
+  else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
+    return SetSamiDeviceValue(requestId, agentId, input, success, failure);
+  else
+    return DoNothing(requestId, agentId, input, success, failure);
+}
 
 function Compute(requestId, agentId, input, success, failure) {
   let res = eval(format( input.expression, input ));
@@ -344,31 +405,6 @@ function PreventCancel(requestId, agentId, input, success, failure) {
 function ResetCancel(requestId, agentId, input, success, failure) {
   currentInstance.updateInstanceKnowledge({cancel:false},'merge')
   success(); 
-}
-
-function SetDeviceValue(requestId, agentId, input, success, failure) {
-  return fetch(format('/devices/{device}/attributes/{attribute}/value', {device:input.device, attribute:input.attribute}), {
-    method: 'post',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      value: input.value
-    })
-  })
-  .then(function(res) {
-    if ((res.status == 200) || (res.status == 202) ) {
-      success();
-    }
-    else {
-      failure();
-    }
-  })
-  .catch(ex => {
-    console.log('action SetDeviceValue [' + requestId + '] failed:', ex);
-    failure();
-  });
 }
 
 function CheckPresence(requestId, agentId, input, success, failure) {
@@ -433,96 +469,58 @@ function GetLightIntensity(requestId, agentId, input, success, failure) {
 }
 
 function TVSwitched(requestId, agentId, input, success, failure) {
-  let initialState = ActionStore.getTVState();
-  let check = function (success) {
-    let currentState = ActionStore.getTVState();
-    if (initialState !== currentState) {
-      success({result: currentState});
-    }
+  if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(__SAMI_TV__)) {
+    input.device = 'tv';
+    input.attribute = 'power';
+    if (!_.isUndefined(sami.devices[input.device]))
+      return GetSamiDeviceValue(requestId, agentId, input, success, failure);
     else
-      timeout[requestId] = window.setTimeout(() => check(success), 500);
+      console.log('action TVSwitched [' + requestId + '] failed: device not found');
   }
-  check(success);
-}
-
-function SetDeviceValue(requestID, agentID, params) {
-  if (_.isUndefined(params.provider)) {
-    params.provider = 'avidsen';
-  }
-  switch (params.provider) {
-    case 'avidsen':
-      return fetch(util.format('/devices/%s/attributes/%s/value', params.device, params.attribute), {
-        method: 'post',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          value: params.value
-        })
-      })
-      .then(function(response) {
-        if ((response.status == 200) || (response.status == 202) ) {
-          sendSuccess(requestID);
-        }
-        else {
-          sendFailure(requestID);
-        }
-      })
-      .catch(function(ex) {
-        sendFailure(requestID);
-      });
-    break;
-    case 'sami':
-      var jsonSAMI = {};
-      _.set(jsonSAMI, params.attribute, params.value);
-      return samiHelper.sendMessageToDevice(params.device, jsonSAMI)
-      .then(function(json) {
-        if (!_.isUndefined(json.data.mid)) {
-          sendSuccess(requestID);
-        }
-        else {
-          sendFailure(requestID);
-        }
-      })
-      .catch(function(ex) {
-        sendFailure(requestID);
-      });
-    break;
-    default:
-    break;
+  else {
+    let initialState = ActionStore.getTVState();
+    let check = function (success) {
+      let currentState = ActionStore.getTVState();
+      if (initialState !== currentState) {
+        success({result: currentState});
+      }
+      else
+        timeout[requestId] = window.setTimeout(() => check(success), 500);
+    }
+    check(success);
   }
 }
 
-function GetDeviceValue(requestID, agentID, params) {
-  if (_.isUndefined(params.provider)) {
-    params.provider = 'avidsen';
+function SetSamiDeviceValue(requestId, agentId, input, success, failure) {
+  let res = {};
+  _.set(res, input.attribute, input.value);
+  return sami.sendMessageToDevice(input.device, res)
+  .then(json => {
+    if (!_.isUndefined(json.data.mid)) {
+      success();
+    }
+    else {
+      failure();
+    }
+  })
+  .catch(ex => {
+    console.log('action SetDeviceValue [' + requestId + '] failed:', ex);
+    failure();
+  });
+}
+
+function GetSamiDeviceValue(requestId, agentId, input, success, failure) {
+  let res = _.pick(sami.devices[input.device].data, input.attribute);
+  if (_.isUndefined(sami.devices[input.device].ID)) {
+    console.log('action GetDeviceValue [' + requestId + '] failed: device ID not found');
+    failure({value: input.value});
   }
-  switch (params.provider) {
-    case 'avidsen':
-      return fetch(util.format('/devices/%s/attributes/%s/value', params.device, params.attribute), {
-        method: 'get'
-      })
-      .then(function(response) {
-        return response.json()
-      })
-      .then(function(json) {
-        return sendSuccess(requestID, JSON.stringify(json));
-      })
-      .catch(function(ex) {
-        sendFailure(requestID);
-      })
-      break;
-    case 'sami':
-      if (!_.isUndefined(samiHelper.devices[params.device].data[params.attribute])) {
-        console.log('get action sami = ' + JSON.stringify(_.pick(samiHelper.devices[params.device].data, params.attribute)));
-        sendSuccess(requestID, JSON.stringify(_.pick(samiHelper.devices[params.device].data, params.attribute)));
-      }
-      else {
-        sendFailure(requestID);
-      }
-      break;
-    default:
-      break;
+  else if (_.isUndefined(res)) {
+    console.log('action GetDeviceValue [' + requestId + '] failed: device data not found');
+    failure();
+  }
+  else {
+    console.log('get action sami =', res);
+    success({value: res[input.attribute]});
   }
 }

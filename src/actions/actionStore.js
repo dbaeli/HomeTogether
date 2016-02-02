@@ -1,5 +1,6 @@
 import Reflux from 'reflux';
 import _ from 'lodash';
+import sami from '../lib/sami/samiHelper.js';
 
 export const devices = {
   updateLights : Reflux.createAction(),
@@ -17,14 +18,16 @@ _.map(['0', '1', '2', '3', '4', '5'], val =>{
 
 export var ActionStore = Reflux.createStore({
   listenables: devices,
-  settings: {lights:{}, presence: initPres, tvState:false},
+  settings: {lights:{}, presence: initPres, devices: {tv: {power: false}, light_sensor1: {state: 2.5}}},
 
   onUpdateLights: function(id, color, brightness) {
     this.settings.lights[id]={color: color, brightness: brightness};
     this.trigger(this.settings);
   },
   onUpdateLightIntensity: function(val) {
-    this.settings.lightIntensity = val;
+    if (!_.isUndefined(sami.devices.light_sensor1.ID))
+      sami.sendMessageToDevice('light_sensor1', {'state': val});
+    this.settings.devices.light_sensor1.state = val;
     this.trigger(this.settings);
   },
   onUpdatePresence: function(entity, id) {
@@ -39,7 +42,9 @@ export var ActionStore = Reflux.createStore({
     this.trigger(this.settings);
   },
   onUpdateTVState: function(val) {
-    this.settings.tvState = val;
+    if (!_.isUndefined(sami.devices.tv.ID))
+      sami.sendMessageToDevice('tv', {'power': val});
+    this.settings.devices.tv.power = val;
     this.trigger(this.settings);
   },
   getPresence: function(id) {
@@ -48,17 +53,18 @@ export var ActionStore = Reflux.createStore({
   getLightState: function(id) {
     return this.settings.lights[id];
   },
-  getInitialState: function() {
-    return this.settings;    
-  },
   getTVState: function() {
-    return this.settings.tvState;
+    return this.settings.devices.tv.power;
   },
   getPlayerLocation: function() {
     let loc = _.findKey(this.settings.presence, {player: true}) || '';
     return loc;
   },
   getLightIntensity: function() {
-    return this.settings.lightIntensity;
+    return this.settings.devices.light_sensor1.state;
+  },
+  getInitialState: function() {
+    _.forEach(this.settings.devices, (val, key) => {sami.devices[key].data = val});
+    return this.settings;    
   }
 });

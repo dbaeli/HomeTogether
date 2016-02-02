@@ -34,7 +34,18 @@ module.exports = {
       __LIFX_BULB_2__: JSON.stringify(process.env.LIFX_BULB_2),
       __LIFX_BULB_3__: JSON.stringify(process.env.LIFX_BULB_3),
       __LIFX_BULB_4__: JSON.stringify(process.env.LIFX_BULB_4),
-      __LIFX_BULB_5__: JSON.stringify(process.env.LIFX_BULB_5)
+      __LIFX_BULB_5__: JSON.stringify(process.env.LIFX_BULB_5),
+      __SAMI_USER__: JSON.stringify(process.env.SAMI_USER),
+      __SAMI_TV__: JSON.stringify(process.env.SAMI_TV),
+      __SAMI_BLIND__: JSON.stringify(process.env.SAMI_BLIND),
+      __SAMI_SHOWER_HEAD__: JSON.stringify(process.env.SAMI_SHOWER_HEAD),
+      __SAMI_BULB_0__: JSON.stringify(process.env.SAMI_BULB_0),
+      __SAMI_BULB_1__: JSON.stringify(process.env.SAMI_BULB_1),
+      __SAMI_BULB_2__: JSON.stringify(process.env.SAMI_BULB_2),
+      __SAMI_BULB_3__: JSON.stringify(process.env.SAMI_BULB_3),
+      __SAMI_BULB_4__: JSON.stringify(process.env.SAMI_BULB_4),
+      __SAMI_BULB_5__: JSON.stringify(process.env.SAMI_BULB_5),
+      __SAMI_LIGHT_SENSOR__: JSON.stringify(process.env.SAMI_LIGHT_SENSOR)
     })
   ],
   resolve: {

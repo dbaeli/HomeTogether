@@ -12,6 +12,7 @@ import Light from './components/light';
 import ColorPicker from './components/colorPicker';
 import Reflux from 'reflux';
 import DayAndNight from './components/dayAndNight';
+import sami from '../lib/sami/samiHelper';
 
 import HomeK from '../knowledge/home.json';
 import RoomK from '../knowledge/room.json';
@@ -45,6 +46,8 @@ export default React.createClass({
     return {instance:null, started:false, devices: ActionStore.getInitialState(), failure: false}
   },
   componentWillMount: function() {
+    if (!_.isUndefined(__SAMI_USER__))
+      sami.createListenerWS(__SAMI_USER__);
     this.n = 0;
     craftai(craftConf)
     .then(instance => {
