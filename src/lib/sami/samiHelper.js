@@ -45,6 +45,10 @@ var sami = {
     'light_bulb_5': {
       'ID': __SAMI_BULB_5__,
       'data' : {}
+    },
+    'presence': {
+      'ID': __SAMI_PRESENCE__,
+      'data' : {}
     }
   },
   sendMessageToDevice: sendMessageToDevice,

@@ -18,7 +18,7 @@ _.map(['0', '1', '2', '3', '4', '5'], val =>{
 
 export var ActionStore = Reflux.createStore({
   listenables: devices,
-  settings: {lights:{}, presence: initPres, devices: {tv: {power: false}, light_sensor1: {state: 2.5}}},
+  settings: {lights:{}, devices: {tv: {power: false}, light_sensor1: {state: 2.5}, presence: initPres}},
 
   onUpdateLights: function(id, color, brightness) {
     this.settings.lights[id]={color: color, brightness: brightness};
@@ -33,12 +33,12 @@ export var ActionStore = Reflux.createStore({
   onUpdatePresence: function(entity, id) {
     let obj = {};
     obj[entity]=true;
-    let previous = _.findKey(this.settings.presence, obj);
-    if (!_.isUndefined(previous) && !_.isUndefined(this.settings.presence[previous]))
-      this.settings.presence[previous][entity] = false;
-    if (_.isUndefined(this.settings.presence[id]))
-      this.settings.presence[id] = {};
-    this.settings.presence[id][entity] = true;
+    let previous = _.findKey(this.settings.devices.presence, obj);
+    if (!_.isUndefined(previous) && !_.isUndefined(this.settings.devices.presence[previous]))
+      this.settings.devices.presence[previous][entity] = false;
+    if (_.isUndefined(this.settings.devices.presence[id]))
+      this.settings.devices.presence[id] = {};
+    this.settings.devices.presence[id][entity] = true;
     this.trigger(this.settings);
   },
   onUpdateTVState: function(val) {
@@ -48,7 +48,7 @@ export var ActionStore = Reflux.createStore({
     this.trigger(this.settings);
   },
   getPresence: function(id) {
-    return this.settings.presence[id];
+    return this.settings.devices.presence[id];
   },
   getLightState: function(id) {
     return this.settings.lights[id];
@@ -57,7 +57,7 @@ export var ActionStore = Reflux.createStore({
     return this.settings.devices.tv.power;
   },
   getPlayerLocation: function() {
-    let loc = _.findKey(this.settings.presence, {player: true}) || '';
+    let loc = _.findKey(this.settings.devices.presence, {player: true}) || '';
     return loc;
   },
   getLightIntensity: function() {
