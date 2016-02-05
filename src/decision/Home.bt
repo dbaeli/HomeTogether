@@ -95,7 +95,7 @@
                           ],
                           "outputParams": [
                             {
-                              "key": "value",
+                              "key": "result",
                               "type": "entityKnowledge",
                               "value": "outsideLightIntensity.value"
                             }
