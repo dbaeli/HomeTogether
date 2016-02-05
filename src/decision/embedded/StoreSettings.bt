@@ -24,53 +24,6 @@
               "label": ""
             },
             "properties": {
-              "op1": {
-                "type": "behaviorParams",
-                "value": "light"
-              },
-              "op2": {
-                "type": "string",
-                "value": ""
-              },
-              "op": "=="
-            },
-            "children": [
-              {
-                "activated": true,
-                "metadata": {
-                  "label": ""
-                },
-                "properties": {
-                  "name": "MockLightGetState",
-                  "inputParams": [
-                    {
-                      "key": "room",
-                      "type": "behaviorParams",
-                      "value": "room"
-                    }
-                  ],
-                  "outputParams": [
-                    {
-                      "key": "settings",
-                      "type": "entityKnowledge",
-                      "value": "tmpSettings"
-                    }
-                  ]
-                },
-                "children": [],
-                "id": "a9f6220d-94d5-46ea-a469-4b288f48d122",
-                "type": "action"
-              }
-            ],
-            "id": "f5d1211f-e177-4aec-981a-d084efabf7e3",
-            "type": "condition"
-          },
-          {
-            "activated": true,
-            "metadata": {
-              "label": ""
-            },
-            "properties": {
               "name": "LiFXGetState",
               "inputParams": [
                 {
