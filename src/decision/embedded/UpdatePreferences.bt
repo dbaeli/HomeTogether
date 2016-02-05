@@ -42,7 +42,7 @@
               ],
               "outputParams": [
                 {
-                  "key": "settings",
+                  "key": "result",
                   "type": "entityKnowledge",
                   "value": "tmpSettings"
                 }
