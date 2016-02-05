@@ -14,9 +14,7 @@
         "metadata": {
           "label": ""
         },
-        "properties": {
-          "active": "false"
-        },
+        "properties": {},
         "children": [
           {
             "activated": true,
@@ -24,7 +22,7 @@
               "label": ""
             },
             "properties": {
-              "name": "LiFXGetState",
+              "name": "LiFXCheckState",
               "inputParams": [
                 {
                   "key": "id",
@@ -35,18 +33,23 @@
                   "key": "room",
                   "type": "behaviorParams",
                   "value": "room"
+                },
+                {
+                  "key": "settings",
+                  "type": "behaviorParams",
+                  "value": "settings"
                 }
               ],
               "outputParams": [
                 {
-                  "key": "result",
+                  "key": "settings",
                   "type": "entityKnowledge",
                   "value": "tmpSettings"
                 }
               ]
             },
             "children": [],
-            "id": "1ad5348f-d781-4e6c-8056-71423b92707a",
+            "id": "13f23204-e091-429c-9b07-4f771d13a866",
             "type": "action"
           },
           {
@@ -54,16 +57,430 @@
             "metadata": {
               "label": ""
             },
-            "properties": {},
+            "properties": {
+              "active": "false"
+            },
+            "children": [
+              {
+                "activated": true,
+                "metadata": {
+                  "label": ""
+                },
+                "properties": {
+                  "op1": {
+                    "type": "entityKnowledge",
+                    "value": "bypassTV"
+                  },
+                  "op2": {
+                    "type": "boolean",
+                    "value": "false"
+                  },
+                  "op": "=="
+                },
+                "children": [],
+                "id": "d4ded63c-06b8-4419-9004-b25d040aa23a",
+                "type": "condition"
+              },
+              {
+                "activated": true,
+                "metadata": {
+                  "label": ""
+                },
+                "properties": {
+                  "active": "false"
+                },
+                "children": [
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {
+                      "op1": {
+                        "type": "behaviorParams",
+                        "value": "presence"
+                      },
+                      "op2": {
+                        "type": "string",
+                        "value": "player"
+                      },
+                      "op": "=="
+                    },
+                    "children": [
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {},
+                        "children": [
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "name": "Log",
+                              "inputParams": [
+                                {
+                                  "key": "message",
+                                  "type": "string",
+                                  "value": "player preferences updated"
+                                }
+                              ],
+                              "outputParams": []
+                            },
+                            "children": [],
+                            "id": "91b30201-b0ae-406d-9bb8-9634487c1ddc",
+                            "type": "action"
+                          },
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "active": "false"
+                            },
+                            "children": [
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "op1": {
+                                    "type": "entityKnowledge",
+                                    "value": "outsideLightIntensity.value"
+                                  },
+                                  "op2": {
+                                    "type": "real",
+                                    "value": "0.5"
+                                  },
+                                  "op": "<="
+                                },
+                                "children": [
+                                  {
+                                    "activated": true,
+                                    "metadata": {
+                                      "label": ""
+                                    },
+                                    "properties": {
+                                      "destination": "player.preferences[0]",
+                                      "op": {
+                                        "type": "entityKnowledge",
+                                        "value": "tmpSettings"
+                                      }
+                                    },
+                                    "children": [],
+                                    "id": "aca310d2-0685-451d-a50b-46a06c3e08c3",
+                                    "type": "set"
+                                  }
+                                ],
+                                "id": "3e5d4778-abcb-4c79-8be9-347766b92a0e",
+                                "type": "condition"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "op1": {
+                                    "type": "entityKnowledge",
+                                    "value": "outsideLightIntensity.value"
+                                  },
+                                  "op2": {
+                                    "type": "real",
+                                    "value": "0.5"
+                                  },
+                                  "op": ">"
+                                },
+                                "children": [
+                                  {
+                                    "activated": true,
+                                    "metadata": {
+                                      "label": ""
+                                    },
+                                    "properties": {
+                                      "op1": {
+                                        "type": "entityKnowledge",
+                                        "value": "outsideLightIntensity.value"
+                                      },
+                                      "op2": {
+                                        "type": "real",
+                                        "value": "1"
+                                      },
+                                      "op": "<="
+                                    },
+                                    "children": [
+                                      {
+                                        "activated": true,
+                                        "metadata": {
+                                          "label": ""
+                                        },
+                                        "properties": {
+                                          "destination": "player.preferences[1]",
+                                          "op": {
+                                            "type": "entityKnowledge",
+                                            "value": "tmpSettings"
+                                          }
+                                        },
+                                        "children": [],
+                                        "id": "6bf4a1df-07be-453b-bcb3-3d23c277c461",
+                                        "type": "set"
+                                      }
+                                    ],
+                                    "id": "5c1c2076-e84c-4606-9ca6-524473559167",
+                                    "type": "condition"
+                                  }
+                                ],
+                                "id": "17a1f6c9-8fab-48cc-8e62-3c86f6cf0212",
+                                "type": "condition"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "destination": "player.preferences[2]",
+                                  "op": {
+                                    "type": "entityKnowledge",
+                                    "value": "tmpSettings"
+                                  }
+                                },
+                                "children": [],
+                                "id": "4c4d62b3-742e-4865-92f9-876d50843e0b",
+                                "type": "set"
+                              }
+                            ],
+                            "id": "c659b0ed-444c-4bcd-a18c-e46a80ed1114",
+                            "type": "priority"
+                          }
+                        ],
+                        "id": "0862a262-9548-42c1-b604-6e7aed3f5924",
+                        "type": "sequence"
+                      }
+                    ],
+                    "id": "b9b40539-64db-42b3-8d22-496674c1d01d",
+                    "type": "condition"
+                  },
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {
+                      "op1": {
+                        "type": "behaviorParams",
+                        "value": "presence"
+                      },
+                      "op2": {
+                        "type": "string",
+                        "value": "mixed"
+                      },
+                      "op": "=="
+                    },
+                    "children": [
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {},
+                        "children": [
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "name": "Log",
+                              "inputParams": [
+                                {
+                                  "key": "message",
+                                  "type": "string",
+                                  "value": "mixed settings updated"
+                                }
+                              ],
+                              "outputParams": []
+                            },
+                            "children": [],
+                            "id": "696cf460-d8bb-4082-ab7e-1177cc8a2e0a",
+                            "type": "action"
+                          },
+                          {
+                            "activated": true,
+                            "metadata": {
+                              "label": ""
+                            },
+                            "properties": {
+                              "active": "false"
+                            },
+                            "children": [
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "op1": {
+                                    "type": "entityKnowledge",
+                                    "value": "outsideLightIntensity.value"
+                                  },
+                                  "op2": {
+                                    "type": "real",
+                                    "value": "0.5"
+                                  },
+                                  "op": "<="
+                                },
+                                "children": [
+                                  {
+                                    "activated": true,
+                                    "metadata": {
+                                      "label": ""
+                                    },
+                                    "properties": {
+                                      "destination": "mixedSettings[0]",
+                                      "op": {
+                                        "type": "entityKnowledge",
+                                        "value": "tmpSettings"
+                                      }
+                                    },
+                                    "children": [],
+                                    "id": "74b1b28b-9e4f-4c5a-888b-d6ab8496b06f",
+                                    "type": "set"
+                                  }
+                                ],
+                                "id": "c7bdb1b5-3377-423a-ae1e-838ebc7fac51",
+                                "type": "condition"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "op1": {
+                                    "type": "entityKnowledge",
+                                    "value": "outsideLightIntensity.value"
+                                  },
+                                  "op2": {
+                                    "type": "real",
+                                    "value": "0.5"
+                                  },
+                                  "op": ">"
+                                },
+                                "children": [
+                                  {
+                                    "activated": true,
+                                    "metadata": {
+                                      "label": ""
+                                    },
+                                    "properties": {
+                                      "op1": {
+                                        "type": "entityKnowledge",
+                                        "value": "outsideLightIntensity.value"
+                                      },
+                                      "op2": {
+                                        "type": "real",
+                                        "value": "1"
+                                      },
+                                      "op": "<="
+                                    },
+                                    "children": [
+                                      {
+                                        "activated": true,
+                                        "metadata": {
+                                          "label": ""
+                                        },
+                                        "properties": {
+                                          "destination": "mixedSettings[1]",
+                                          "op": {
+                                            "type": "entityKnowledge",
+                                            "value": "tmpSettings"
+                                          }
+                                        },
+                                        "children": [],
+                                        "id": "832e672a-0d27-4867-a975-b93bca3e0c17",
+                                        "type": "set"
+                                      }
+                                    ],
+                                    "id": "50a43251-2e36-4216-887a-2be085702ca6",
+                                    "type": "condition"
+                                  }
+                                ],
+                                "id": "8c40c479-fb97-4484-9475-4c18940c1466",
+                                "type": "condition"
+                              },
+                              {
+                                "activated": true,
+                                "metadata": {
+                                  "label": ""
+                                },
+                                "properties": {
+                                  "destination": "mixedSettings[2]",
+                                  "op": {
+                                    "type": "entityKnowledge",
+                                    "value": "tmpSettings"
+                                  }
+                                },
+                                "children": [],
+                                "id": "f2c8e0b5-22e4-4a3f-a1e3-8cf1e05e1a41",
+                                "type": "set"
+                              }
+                            ],
+                            "id": "aac8052e-557f-4458-8fac-3caf8fb97096",
+                            "type": "priority"
+                          }
+                        ],
+                        "id": "efcac45a-3ac6-4e3d-8156-7388df3b54c8",
+                        "type": "sequence"
+                      }
+                    ],
+                    "id": "5f5cb616-f58c-4f06-ba1e-6a0c5fbe24db",
+                    "type": "condition"
+                  },
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {},
+                    "children": [],
+                    "id": "811e32f2-f0b1-4f59-bef1-ee2c66b47696",
+                    "type": "success"
+                  }
+                ],
+                "id": "ad1d61c8-aea2-4d6d-bfa8-cf34083741f9",
+                "type": "priority"
+              }
+            ],
+            "id": "bcb301dc-6a0e-459e-9606-3083ca32a848",
+            "type": "priority"
+          },
+          {
+            "activated": true,
+            "metadata": {
+              "label": ""
+            },
+            "properties": {
+              "destination": "dimBrightness",
+              "op": {
+                "type": "entityKnowledge",
+                "value": "tmpSettings.brightness"
+              }
+            },
             "children": [],
-            "id": "5070ef7b-7269-4f53-ae6d-968ef2b39023",
-            "type": "success"
+            "id": "b268517d-9028-4064-9317-9169c2acc60d",
+            "type": "set"
           }
         ],
-        "id": "a9813ea0-4c21-4ead-b635-6ded161484c4",
-        "type": "priority"
+        "id": "5abff2aa-1b91-4c01-9231-83706b758d3e",
+        "type": "sequence"
       }
     ],
-    "id": "404a6af9-2218-4480-bec1-9ac593f8f308"
+    "id": "a7ca0438-95e0-4d46-892e-e10f6b312af2"
   }
 ]
