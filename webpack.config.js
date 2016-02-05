@@ -45,7 +45,8 @@ module.exports = {
       __SAMI_BULB_3__: JSON.stringify(process.env.SAMI_BULB_3),
       __SAMI_BULB_4__: JSON.stringify(process.env.SAMI_BULB_4),
       __SAMI_BULB_5__: JSON.stringify(process.env.SAMI_BULB_5),
-      __SAMI_LIGHT_SENSOR__: JSON.stringify(process.env.SAMI_LIGHT_SENSOR)
+      __SAMI_LIGHT_SENSOR__: JSON.stringify(process.env.SAMI_LIGHT_SENSOR),
+      __SAMI_PRESENCE__: JSON.stringify(process.env.SAMI_PRESENCE)
     })
   ],
   resolve: {

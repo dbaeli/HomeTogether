@@ -45,6 +45,10 @@ var sami = {
     'light_bulb_5': {
       'ID': __SAMI_BULB_5__,
       'data' : {}
+    },
+    'presence': {
+      'ID': __SAMI_PRESENCE__,
+      'data' : {}
     }
   },
   sendMessageToDevice: sendMessageToDevice,
@@ -80,7 +84,7 @@ function sendMessageToDevice(deviceName, messageContent) {
     return json;
   })
   .catch(function(ex) {
-    console.log('Error in function sendMessageToDevice:', JSON.stringify(ex));
+    console.log('Error in function sendMessageToDevice:', ex);
   })
 }
 

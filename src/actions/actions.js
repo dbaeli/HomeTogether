@@ -21,13 +21,10 @@ export var actionTable = {
   'GetDeviceLogs':{'start':GetDeviceLogs},
   'GetDeviceValue':{'start':GetDeviceValue},
   'GetLightIntensity':{'start':GetLightIntensity,'cancel':cancelCheck},
-  'LiFXCheckState':{'start':(!_.isUndefined(__LIFX_TOKEN__) ? LiFXCheckState : MockLightCheckState),'cancel':cancelCheck},
-  'LiFXGetState':{'start':(!_.isUndefined(__LIFX_TOKEN__) ? LiFXGetState : MockLightSetState)},
-  'LiFXSetState':{'start':(!_.isUndefined(__LIFX_TOKEN__) ? LiFXSetState : MockLightSetState)},
+  'LiFXCheckState':{'start': LiFXCheckState,'cancel':cancelCheck},
+  'LiFXGetState':{'start': LiFXGetState},
+  'LiFXSetState':{'start': LiFXSetState},
   'Log':{'start':Log},
-  'MockLightCheckState':{'start':MockLightCheckState,'cancel':cancelCheck},
-  'MockLightGetState':{'start':MockLightGetState},
-  'MockLightSetState':{'start':MockLightSetState},
   'PreventCancel':{'start':PreventCancel},
   'ResetCancel':{'start':ResetCancel},
   'SetDeviceValue':{'start':SetDeviceValue},
@@ -167,90 +164,84 @@ function LiFXRequest(r) {
 // LIFX Actions: only available if a __LIFX_TOKEN__ has been set in the environment variables (will fall back to the 'mockLight' actions otherwise)
 
 function LiFXSetState(requestId, agentId, input, success, failure) {
-  let r = {};
-  r.duration = input.duration;
-  r.color = input.color;
-  r.power = input.power;
-  r.brightness = _.isUndefined(input.brightness) ? 0.5 : input.brightness;
-  return LiFXRequest({
-    method: 'PUT',
-    path: 'lights/'+input.id+'/state',
-    body: JSON.stringify( r )
-  })
-  .then(() => success())
-  .catch(ex => {
-    console.log('action LiFXSetState [' + requestId + '] failed:', ex);
-    failure();
-  });
+  if (!_.isUndefined(__LIFX_TOKEN__) && input.light !== '') {
+    let r = {};
+    r.duration = input.duration;
+    r.color = input.color;
+    r.power = input.power;
+    r.brightness = _.isUndefined(input.brightness) ? 0.5 : input.brightness;
+    return LiFXRequest({
+      method: 'PUT',
+      path: 'lights/'+input.id+'/state',
+      body: JSON.stringify( r )
+    })
+    .then(() => success())
+    .catch(ex => {
+      console.log('action LiFXSetState [' + requestId + '] failed:', ex);
+      failure();
+    });
+  }
+  else
+    MockLightSetState(requestId, agentId, input, success, failure)
 }
 
 function LiFXGetState(requestId, agentId, input, success, failure) {
-  return LiFXRequest({
-    path: 'lights/'+input.id
-  })
-  .then(res => res.json())
-  .then(json => {
-    let lightSetting = _.pick(_.first(json), ['color', 'brightness', 'power']);
-    let color = 'hue:' + lightSetting.color.hue + ' saturation:' + lightSetting.color.saturation;
-    let obj = {settings: {color: color, brightness: lightSetting.brightness, power: lightSetting.power}};
-    success(obj);
-  }) 
-  .catch(ex => {
-    console.log('action LiFXGetState [' + requestId + '] failed:', ex);
-    failure();
-  });
-}
-
-function LiFXCheckState(requestId, agentId, input, success, failure) {
-  let getLightState = function (input, success) {
+  if (!_.isUndefined(__LIFX_TOKEN__) && input.light !== '') {
     return LiFXRequest({
       path: 'lights/'+input.id
     })
     .then(res => res.json())
     .then(json => {
-      let lightSettings = _.pick(_.first(json), ['color', 'brightness', 'power']);
-      var rgb;
-      if(input.settings.color.startsWith('#')) {
-        rgb = hexToRGB( input.settings.color );
-      } else {
-        var patt = /hue:(.*) saturation:(.*)/;
-        var res =  patt.exec(input.settings.color);
-
-        rgb = hsb2rgb( res[1], res[2], input.settings.brightness );  
-      }
-      var rgbNew = hsb2rgb( lightSettings.color.hue, lightSettings.color.saturation, lightSettings.brightness );
-      let color = 'hue:' + lightSettings.color.hue + ' saturation:' + lightSettings.color.saturation;
-      let obj = {color: color, brightness: lightSettings.brightness, power: lightSettings.power};      
-      if (!_.isEqual(rgb, rgbNew )) {
-        success({settings: obj});
-      }
-      else
-        timeout[requestId] = window.setTimeout(() => getLightState(input, success), 2000);
+      let lightSetting = _.pick(_.first(json), ['color', 'brightness', 'power']);
+      let color = 'hue:' + lightSetting.color.hue + ' saturation:' + lightSetting.color.saturation;
+      let obj = {result: {color: color, brightness: lightSetting.brightness, power: lightSetting.power}};
+      success(obj);
     }) 
     .catch(ex => {
-      console.log('action LiFXCheckState [' + requestId + '] failed:', ex);
-      failure({settings: input.settings});
+      console.log('action LiFXGetState [' + requestId + '] failed:', ex);
+      failure();
     });
   }
-  timeout[requestId] = window.setTimeout(() => getLightState(input, success), 2000);
+  else
+    MockLightGetState(requestId, agentId, input, success, failure);
 }
 
-function LiFXEffect(requestId, agentId, input, success, failure) {
-  let r = {power_on:'true', persist:false, peak:0.5};
-  r.period = _.isUndefined(input.period) ? 0 : input.period;
-  r.color = !_.isUndefined(input.color1) ? input.color1 : undefined;
-  r.from_color = !_.isUndefined(input.color2) ? input.color2 : undefined;
-  r.cycles = _.isUndefined(input.number) ? 5 : input.number;
-  return LiFXRequest({
-    method: 'POST',
-    path: 'lights/'+input.id+'/effects/'+input.effect,
-    body: JSON.stringify( r )
-  })
-  .then(() => success())
-  .catch(ex => {
-    console.log('action LiFXEffect [' + requestId + '] failed:', ex);
-    failure(requestId);
-  });
+function LiFXCheckState(requestId, agentId, input, success, failure) {
+  if (!_.isUndefined(__LIFX_TOKEN__) && input.light !== '') {
+    let getLightState = function (input, success) {
+      return LiFXRequest({
+        path: 'lights/'+input.id
+      })
+      .then(res => res.json())
+      .then(json => {
+        let lightSettings = _.pick(_.first(json), ['color', 'brightness', 'power']);
+        var rgb;
+        if(input.settings.color.startsWith('#')) {
+          rgb = hexToRGB( input.settings.color );
+        } else {
+          var patt = /hue:(.*) saturation:(.*)/;
+          var res =  patt.exec(input.settings.color);
+
+          rgb = hsb2rgb( res[1], res[2], input.settings.brightness );  
+        }
+        var rgbNew = hsb2rgb( lightSettings.color.hue, lightSettings.color.saturation, lightSettings.brightness );
+        let color = 'hue:' + lightSettings.color.hue + ' saturation:' + lightSettings.color.saturation;
+        let obj = {color: color, brightness: lightSettings.brightness, power: lightSettings.power};      
+        if (!_.isEqual(rgb, rgbNew )) {
+          success({result: obj});
+        }
+        else
+          timeout[requestId] = window.setTimeout(() => getLightState(input, success), 2000);
+      }) 
+      .catch(ex => {
+        console.log('action LiFXCheckState [' + requestId + '] failed:', ex);
+        failure({result: input.settings});
+      });
+    }
+    getLightState(input, success);
+  }
+  else
+    MockLightCheckState(requestId, agentId, input, success, failure);
 }
 
 // ZIPATO Actions: only available if a __ZIPABOX_USER__ has been set in the environment variables (will run indefinitely otherwise)
@@ -274,8 +265,7 @@ function GetZipatoDeviceLogs(requestId, agentId, input, success, failure) {
   .then(res => res.json())
   .then(json => {
     let out = {value:_.first(json.logs)};
-    out.value.value = (out.value.value.toLowerCase() === 'true');
-    return success(out);
+    return success({result: (out.value.value.toLowerCase() === 'true')});
   })
   .catch(ex => {
     console.log('action GetDeviceLogs [' + requestId + '] failed:', ex);
@@ -302,14 +292,14 @@ function CheckZipatoDeviceValue(requestId, agentId, input, success, failure) {
           out.value = parseFloat(out.value === true ? 0.0 : 2.5);
           devices.updateLightIntensity(out.value);
         }
-        return success(out);
+        return success({result: out.value});
       }
       else
         timeout[requestId] = window.setTimeout(() => getValue(input, success), 5000);
     })
     .catch(ex => {
       console.log('action CheckDeviceValue [' + requestId + '] failed:', ex);
-      failure({value: input.value});
+      failure({result: input.value});
     });
   }
   getValue(input, success);
@@ -340,19 +330,14 @@ function SetZipatoDeviceValue(requestId, agentId, input, success, failure) {
   });
 }
 
-function DoNothing(requestId, agentId, input, success, failure) {
-  // Do nothing (obviously)
-}
-
 // Generic actions
 
 function CheckDeviceValue(requestId, agentId, input, success, failure) {
   if (!_.isUndefined(__ZIPABOX_USER__))
     return CheckZipatoDeviceValue(requestId, agentId, input, success, failure);
   else if (!_.isUndefined(__SAMI_USER__))
-    return GetSamiDeviceValue(requestId, agentId, input, success, failure);
-  else
-    return DoNothing(requestId, agentId, input, success, failure);
+    return CheckSamiDeviceValue(requestId, agentId, input, success, failure);
+  //else does nothing
 }
 
 function GetDeviceLogs(requestId, agentId, input, success, failure) {
@@ -360,8 +345,7 @@ function GetDeviceLogs(requestId, agentId, input, success, failure) {
     return GetZipatoDeviceLogs(requestId, agentId, input, success, failure);
   else if (!_.isUndefined(__SAMI_USER__))
     return GetSamiDeviceValue(requestId, agentId, input, success, failure);
-  else
-    return DoNothing(requestId, agentId, input, success, failure);
+  //else does nothing
 }
 
 function GetDeviceValue(requestId, agentId, input, success, failure) {
@@ -369,18 +353,15 @@ function GetDeviceValue(requestId, agentId, input, success, failure) {
     return GetZipatoDeviceValue(requestId, agentId, input, success, failure);
   else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
     return GetSamiDeviceValue(requestId, agentId, input, success, failure);
-  else
-    return DoNothing(requestId, agentId, input, success, failure);
+  //else does nothing
 }
-
 
 function SetDeviceValue(requestId, agentId, input, success, failure) {
   if (!_.isUndefined(__ZIPABOX_USER__))
     return SetZipatoDeviceValue(requestId, agentId, input, success, failure);
   else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
     return SetSamiDeviceValue(requestId, agentId, input, success, failure);
-  else
-    return DoNothing(requestId, agentId, input, success, failure);
+  //else does nothing
 }
 
 function Compute(requestId, agentId, input, success, failure) {
@@ -423,7 +404,7 @@ function MockLightGetState(requestId, agentId, input, success, failure) {
   let out = ActionStore.getLightState(input.room);
   if (_.isUndefined(out))
     out = {color: "#000000", brightness: 0};
-  success({settings: out});
+  success({result: out});
 }
 
 function MockLightCheckState(requestId, agentId, input, success, failure) {
@@ -436,7 +417,7 @@ function MockLightCheckState(requestId, agentId, input, success, failure) {
     if (!_.isUndefined(input.settings.bypassTV))
       out.bypassTV = input.settings.bypassTV;
     if (!_.isEqual(out, input.settings)) {
-      success({settings: out});
+      success({result: out});
     }
     else
       timeout[requestId] = window.setTimeout(() => getLightState(input, success), 2000);
@@ -458,7 +439,7 @@ function GetLightIntensity(requestId, agentId, input, success, failure) {
     let out = ActionStore.getLightIntensity();
     if (!_.isUndefined(out))
       if (!_.isEqual(out, input.intensity)) {
-        success({intensity: parseFloat(out)});
+        success({result: parseFloat(out)});
       }
       else
         timeout[requestId] = window.setTimeout(() => getIntensity(input, success), 2000);
@@ -513,7 +494,7 @@ function GetSamiDeviceValue(requestId, agentId, input, success, failure) {
   let res = _.pick(sami.devices[input.device].data, input.attribute);
   if (_.isUndefined(sami.devices[input.device].ID)) {
     console.log('action GetDeviceValue [' + requestId + '] failed: device ID not found');
-    failure({value: input.value});
+    failure({result: input.value});
   }
   else if (_.isUndefined(res)) {
     console.log('action GetDeviceValue [' + requestId + '] failed: device data not found');
@@ -521,6 +502,29 @@ function GetSamiDeviceValue(requestId, agentId, input, success, failure) {
   }
   else {
     console.log('get action sami =', res);
-    success({value: res[input.attribute]});
+    success({result: res[input.attribute]});
+  }
+}
+
+function CheckSamiDeviceValue(requestId, agentId, input, success, failure) {
+  let res = _.pick(sami.devices[input.device].data, input.attribute);
+  if (_.isUndefined(sami.devices[input.device].ID)) {
+    console.log('action GetDeviceValue [' + requestId + '] failed: device ID not found');
+    failure({result: input.value});
+  }
+  else if (_.isUndefined(res)) {
+    console.log('action GetDeviceValue [' + requestId + '] failed: device data not found');
+    failure();
+  }
+  else {
+    let getValue = function (input, success) {
+      if (!_.isEqual(res[input.attribute], input.value)) {
+        console.log('check action sami =', res);
+        return success({result: res[input.attribute]});
+      }
+      else
+        timeout[requestId] = window.setTimeout(() => getValue(input, success), 5000);
+    }
+    getValue(input, success);
   }
 }
