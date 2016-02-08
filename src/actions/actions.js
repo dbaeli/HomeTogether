@@ -181,8 +181,13 @@ function LiFXSetState(requestId, agentId, input, success, failure) {
       failure();
     });
   }
-  else
-    MockLightSetState(requestId, agentId, input, success, failure)
+  else {
+    if (MockLightSetState(requestId, agentId, input, failure))
+      success();
+    // if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
+    //   input.device = 'light_bulb_' + input.room;
+    //   return SetSamiDeviceValue(requestId, agentId, input, success, failure);
+  }
 }
 
 function LiFXGetState(requestId, agentId, input, success, failure) {
@@ -203,7 +208,7 @@ function LiFXGetState(requestId, agentId, input, success, failure) {
     });
   }
   else
-    MockLightGetState(requestId, agentId, input, success, failure);
+    success({result: MockLightGetState(requestId, agentId, input, failure)});
 }
 
 function LiFXCheckState(requestId, agentId, input, success, failure) {
@@ -221,7 +226,6 @@ function LiFXCheckState(requestId, agentId, input, success, failure) {
         } else {
           var patt = /hue:(.*) saturation:(.*)/;
           var res =  patt.exec(input.settings.color);
-
           rgb = hsb2rgb( res[1], res[2], input.settings.brightness );  
         }
         var rgbNew = hsb2rgb( lightSettings.color.hue, lightSettings.color.saturation, lightSettings.brightness );
@@ -240,8 +244,17 @@ function LiFXCheckState(requestId, agentId, input, success, failure) {
     }
     getLightState(input, success);
   }
-  else
-    MockLightCheckState(requestId, agentId, input, success, failure);
+  else {
+    let getLightState = function (input, success) {
+      let res = MockLightGetState(requestId, agentId, input, failure);
+      console.log('LiFXCheckState, result =', res);
+      if (!_.isUndefined(res) && !_.isEqual(res, input.settings))
+        success({result: res});
+      else
+        timeout[requestId] = window.setTimeout(() => getLightState(input, success), 2000);
+    }
+    getLightState(input, success);
+  }
 }
 
 // ZIPATO Actions: only available if a __ZIPABOX_USER__ has been set in the environment variables (will run indefinitely otherwise)
@@ -264,45 +277,12 @@ function GetZipatoDeviceLogs(requestId, agentId, input, success, failure) {
   })
   .then(res => res.json())
   .then(json => {
-    let out = {value:_.first(json.logs)};
-    return success({result: (out.value.value.toLowerCase() === 'true')});
+    return _.first(json.logs).value.toLowerCase() === 'true';
   })
   .catch(ex => {
     console.log('action GetDeviceLogs [' + requestId + '] failed:', ex);
-    failure();
+    failure({result: input.value});
   });
-}
-
-function CheckZipatoDeviceValue(requestId, agentId, input, success, failure) {
-  let getValue = function (input, success) {
-    return fetch(format('/devices/{device}/attributes/{attribute}/logs', {device:input.device, attribute:input.attribute}), {
-      method: 'get'
-    })
-    .then(res => res.json())
-    .then(json => {
-      let out = _.first(json.logs);
-      out.value = out.value.toLowerCase() === 'true';
-      let val = input.value;
-      if (val == 0.0)
-        val = true;
-      else if (val == 2.5)
-        val = false;
-      if (!_.isEqual(out.value, val)) {
-        if (input.device === 'light_sensor1'){
-          out.value = parseFloat(out.value === true ? 0.0 : 2.5);
-          devices.updateLightIntensity(out.value);
-        }
-        return success({result: out.value});
-      }
-      else
-        timeout[requestId] = window.setTimeout(() => getValue(input, success), 5000);
-    })
-    .catch(ex => {
-      console.log('action CheckDeviceValue [' + requestId + '] failed:', ex);
-      failure({result: input.value});
-    });
-  }
-  getValue(input, success);
 }
 
 function SetZipatoDeviceValue(requestId, agentId, input, success, failure) {
@@ -333,18 +313,47 @@ function SetZipatoDeviceValue(requestId, agentId, input, success, failure) {
 // Generic actions
 
 function CheckDeviceValue(requestId, agentId, input, success, failure) {
-  if (!_.isUndefined(__ZIPABOX_USER__))
-    return CheckZipatoDeviceValue(requestId, agentId, input, success, failure);
-  else if (!_.isUndefined(__SAMI_USER__))
-    return CheckSamiDeviceValue(requestId, agentId, input, success, failure);
+  if (!_.isUndefined(__ZIPABOX_USER__)) {
+    let getValue = function (input, success) {
+      let res = GetZipatoDeviceValue(requestId, agentId, input, success, failure);
+      let val = input.value;
+      if (val == 0.0)
+        val = true;
+      else if (val == 2.5)
+        val = false;
+      if (!_.isEqual(res, val)) {
+        if (input.device === 'light_sensor1'){
+          res = parseFloat(res === true ? 0.0 : 2.5);
+          devices.updateLightIntensity(res);
+        }
+        success({result: res});
+      }
+      else
+        timeout[requestId] = window.setTimeout(() => getValue(input, success), 5000);
+    }
+    getValue(input, success);
+  }
+  else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID)) {
+    let getValue = function (input, success) {
+      let res = GetSamiDeviceValue(requestId, agentId, input, failure);
+      console.log('CheckDeviceValue: result', res);
+      if (!_.isUndefined(res) && !_.isEqual(res, input.value)) {
+        console.log('CheckDeviceValue: output =', res);
+        success({result: res});
+      }
+      else
+        timeout[requestId] = window.setTimeout(() => getValue(input, success), 5000);
+    }
+    getValue(input, success);
+  }
   //else does nothing
 }
 
 function GetDeviceLogs(requestId, agentId, input, success, failure) {
   if (!_.isUndefined(__ZIPABOX_USER__))
     return GetZipatoDeviceLogs(requestId, agentId, input, success, failure);
-  else if (!_.isUndefined(__SAMI_USER__))
-    return GetSamiDeviceValue(requestId, agentId, input, success, failure);
+  else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
+    success({result: GetSamiDeviceValue(requestId, agentId, input, failure)});
   //else does nothing
 }
 
@@ -352,7 +361,7 @@ function GetDeviceValue(requestId, agentId, input, success, failure) {
   if (!_.isUndefined(__ZIPABOX_USER__))
     return GetZipatoDeviceValue(requestId, agentId, input, success, failure);
   else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
-    return GetSamiDeviceValue(requestId, agentId, input, success, failure);
+    success({result: GetSamiDeviceValue(requestId, agentId, input, failure)});
   //else does nothing
 }
 
@@ -360,7 +369,8 @@ function SetDeviceValue(requestId, agentId, input, success, failure) {
   if (!_.isUndefined(__ZIPABOX_USER__))
     return SetZipatoDeviceValue(requestId, agentId, input, success, failure);
   else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
-    return SetSamiDeviceValue(requestId, agentId, input, success, failure);
+    if (SetSamiDeviceValue(requestId, agentId, input, failure))
+      success();
   //else does nothing
 }
 
@@ -400,38 +410,23 @@ function CheckPresence(requestId, agentId, input, success, failure) {
   check(input, success);
 }
 
-function MockLightGetState(requestId, agentId, input, success, failure) {
+function MockLightGetState(requestId, agentId, input, failure) {
   let out = ActionStore.getLightState(input.room);
-  if (_.isUndefined(out))
+  if (_.isUndefined(out)) 
     out = {color: "#000000", brightness: 0};
-  success({result: out});
+  out.power = 'on';
+  if (out.brightness === 0)
+    out.power = 'off';
+  return out;
 }
 
-function MockLightCheckState(requestId, agentId, input, success, failure) {
-  let getLightState = function (input, success) {
-    let out = ActionStore.getLightState(input.room);
-    if (_.isUndefined(out))
-      out = {color: "#000000", brightness: 0};
-    if (!_.isUndefined(input.settings.power))
-      out.power = input.settings.power;
-    if (!_.isUndefined(input.settings.bypassTV))
-      out.bypassTV = input.settings.bypassTV;
-    if (!_.isEqual(out, input.settings)) {
-      success({result: out});
-    }
-    else
-      timeout[requestId] = window.setTimeout(() => getLightState(input, success), 2000);
-  }
-  getLightState(input, success);
-}
-
-function MockLightSetState(requestId, agentId, input, success, failure) {
+function MockLightSetState(requestId, agentId, input, failure) {
   let brightness = _.isUndefined(input.brightness) ? 0.5 : input.brightness;
   if (input.power == 'off') {
     brightness = 0;
   }
   devices.updateLights(input.room, input.color, brightness);
-  success();
+  return true;
 }
 
 function GetLightIntensity(requestId, agentId, input, success, failure) {
@@ -439,6 +434,7 @@ function GetLightIntensity(requestId, agentId, input, success, failure) {
     let out = ActionStore.getLightIntensity();
     if (!_.isUndefined(out))
       if (!_.isEqual(out, input.intensity)) {
+        console.log('GetLightIntensity: out =', out);
         success({result: parseFloat(out)});
       }
       else
@@ -454,31 +450,33 @@ function TVSwitched(requestId, agentId, input, success, failure) {
     input.device = 'tv';
     input.attribute = 'power';
     if (!_.isUndefined(sami.devices[input.device]))
-      return GetSamiDeviceValue(requestId, agentId, input, success, failure);
+      success({result: GetSamiDeviceValue(requestId, agentId, input, failure)});
     else
       console.log('action TVSwitched [' + requestId + '] failed: device not found');
   }
   else {
     let initialState = ActionStore.getTVState();
-    let check = function (success) {
+    let check = function () {
       let currentState = ActionStore.getTVState();
       if (initialState !== currentState) {
         success({result: currentState});
       }
       else
-        timeout[requestId] = window.setTimeout(() => check(success), 500);
+        timeout[requestId] = window.setTimeout(() => check(), 500);
     }
-    check(success);
+    check();
   }
 }
 
-function SetSamiDeviceValue(requestId, agentId, input, success, failure) {
+// SAMI actions
+
+function SetSamiDeviceValue(requestId, agentId, input, failure) {
   let res = {};
   _.set(res, input.attribute, input.value);
   return sami.sendMessageToDevice(input.device, res)
   .then(json => {
     if (!_.isUndefined(json.data.mid)) {
-      success();
+      return true;
     }
     else {
       failure();
@@ -490,7 +488,7 @@ function SetSamiDeviceValue(requestId, agentId, input, success, failure) {
   });
 }
 
-function GetSamiDeviceValue(requestId, agentId, input, success, failure) {
+function GetSamiDeviceValue(requestId, agentId, input, failure) {
   let res = _.pick(sami.devices[input.device].data, input.attribute);
   if (_.isUndefined(sami.devices[input.device].ID)) {
     console.log('action GetDeviceValue [' + requestId + '] failed: device ID not found');
@@ -502,29 +500,6 @@ function GetSamiDeviceValue(requestId, agentId, input, success, failure) {
   }
   else {
     console.log('get action sami =', res);
-    success({result: res[input.attribute]});
-  }
-}
-
-function CheckSamiDeviceValue(requestId, agentId, input, success, failure) {
-  let res = _.pick(sami.devices[input.device].data, input.attribute);
-  if (_.isUndefined(sami.devices[input.device].ID)) {
-    console.log('action GetDeviceValue [' + requestId + '] failed: device ID not found');
-    failure({result: input.value});
-  }
-  else if (_.isUndefined(res)) {
-    console.log('action GetDeviceValue [' + requestId + '] failed: device data not found');
-    failure();
-  }
-  else {
-    let getValue = function (input, success) {
-      if (!_.isEqual(res[input.attribute], input.value)) {
-        console.log('check action sami =', res);
-        return success({result: res[input.attribute]});
-      }
-      else
-        timeout[requestId] = window.setTimeout(() => getValue(input, success), 5000);
-    }
-    getValue(input, success);
+    return res[input.attribute];
   }
 }
