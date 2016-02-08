@@ -28,6 +28,8 @@ module.exports = {
       __CRAFT_PROJECT_NAME__: JSON.stringify(process.env.CRAFT_PROJECT_NAME),
       __CRAFT_PROJECT_VERSION__: JSON.stringify(process.env.CRAFT_PROJECT_VERSION),
       __ZIPABOX_USER__: JSON.stringify(process.env.ZIPABOX_USER),
+      __ZIPABOX_LIGHT_SENSOR__:JSON.stringify(process.env.ZIPABOX_LIGHT_SENSOR_DEVICE_UUID),
+      __ZIPABOX_BLIND__:JSON.stringify(process.env.ZIPABOX_BLIND_DEVICE_UUID),
       __LIFX_TOKEN__: JSON.stringify(process.env.LIFX_TOKEN),
       __LIFX_BULB_0__: JSON.stringify(process.env.LIFX_BULB_0),
       __LIFX_BULB_1__: JSON.stringify(process.env.LIFX_BULB_1),
