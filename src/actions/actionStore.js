@@ -25,13 +25,13 @@ export var ActionStore = Reflux.createStore({
     this.trigger(this.settings);
   },
   onUpdateLightIntensity: function(val) {
-    if (!_.isUndefined(sami.devices.light_sensor1.ID))
+    if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices.light_sensor1.ID))
       sami.sendMessageToDevice('light_sensor1', {'state': val});
     this.settings.devices.light_sensor1.state = val;
     this.trigger(this.settings);
   },
   onUpdatePresence: function(entity, id) {
-    if (!_.isUndefined(sami.devices.presence.ID)) {
+    if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices.presence.ID)) {
       let res = {};
       res[entity]=id;
       sami.sendMessageToDevice('presence', res);
@@ -47,7 +47,7 @@ export var ActionStore = Reflux.createStore({
     this.trigger(this.settings);
   },
   onUpdateTVState: function(val) {
-    if (!_.isUndefined(sami.devices.tv.ID))
+    if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices.tv.ID))
       sami.sendMessageToDevice('tv', {'power': val});
     this.settings.devices.tv.power = val;
     this.trigger(this.settings);
