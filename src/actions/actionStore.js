@@ -10,23 +10,29 @@ export const devices = {
 };
 
 let initPres = {};
+let lightBulbs = {};
 _.map(['0', '1', '2', '3', '4', '5'], val =>{
-  var obj = {};
-  obj[val]={occupant: false, player:false};
-  _.assign(initPres, obj);
+  let pres = {};
+  pres[val]={occupant: false, player:false};
+  _.assign(initPres, pres);
+  let light = {};
+  light[val]={color: '#000000', brightness: 0.0, power: 'off'};
+  _.assign(lightBulbs, light);
 });
 
-export var ActionStore = Reflux.createStore({
+export let ActionStore = Reflux.createStore({
   listenables: devices,
-  settings: {lights:{}, devices: {tv: {power: false}, light_sensor1: {state: 2.5}, presence: initPres}},
+  settings: {lights:lightBulbs, devices: {tv: {power: false}, light_sensor1: {state: 2.5}, presence: initPres}},
 
-  onUpdateLights: function(id, color, brightness) {
-    this.settings.lights[id]={color: color, brightness: brightness};
+  onUpdateLights: function(id, color, brightness, power) {
+    if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices['light_bulb_'+id].ID))
+      sami.sendMessageToDevice('light_bulb_'+id, {color: color, brightness: brightness, power: power});
+    this.settings.lights[id]={color: color, brightness: brightness, power: power};
     this.trigger(this.settings);
   },
   onUpdateLightIntensity: function(val) {
     if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices.light_sensor1.ID))
-      sami.sendMessageToDevice('light_sensor1', {'state': val});
+      sami.sendMessageToDevice('light_sensor1', {state: val});
     this.settings.devices.light_sensor1.state = val;
     this.trigger(this.settings);
   },
@@ -48,7 +54,7 @@ export var ActionStore = Reflux.createStore({
   },
   onUpdateTVState: function(val) {
     if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices.tv.ID))
-      sami.sendMessageToDevice('tv', {'power': val});
+      sami.sendMessageToDevice('tv', {power: val});
     this.settings.devices.tv.power = val;
     this.trigger(this.settings);
   },
@@ -70,6 +76,7 @@ export var ActionStore = Reflux.createStore({
   },
   getInitialState: function() {
     _.forEach(this.settings.devices, (val, key) => {sami.devices[key].data = val});
+    _.forEach(this.settings.lights, (val, key) => {sami.devices['light_bulb_'+key].data = val});
     return this.settings;    
   }
 });

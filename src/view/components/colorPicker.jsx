@@ -33,8 +33,12 @@ export default React.createClass({
   },
   handleChange(val) {
     if (loc !== 'out' && loc !== '')
-      if (loc !== '0' || _.isUndefined(__LIFX_TOKEN__))
-        devices.updateLights(loc, '#' + val.hex, val.rgb.a)
+      if (loc !== '0' || _.isUndefined(__LIFX_TOKEN__)) {
+        let power = 'on';
+        if (val.rgb.a === 0.0)
+          power = 'off';
+        devices.updateLights(loc, '#' + val.hex, val.rgb.a, power);
+      }
   },
   shouldComponentUpdate: function(nextProps, nextState) {
     loc = ActionStore.getPlayerLocation();

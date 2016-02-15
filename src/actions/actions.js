@@ -182,16 +182,30 @@ function LiFXSetState(requestId, agentId, input, success, failure) {
     });
   }
   else {
-    if (MockLightSetState(requestId, agentId, input, failure))
+    let light = _.findKey(sami.devices, o => o.ID === input.id);
+    if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(light)) {
+      input.device = light;
+      input.message = _.reduce(['color', 'brightness', 'power'], (res, val) => {
+        res[val] = input[val];
+        return res;
+      }, {});
+      SetSamiDeviceValue(requestId, agentId, input, failure)
+      .then(res => {
+        MockLightSetState(requestId, agentId, input, failure);
+        success();
+      })
+      .catch(ex => {
+        console.log('action LiFXSetState [' + requestId + '] failed:', ex);
+        failure();
+      });
+    }
+    else if (MockLightSetState(requestId, agentId, input, failure))
       success();
-    // if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
-    //   input.device = 'light_bulb_' + input.room;
-    //   return SetSamiDeviceValue(requestId, agentId, input, success, failure);
   }
 }
 
 function LiFXGetState(requestId, agentId, input, success, failure) {
-  if (!_.isUndefined(__LIFX_TOKEN__) && input.light !== '') {
+  if (!_.isUndefined(__LIFX_TOKEN__) && input.id !== '') {
     return LiFXRequest({
       path: 'lights/'+input.id
     })
@@ -207,12 +221,38 @@ function LiFXGetState(requestId, agentId, input, success, failure) {
       failure();
     });
   }
-  else
-    success({result: MockLightGetState(requestId, agentId, input, failure)});
+  else {
+    let res = {};
+    let light = _.findKey(sami.devices, o => o.ID === input.id);
+    if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(light)) {
+      Promise.all(
+        _.map(['color', 'brightness', 'power'], (key, val) => {
+          input.device = light;
+          input.attribute = val;
+          return GetSamiDeviceValue(requestId, agentId, input, failure)
+          .then(r => {
+            res[val] = r
+            if (!_.isUndefined(res) && !_.isEqual(res, input.settings))
+              success({result: res});
+            else
+              timeout[requestId] = window.setTimeout(() => getLightState(input, success), 2000);
+          })
+          .catch(ex => {
+            console.log('action LiFXGetState [' + requestId + '] failed:', ex);
+            failure();
+          });
+        })
+      );
+    }
+    else
+      res = MockLightGetState(requestId, agentId, input, failure);
+    if (!_.isUndefined(res) && !_.isEqual(res, input.settings))
+      success({result: res});
+  }
 }
 
 function LiFXCheckState(requestId, agentId, input, success, failure) {
-  if (!_.isUndefined(__LIFX_TOKEN__) && input.light !== '') {
+  if (!_.isUndefined(__LIFX_TOKEN__) && input.id !== '') {
     let getLightState = function (input, success) {
       return LiFXRequest({
         path: 'lights/'+input.id
@@ -245,12 +285,43 @@ function LiFXCheckState(requestId, agentId, input, success, failure) {
     getLightState(input, success);
   }
   else {
+    let res = {};
+    let light = _.findKey(sami.devices, o => o.ID === input.id);
     let getLightState = function (input, success) {
-      let res = MockLightGetState(requestId, agentId, input, failure);
-      if (!_.isUndefined(res) && !_.isEqual(res, input.settings))
-        success({result: res});
-      else
-        timeout[requestId] = window.setTimeout(() => getLightState(input, success), 2000);
+      if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(light)) {
+        Promise.all(
+          _.map(['color', 'brightness', 'power'], (val, key) => {
+            input.device = light;
+            input.attribute = val;
+            return GetSamiDeviceValue(requestId, agentId, input, failure)
+            .then(r => {
+              res[val] = r;
+              return true;
+            })
+            .catch(ex => {
+              console.log('action LiFXCheckState [' + requestId + '] failed:', ex);
+              failure();
+            });
+          })
+        )
+        .then(() => {
+          if (!_.isUndefined(res) && !_.isEqual(res, input.settings))
+            success({result: res});
+          else
+            timeout[requestId] = window.setTimeout(() => getLightState(input, success), 2000);
+        })
+        .catch(ex => {
+          console.log('action LiFXCheckState [' + requestId + '] failed:', ex);
+          failure();
+        });
+      }
+      else {
+        res = MockLightGetState(requestId, agentId, input, failure);
+        if (!_.isUndefined(res) && !_.isEqual(res, input.settings))
+          success({result: res});
+        else
+          timeout[requestId] = window.setTimeout(() => getLightState(input, success), 2000);
+      }
     }
     getLightState(input, success);
   }
@@ -312,8 +383,9 @@ function SetZipatoDeviceValue(requestId, agentId, input, failure) {
 // SAMI functions: only available if a __SAMI_USER__ has been set in the environment variables
 
 function SetSamiDeviceValue(requestId, agentId, input, failure) {
-  let res = {};
-  _.set(res, input.attribute, input.value);
+  let res = {} || input.message;
+  if (!_.isUndefined(input.attribute) && !_.isUndefined(input.value))
+    _.set(res, input.attribute, input.value);
   return sami.sendMessageToDevice(input.device, res)
   .then(json => {
     if (!_.isUndefined(json.data.mid)) {
@@ -379,8 +451,9 @@ function CheckDeviceValue(requestId, agentId, input, success, failure) {
     let getValue = function (input, success) {
       GetSamiDeviceValue(requestId, agentId, input, failure)
       .then(res => {
-        if (!_.isUndefined(res) && !_.isEqual(res, input.value))
+        if (!_.isUndefined(res) && !_.isEqual(res, input.value)){
           success({result: res});
+        }
         else
           timeout[requestId] = window.setTimeout(() => getValue(input, success), 2000);
       })
@@ -422,10 +495,7 @@ function GetDeviceValue(requestId, agentId, input, success, failure) {
     });
   else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
     GetSamiDeviceValue(requestId, agentId, input, failure)
-    .then(res => {
-      console.log('GetDeviceValue with SAMI, res =', res);
-      success({result: res});
-    })
+    .then(res => success({result: res}))
     .catch(ex => {
       console.log('action GetDeviceValue [' + requestId + '] failed:', ex);
       failure();
@@ -502,7 +572,7 @@ function MockLightSetState(requestId, agentId, input, failure) {
   if (input.power == 'off') {
     brightness = 0;
   }
-  devices.updateLights(input.room, input.color, brightness);
+  devices.updateLights(input.room, input.color, brightness, input.power);
   return true;
 }
 
