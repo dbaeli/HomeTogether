@@ -104,3 +104,30 @@
     background: -moz-radial-gradient(#008DFF 20%, white 70%, white); /* For Firefox 3.6 to 15 */
     background: radial-gradient(#008DFF 20%, white 70%, white); /* Standard syntax (must be last) */
 }
+
+.colorDiv,
+.colorDivNegative
+{
+    height: 25px;
+    margin: 2px;
+    border: 1px solid;
+    border-color: #cccccc;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.colorDiv:hover,
+.colorDivNegative:hover
+{
+    border-color: #777777;
+}
+
+.colorDiv:active
+{
+    box-shadow: inset 1px 3px 6px rgba(0,0,0,0.6);
+}
+
+.colorDivNegative:active
+{
+    box-shadow: inset 1px 3px 6px rgba(255,255,255,0.5);
+}

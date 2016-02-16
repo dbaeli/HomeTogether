@@ -1,9 +1,8 @@
 import React from 'react';
 import Reflux from 'reflux';
-import { Button, Row, Col } from 'react-bootstrap';
+import { Button, Row, Col, Input } from 'react-bootstrap';
 import {devices, ActionStore} from '../../actions/actionStore';
 import _ from 'lodash';
-import ColorPicker from 'react-color';
 
 function hexToRGB(hex) {
   var intColor = parseInt(hex.split('#')[1], 16);
@@ -12,6 +11,7 @@ function hexToRGB(hex) {
 
 let loc;
 let color;
+let setting = {};
 let lifx_bulbs = [
   __LIFX_BULB_0__,
   __LIFX_BULB_1__,
@@ -19,7 +19,16 @@ let lifx_bulbs = [
   __LIFX_BULB_3__,
   __LIFX_BULB_4__,
   __LIFX_BULB_5__
+];
+let colorPalette = [
+  '#FEFE33',
+  '#FB9902',
+  '#FE2712',
+  '#8601AF',
+  '#0247FE',
+  '#66B032'
 ]
+
 
 export default React.createClass({
   mixins: [Reflux.connect(ActionStore, 'devices')],
@@ -29,48 +38,96 @@ export default React.createClass({
     return {rgb: rgb, hex: light.color.split('#')[1]};
   },
   getInitialState: function() {
-    return {color:{}, location:'out'}
+    return {setting:{color:{}, brightness:0.0}, location:'out'}
   },
-  handleChange(val) {
+  changeColor(val) {
     if (loc !== 'out' && loc !== '')
       if (loc !== '0' || _.isUndefined(__LIFX_TOKEN__)) {
         let power = 'on';
-        if (val.rgb.a === 0.0)
+        if (this.state.setting.brightness === 0.0)
           power = 'off';
-        devices.updateLights(loc, '#' + val.hex, val.rgb.a, power);
+        devices.updateLights(loc, val, this.state.setting.brightness, power);
+      }
+  },
+  changeBrightness(val) {
+    if (loc !== 'out' && loc !== '')
+      if (loc !== '0' || _.isUndefined(__LIFX_TOKEN__)) {
+        let power = 'on';
+        if (val === 0.0)
+          power = 'off';
+        devices.updateLights(loc, this.state.setting.color, val, power);
       }
   },
   shouldComponentUpdate: function(nextProps, nextState) {
     loc = ActionStore.getPlayerLocation();
     let lightState = ActionStore.getLightState(loc);
     if (!_.isUndefined(lightState)) {
-      color = this.convertLightToColor(lightState);
+      setting.color = lightState.color;
+      setting.brightness = lightState.brightness;
     }
-    return this.state.location !== loc || (!_.isUndefined(color) && !_.isEqual(this.state.color.rgb, color.rgb));
+    return this.state.location !== loc 
+            || (!_.isUndefined(setting.color)
+            && !_.isEqual(this.state.setting.color, setting.color))
+            || (!_.isUndefined(setting.brightness)
+            && !_.isEqual(this.state.setting.brightness, setting.brightness));
   },
   componentWillUpdate: function(nextProps, nextState) {
     let res = {location: loc};
-    if (!_.isUndefined(color))
-      res['color'] = color;
+    if (!_.isUndefined(setting))
+      res['setting'] = {color: setting.color, brightness: setting.brightness};
     this.setState(res);
   },
   render: function() {
     if (this.state.location !== 'out' && this.state.location !== '')
       return (
-        <Row style={{marginTop:20, display:'block'}}>
-          <Col xs={7}>{
+        <Row style={{marginTop:20}}>
+          <h4 style={{display:'inline-block',verticalAlign:'top',margin:35}}>Room&nbsp;{this.state.location} <br />settings</h4>
+          {
             !_.isUndefined(lifx_bulbs[parseInt(this.state.location)]) ?
-              <h4>Use the LiFX application to change the light color</h4>
+              <h4 style={{display:'inline-block',verticalAlign:'top',margin:35}}>Use the LiFX application <br />to change the light color</h4>
             :
-              <ColorPicker style={{marginRight: -5}} color={this.state.color.rgb} onChangeComplete={this.handleChange} type='chrome' />
+              <div style={{display:'inline-block'}}>
+                <ColorPicker color={this.state.setting.color} onChangeComplete={this.changeColor} />
+                <BrightnessPicker level={this.state.setting.brightness} onChangeComplete={this.changeBrightness} />
+              </div>
           }
-          </Col>
-          <Col xs={2}>
-            <h4>Room&nbsp;{this.state.location}<br />settings</h4>
-          </Col>
         </Row>
       );
     else
       return (<div></div>)
+  }
+});
+
+let ColorPicker = React.createClass({
+  render: function() {
+    let currentColor = '#' + this.props.color;
+    let range = _.map(colorPalette, (k) => {
+      return(
+        <Button key={k} className='colorDiv' style={{backgroundColor:k}} onClick={()=>this.props.onChangeComplete(k)}></Button>
+      );
+    });
+    return(
+      <div>
+        <span style={{fontWeight:600}}>Color:</span>
+        <div>{range}</div>
+      </div>
+    );
+  }
+});
+
+let BrightnessPicker = React.createClass({
+  render: function() {
+    let range = _.map(_.range(3), (k) => {
+      let val = k/2;
+      return(
+        <Button key={k} className={val > 0.7 ? 'colorDivNegative' : 'colorDiv'} style={{backgroundColor:'rgba(0,0,0,'+(1-val)+')'}} onClick={()=>this.props.onChangeComplete(val)}></Button>
+      );
+    });
+    return(
+      <div>
+        <span style={{fontWeight:600}}>Brightness:</span>
+        <div>{range}</div>
+      </div>
+    );
   }
 });
