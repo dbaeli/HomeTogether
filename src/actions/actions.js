@@ -6,8 +6,6 @@ import btoa from 'btoa';
 import {devices, ActionStore} from './actionStore';
 import sami from '../lib/sami/samiHelper.js';
 
-import chatHistoryStore from '../view/components/chatHistoryStore';
-
 var currentInstance = null;
 
 export function setCurrentInstance( instance ) {
@@ -528,15 +526,10 @@ function Compute(requestId, agentId, input, success, failure) {
 
 function Log(requestId, agentId, input, success, failure) {
   console.log ('LOG FROM CRAFT :', format( input.message, input ) );
-  if( _.isUndefined(input.cancel) || input.cancel === false )
-    chatHistoryStore.addCraftMessage( agentId, format( input.message, input ) );
-  else
-    chatHistoryStore.addCancelMessage( agentId, format( input.message, input ) );
   success();
 }
 
 function PreventCancel(requestId, agentId, input, success, failure) {
-  chatHistoryStore.cancelMessage();
   success(); 
 }
 

@@ -21,7 +21,9 @@ let lifx_bulbs = [
   __LIFX_BULB_5__
 ];
 let colorPalette = [
-  '#FEFE33',
+  '#FFF3D9',
+  '#E8F3F7',
+  '#D9EBFF',
   '#FB9902',
   '#FE2712',
   '#8601AF',

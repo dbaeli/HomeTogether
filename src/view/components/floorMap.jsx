@@ -32,19 +32,6 @@ export default React.createClass({
       this.setState({TV: tvState});
     }
   },
-  renderPlayer: function() {
-    if (_.isUndefined(this.state.room)) {
-      return (
-        <div/>
-      );
-    }
-    else {
-      let position = POSITION_FROM_ROOM[this.state.room];
-      return (
-        <Character x={position.x} y={position.y} image={player}/>
-      );
-    }
-  },
   renderTv: function() {
     if (this.state.TV) {
       return (
@@ -78,7 +65,6 @@ export default React.createClass({
           <area shape='rect' id={4} coords='561,13,637,141' onClick={e=>this.roomSelected(e.target.id)} alt='water closet' />
           <area shape='rect' id={5} coords='346,251,637,445' onClick={e=>this.roomSelected(e.target.id)} alt='bedroom' />
         </map>
-        { this.renderPlayer() }
         { this.renderTv() }
       </div>
     );

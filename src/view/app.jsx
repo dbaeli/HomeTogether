@@ -7,7 +7,6 @@ import {ActionStore,devices} from '../actions/actionStore';
 import FloorMap from './components/floorMap';
 import Occupant from './components/occupant';
 import Player from './components/player';
-import ChatHistory from './components/chatHistory';
 import { Input, Button, Grid, Row, Col, ProgressBar } from 'react-bootstrap';
 import Light from './components/light';
 import ColorPicker from './components/colorPicker';
@@ -113,7 +112,6 @@ export default React.createClass({
             <Col sm={0} md={2}>
             </Col>
             <Col sm={12} md={8}>
-              <ChatHistory id='hist' placeholder='No message...' instance={this.state.instance}/>
               <DayAndNight style={{marginTop:'10px'}} onUpdateLightIntensity={(val) => this.updateLight(val)}/>
               <ColorPicker style={{marginTop:'10px'}} />
             </Col>
