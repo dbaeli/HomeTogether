@@ -297,58 +297,17 @@
                     "metadata": {
                       "label": ""
                     },
-                    "properties": {},
-                    "children": [
-                      {
-                        "activated": true,
-                        "metadata": {
-                          "label": ""
-                        },
-                        "properties": {
-                          "channel": {
-                            "type": "string",
-                            "value": "Rooms"
-                          },
-                          "sender": "",
-                          "content": "outsideLightIntensity"
-                        },
-                        "children": [],
-                        "id": "267fc98c-45d7-4d6f-a2f9-972350301a9c",
-                        "type": "receiveMessage"
+                    "properties": {
+                      "channel": {
+                        "type": "string",
+                        "value": "Rooms"
                       },
-                      {
-                        "activated": true,
-                        "metadata": {
-                          "label": ""
-                        },
-                        "properties": {
-                          "name": "Log",
-                          "inputParams": [
-                            {
-                              "key": "message",
-                              "type": "string",
-                              "value": "message received in room {a}: light intensity = {l}"
-                            },
-                            {
-                              "key": "a",
-                              "type": "entityKnowledge",
-                              "value": "roomId"
-                            },
-                            {
-                              "key": "l",
-                              "type": "entityKnowledge",
-                              "value": "outsideLightIntensity"
-                            }
-                          ],
-                          "outputParams": []
-                        },
-                        "children": [],
-                        "id": "0c13f7f1-06e7-4f7b-8a51-2f87972663a2",
-                        "type": "action"
-                      }
-                    ],
-                    "id": "576e685a-cc4a-49f2-b535-e075779df0a1",
-                    "type": "sequence"
+                      "sender": "",
+                      "content": "outsideLightIntensity"
+                    },
+                    "children": [],
+                    "id": "267fc98c-45d7-4d6f-a2f9-972350301a9c",
+                    "type": "receiveMessage"
                   }
                 ],
                 "id": "d181da0f-7db4-474f-8219-c91e69c032a3",
