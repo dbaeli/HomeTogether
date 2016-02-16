@@ -103,7 +103,7 @@ let ColorPicker = React.createClass({
     let currentColor = '#' + this.props.color;
     let range = _.map(colorPalette, (k) => {
       return(
-        <Button key={k} className='colorDiv' style={{backgroundColor:k}} onClick={()=>this.props.onChangeComplete(k)}></Button>
+        <div key={k} className='colorDiv' style={{backgroundColor:k}} onClick={()=>this.props.onChangeComplete(k)}></div>
       );
     });
     return(
@@ -120,7 +120,7 @@ let BrightnessPicker = React.createClass({
     let range = _.map(_.range(3), (k) => {
       let val = k/2;
       return(
-        <Button key={k} className={val > 0.7 ? 'colorDivNegative' : 'colorDiv'} style={{backgroundColor:'rgba(0,0,0,'+(1-val)+')'}} onClick={()=>this.props.onChangeComplete(val)}></Button>
+        <div key={k} className={val > 0.7 ? 'colorDivNegative' : 'colorDiv'} style={{backgroundColor:'rgba(0,0,0,'+(1-val)+')'}} onClick={()=>this.props.onChangeComplete(val)}></div>
       );
     });
     return(
