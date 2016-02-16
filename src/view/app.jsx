@@ -6,6 +6,7 @@ import {actionTable,setCurrentInstance} from '../actions/actions';
 import {ActionStore,devices} from '../actions/actionStore';
 import FloorMap from './components/floorMap';
 import Occupant from './components/occupant';
+import Player from './components/player';
 import ChatHistory from './components/chatHistory';
 import { Input, Button, Grid, Row, Col, ProgressBar } from 'react-bootstrap';
 import Light from './components/light';
@@ -43,7 +44,7 @@ export default React.createClass({
     return this.state.instance.updateInstanceKnowledge( {tvState:val}, 'merge' );
   },
   getInitialState: function() {
-    return {instance:null, started:false, devices: ActionStore.getInitialState(), failure: false}
+    return {instance:null, started:false, devices: ActionStore.getInitialState(), failure: false, playerPosition:''}
   },
   componentWillMount: function() {
     if (!_.isUndefined(__SAMI_USER__))
@@ -102,7 +103,8 @@ export default React.createClass({
             <Col sm={0} md={2}>
             </Col>
             <Col sm={12} md={8}>
-              <FloorMap onUpdateTV={(val)=>this.updateTV(val)} onUpdateLocation={(location) => devices.updatePresence('player', location)}/>
+              <FloorMap onUpdateTV={(val)=>this.updateTV(val)} onUpdateLocation={(location) => {devices.updatePresence('player', location); this.setState({playerPosition: location})}}/>
+              <Player location={this.state.playerPosition}/>
               <Occupant onUpdateLocation={(location) => devices.updatePresence('occupant', location)}/>
               <Light/>
             </Col>

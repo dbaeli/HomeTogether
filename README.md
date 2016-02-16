@@ -1,6 +1,11 @@
 # Home Together #
 ## Autonomous Home powered by **craft ai** ##
 
+**HomeTogether** showcases the **craft ai** AI platform in a SmartHome context,
+this demo was presented at [CES 2016](http://www.craft.ai/blog/home-together-a-ces-demo/).
+
+For further information, please check the dedicated [blog post](http://www.craft.ai/blog/home-together-hands-on/).
+
 ### Local development ###
 
 The following environment variables are required, for example in a `.env` file at the root
@@ -15,7 +20,7 @@ The following environment variables are required, for example in a `.env` file a
 
 Setting the following variables will enable the connection with the Zipabox API and the associated devices.
 
-- `ZIPABOX_USER`: The username for the _Zipabox_ access. 
+- `ZIPABOX_USER`: The username for the _Zipabox_ access.
 - `ZIPABOX_PASSWORD`: The password for the _Zipabox_ access.
 - `ZIPABOX_BLIND_DEVICE_UUID`: The _Zipabox_ device UUID for the blind.
 - `ZIPABOX_BLIND_ENDPOINT_UUID`: The _Zipabox_ endpoint UUID for the blind.
