@@ -150,6 +150,26 @@
                         "children": [],
                         "id": "999089fc-845a-4a4e-9033-ba7885aa276a",
                         "type": "success"
+                      },
+                      {
+                        "activated": true,
+                        "metadata": {
+                          "label": ""
+                        },
+                        "properties": {
+                          "name": "Log",
+                          "inputParams": [
+                            {
+                              "key": "message",
+                              "type": "string",
+                              "value": "message sent to rooms"
+                            }
+                          ],
+                          "outputParams": []
+                        },
+                        "children": [],
+                        "id": "eec6fe98-0c20-4ce9-8ab9-390c95b7bff1",
+                        "type": "action"
                       }
                     ],
                     "id": "03b828a7-2509-460e-81d3-3d2005fd247d",
