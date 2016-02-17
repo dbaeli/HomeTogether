@@ -112,7 +112,6 @@ export default React.createClass({
             <Col sm={0} md={2}>
             </Col>
             <Col sm={12} md={8}>
-              <ChatHistory id='hist' placeholder='No message...' instance={this.state.instance}/>
               <DayAndNight style={{marginTop:'10px'}} onUpdateLightIntensity={(val) => this.updateLight(val)}/>
               <ColorPicker style={{marginTop:'10px'}} />
             </Col>
