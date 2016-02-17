@@ -20,6 +20,8 @@
     "json-file-db": "*",
     "json-loader": "0.5.4",
     "lodash": "3.10.1",
+    "passport": "0.3.2",
+    "passport-oauth": "1.0.0",
     "react": "0.14.3",
     "react-bootstrap": "0.28.1",
     "react-dom": "0.14.3",
