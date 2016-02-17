@@ -7,12 +7,12 @@ import {ActionStore,devices} from '../actions/actionStore';
 import FloorMap from './components/floorMap';
 import Occupant from './components/occupant';
 import Player from './components/player';
-import ChatHistory from './components/chatHistory';
 import { Input, Button, Grid, Row, Col, ProgressBar } from 'react-bootstrap';
 import Light from './components/light';
 import ColorPicker from './components/colorPicker';
 import Reflux from 'reflux';
 import DayAndNight from './components/dayAndNight';
+import sami from '../lib/sami/samiHelper';
 
 import HomeK from '../knowledge/home.json';
 import RoomK from '../knowledge/room.json';
@@ -46,6 +46,8 @@ export default React.createClass({
     return {instance:null, started:false, devices: ActionStore.getInitialState(), failure: false, playerPosition:''}
   },
   componentWillMount: function() {
+    if (!_.isUndefined(__SAMI_USER__))
+      sami.createListenerWS(__SAMI_USER__);
     this.n = 0;
     craftai(craftConf)
     .then(instance => {
@@ -54,12 +56,12 @@ export default React.createClass({
     })
     .then(() => this.state.instance.updateInstanceKnowledge(OccupantK))
     .then(() => this.state.instance.createAgent('src/decision/Home.bt', HomeK))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/LivingRoom.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_0__) ? __LIFX_BULB_0__ : '')})))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/DiningRoom.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_1__) ? __LIFX_BULB_1__ : '')})))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/Corridor.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_2__) ? __LIFX_BULB_2__ : '')})))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/Bathroom.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_3__) ? __LIFX_BULB_3__ : '')})))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/WaterCloset.bt',_.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_4__) ? __LIFX_BULB_4__ : '')})))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/Bedroom.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_5__) ? __LIFX_BULB_5__ : '')})))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/LivingRoom.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_0__) ? __LIFX_BULB_0__ : (!_.isUndefined(__SAMI_BULB_0__) ? __SAMI_BULB_0__ : ''))})))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/DiningRoom.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_1__) ? __LIFX_BULB_1__ : (!_.isUndefined(__SAMI_BULB_1__) ? __SAMI_BULB_1__ : ''))})))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/Corridor.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_2__) ? __LIFX_BULB_2__ : (!_.isUndefined(__SAMI_BULB_2__) ? __SAMI_BULB_2__ : ''))})))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/Bathroom.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_3__) ? __LIFX_BULB_3__ : (!_.isUndefined(__SAMI_BULB_3__) ? __SAMI_BULB_3__ : ''))})))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/WaterCloset.bt',_.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_4__) ? __LIFX_BULB_4__ : (!_.isUndefined(__SAMI_BULB_4__) ? __SAMI_BULB_4__ : ''))})))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/Bedroom.bt', _.assign(RoomK, {roomLightId: (!_.isUndefined(__LIFX_BULB_5__) ? __LIFX_BULB_5__ : (!_.isUndefined(__SAMI_BULB_5__) ? __SAMI_BULB_5__ : ''))})))
     .then(() => registerActions(this.state.instance))
     .then(() => {
       this.state.instance.update(10);
@@ -110,7 +112,6 @@ export default React.createClass({
             <Col sm={0} md={2}>
             </Col>
             <Col sm={12} md={8}>
-              <ChatHistory id='hist' placeholder='No message...' instance={this.state.instance}/>
               <DayAndNight style={{marginTop:'10px'}} onUpdateLightIntensity={(val) => this.updateLight(val)}/>
               <ColorPicker style={{marginTop:'10px'}} />
             </Col>

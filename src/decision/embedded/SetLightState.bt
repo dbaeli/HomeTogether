@@ -24,57 +24,6 @@
               "label": ""
             },
             "properties": {
-              "op1": {
-                "type": "behaviorParams",
-                "value": "light"
-              },
-              "op2": {
-                "type": "string",
-                "value": ""
-              },
-              "op": "=="
-            },
-            "children": [
-              {
-                "activated": true,
-                "metadata": {
-                  "label": ""
-                },
-                "properties": {
-                  "name": "MockLightSetState",
-                  "inputParams": [
-                    {
-                      "key": "color",
-                      "type": "behaviorParams",
-                      "value": "settings.color"
-                    },
-                    {
-                      "key": "brightness",
-                      "type": "behaviorParams",
-                      "value": "settings.brightness"
-                    },
-                    {
-                      "key": "room",
-                      "type": "behaviorParams",
-                      "value": "room"
-                    }
-                  ],
-                  "outputParams": []
-                },
-                "children": [],
-                "id": "7046c5bc-9d8b-4d29-a6f0-eac3cdc2cd43",
-                "type": "action"
-              }
-            ],
-            "id": "f5d1211f-e177-4aec-981a-d084efabf7e3",
-            "type": "condition"
-          },
-          {
-            "activated": true,
-            "metadata": {
-              "label": ""
-            },
-            "properties": {
               "name": "LiFXSetState",
               "inputParams": [
                 {
