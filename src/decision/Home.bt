@@ -34,7 +34,7 @@
                 "properties": {},
                 "children": [
                   {
-                    "activated": true,
+                    "activated": false,
                     "metadata": {
                       "label": ""
                     },
@@ -59,7 +59,7 @@
                           ],
                           "outputParams": [
                             {
-                              "key": "intensity",
+                              "key": "result",
                               "type": "entityKnowledge",
                               "value": "outsideLightIntensity.value"
                             }
@@ -68,46 +68,46 @@
                         "children": [],
                         "id": "880b340f-8413-4fd2-94cc-3c623fa2b822",
                         "type": "action"
-                      },
-                      {
-                        "activated": true,
-                        "metadata": {
-                          "label": ""
-                        },
-                        "properties": {
-                          "name": "CheckDeviceValue",
-                          "inputParams": [
-                            {
-                              "key": "device",
-                              "type": "string",
-                              "value": "light_sensor1"
-                            },
-                            {
-                              "key": "attribute",
-                              "type": "string",
-                              "value": "state"
-                            },
-                            {
-                              "key": "value",
-                              "type": "entityKnowledge",
-                              "value": "outsideLightIntensity.value"
-                            }
-                          ],
-                          "outputParams": [
-                            {
-                              "key": "value",
-                              "type": "entityKnowledge",
-                              "value": "outsideLightIntensity.value"
-                            }
-                          ]
-                        },
-                        "children": [],
-                        "id": "d3b2af8d-c787-4e03-b225-569339e0fc58",
-                        "type": "action"
                       }
                     ],
                     "id": "c8d6e6da-8db8-4377-b46d-3b1a04aa20a5",
                     "type": "parallel"
+                  },
+                  {
+                    "activated": true,
+                    "metadata": {
+                      "label": ""
+                    },
+                    "properties": {
+                      "name": "GetLightIntensity",
+                      "inputParams": [
+                        {
+                          "key": "device",
+                          "type": "string",
+                          "value": "light_sensor1"
+                        },
+                        {
+                          "key": "attribute",
+                          "type": "string",
+                          "value": "state"
+                        },
+                        {
+                          "key": "value",
+                          "type": "entityKnowledge",
+                          "value": "outsideLightIntensity.value"
+                        }
+                      ],
+                      "outputParams": [
+                        {
+                          "key": "result",
+                          "type": "entityKnowledge",
+                          "value": "outsideLightIntensity.value"
+                        }
+                      ]
+                    },
+                    "children": [],
+                    "id": "d3b2af8d-c787-4e03-b225-569339e0fc58",
+                    "type": "action"
                   },
                   {
                     "activated": true,
