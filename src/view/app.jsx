@@ -24,6 +24,8 @@ let craftConf = {
   version: __CRAFT_PROJECT_VERSION__,
   appId: __CRAFT_APP_ID__,
   appSecret: __CRAFT_APP_SECRET__,
+  wsApiUrl: __CRAFT_WS_API_URL__,
+  httpApiUrl: __CRAFT_HTTP_API_URL__
 };
 
 function registerActions(instance) {
