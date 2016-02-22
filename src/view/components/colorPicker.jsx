@@ -3,6 +3,7 @@ import Reflux from 'reflux';
 import { Button, Row, Col, Input } from 'react-bootstrap';
 import {devices, ActionStore} from '../../actions/actionStore';
 import _ from 'lodash';
+import hue from '../../lib/hue/hueHelper';
 
 function hexToRGB(hex) {
   var intColor = parseInt(hex.split('#')[1], 16);
@@ -19,6 +20,14 @@ let lifx_bulbs = [
   __LIFX_BULB_3__,
   __LIFX_BULB_4__,
   __LIFX_BULB_5__
+];
+let hue_bulbs = [
+  hue.lights[0].id,
+  hue.lights[1].id,
+  hue.lights[2].id,
+  hue.lights[3].id,
+  hue.lights[4].id,
+  hue.lights[5].id
 ];
 let colorPalette = [
   '#FFF3D9',
@@ -85,13 +94,17 @@ export default React.createClass({
         <Row style={{marginTop:20}}>
           <h4 style={{display:'inline-block',verticalAlign:'top',margin:35}}>Room&nbsp;{this.state.location} <br />settings</h4>
           {
-            !_.isUndefined(lifx_bulbs[parseInt(this.state.location)]) ?
-              <h4 style={{display:'inline-block',verticalAlign:'top',margin:35}}>Use the LiFX application <br />to change the light color</h4>
-            :
-              <div style={{display:'inline-block'}}>
-                <ColorPicker color={this.state.setting.color} onChangeComplete={this.changeColor} />
-                <BrightnessPicker level={this.state.setting.brightness} onChangeComplete={this.changeBrightness} />
-              </div>
+            !_.isUndefined(hue_bulbs[parseInt(this.state.location)]) ?
+              <h4 style={{display:'inline-block',verticalAlign:'top',margin:35}}>Use the Philips Hue application <br />to change the light color</h4>
+            : (
+              !_.isUndefined(lifx_bulbs[parseInt(this.state.location)]) ?
+                <h4 style={{display:'inline-block',verticalAlign:'top',margin:35}}>Use the LiFX application <br />to change the light color</h4>
+              :
+                <div style={{display:'inline-block'}}>
+                  <ColorPicker color={this.state.setting.color} onChangeComplete={this.changeColor} />
+                  <BrightnessPicker level={this.state.setting.brightness} onChangeComplete={this.changeBrightness} />
+                </div>
+              )
           }
         </Row>
       );
