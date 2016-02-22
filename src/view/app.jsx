@@ -109,7 +109,11 @@ export default React.createClass({
     hue.init()
     .then(res => res.json())
     .then(addr => {
-      if (_.size(addr) === 0 || _.isUndefined(_.first(addr).internalipaddress)) {
+      if (!_.isUndefined(__HUE_BRIDGE_IP__)) {
+        hue.bridgeIpAddress = __HUE_BRIDGE_IP__;
+        return getHueUserId();
+      }
+      else if (_.size(addr) === 0 || _.isUndefined(_.first(addr).internalipaddress)) {
         console.log('no Hue bridge found');
         _.map(hue.lights, (val, key) => val.id = undefined);
         return true;
