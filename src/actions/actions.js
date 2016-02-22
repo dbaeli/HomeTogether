@@ -5,6 +5,7 @@ import _ from 'lodash';
 import btoa from 'btoa';
 import {devices, ActionStore} from './actionStore';
 import sami from '../lib/sami/samiHelper.js';
+import hue from  '../lib/hue/hueHelper.js';
 
 var currentInstance = null;
 
@@ -30,6 +31,23 @@ export var actionTable = {
 };
 
 let timeout = {};
+
+// Helpers for conversions between Hue color values and web colors.
+// function rgb2xy(r, g, b) {
+//   let red = r/255;
+//   let green = g/255;
+//   let blue = b/255;
+
+//   // Apply gamma correction
+//   red = (red > 0.04045) ? Math.pow((red + 0.055) / 1.055, 2.4) : (red / 12.92);
+//   green = (green > 0.04045) ? Math.pow((green + 0.055) / 1.055, 2.4) : (green / 12.92);
+//   blue = (blue > 0.04045) ? Math.pow((blue + 0.055) / 1.055, 2.4) : (blue / 12.92);
+
+//   //convert to XYZ
+//   let X = red * 0.664511 + green * 0.154324 + blue * 0.162028;
+//   let Y = red * 0.283881 + green * 0.668433 + blue * 0.047685;
+//   let Z = red * 0.000088 + green * 0.072310 + blue * 0.986039;
+// }
 
 // Helpers for conversions between LIFX color values and web colors.
 
@@ -162,7 +180,32 @@ function LiFXRequest(r) {
 // LIFX Actions: only available if a __LIFX_TOKEN__ has been set in the environment variables (will fall back to the 'mockLight' actions otherwise)
 
 function LiFXSetState(requestId, agentId, input, success, failure) {
-  if (!_.isUndefined(__LIFX_TOKEN__) && input.light !== '') {
+  if (!_.isUndefined(hue.userId) && !_.isUndefined(_.find(hue.lights, {id: input.id}))) {
+    let rgb = input.color;
+    if(typeof input.color === 'string') {
+      let tmpRgb = hexToRGB(input.color);
+      rgb = [tmpRgb.r, tmpRgb.g, tmpRgb.b];
+    }
+    let brightness = _.isUndefined(input.brightness) ? 127 : parseInt(Math.max(Math.min(input.brightness*255, 254),1));
+    let power = (input.power === 'on');
+    let r = {};
+    r.transitiontime = input.duration;
+    r.xy = hue.convertRGBtoXY(rgb);
+    r.on = (input.power === 'on');
+    r.bri = brightness;
+    return hue.request({
+      method: 'PUT',
+      path: hue.userId+'/lights/'+input.id+'/state',
+      body: JSON.stringify( r )
+    })
+    .then(res => res.json())
+    .then(() => success())
+    .catch(ex => {
+      console.log('action LiFXSetState [' + requestId + '] failed:', ex);
+      failure();
+    });
+  }
+  else if (!_.isUndefined(__LIFX_TOKEN__) && input.id !== '') {
     let r = {};
     r.duration = input.duration;
     r.color = input.color;
@@ -203,7 +246,22 @@ function LiFXSetState(requestId, agentId, input, success, failure) {
 }
 
 function LiFXGetState(requestId, agentId, input, success, failure) {
-  if (!_.isUndefined(__LIFX_TOKEN__) && input.id !== '') {
+  if (!_.isUndefined(hue.userId) && !_.isUndefined(_.find(hue.lights, {id: input.id}))) {
+    return hue.request({
+      path: hue.userId+'/lights/'+input.id
+    })
+    .then(res => res.json())
+    .then(json => {
+      let color = hue.convertXYtoRGB(json.state.xy[0], json.state.xy[1], json.state.bri);
+      let obj = {color: color, brightness: parseFloat((json.state.bri/254).toFixed(1)), power: (json.state.on ? 'on' : 'off')};
+      success({result: obj});
+    })
+    .catch(ex => {
+      console.log('action LiFXGetState [' + requestId + '] failed:', ex);
+      failure();
+    });
+  }
+  else if (!_.isUndefined(__LIFX_TOKEN__) && input.id !== '') {
     return LiFXRequest({
       path: 'lights/'+input.id
     })
@@ -213,7 +271,7 @@ function LiFXGetState(requestId, agentId, input, success, failure) {
       let color = 'hue:' + lightSetting.color.hue + ' saturation:' + lightSetting.color.saturation;
       let obj = {result: {color: color, brightness: lightSetting.brightness, power: lightSetting.power}};
       success(obj);
-    }) 
+    })
     .catch(ex => {
       console.log('action LiFXGetState [' + requestId + '] failed:', ex);
       failure();
@@ -250,7 +308,33 @@ function LiFXGetState(requestId, agentId, input, success, failure) {
 }
 
 function LiFXCheckState(requestId, agentId, input, success, failure) {
-  if (!_.isUndefined(__LIFX_TOKEN__) && input.id !== '') {
+  if (!_.isUndefined(hue.userId) && !_.isUndefined(_.find(hue.lights, {id: input.id}))) {
+    let getLightState = function (input, success) {
+      return hue.request({
+        path: hue.userId+'/lights/'+input.id
+      })
+      .then(res => res.json())
+      .then(json => {
+        let rgb = input.settings.color;
+        if(typeof input.settings.color === 'string') {
+          rgb = hexToRGB( input.settings.color );
+        }
+        let rgbNew = hue.convertXYtoRGB(json.state.xy[0], json.state.xy[1], json.state.bri);
+        let obj = {color: rgbNew, brightness: parseFloat((json.state.bri/254).toFixed(1)), power: (json.state.on ? 'on' : 'off')};
+        if (!_.isEqual(rgb, rgbNew)) {
+          success({result: obj});
+        }
+        else
+          timeout[requestId] = window.setTimeout(() => getLightState(input, success), 2000);
+      }) 
+      .catch(ex => {
+        console.log('action LiFXCheckState [' + requestId + '] failed:', ex);
+        failure({result: input.settings});
+      });
+    }
+    getLightState(input, success);
+  }
+  else if (!_.isUndefined(__LIFX_TOKEN__) && input.id !== '') {
     let getLightState = function (input, success) {
       return LiFXRequest({
         path: 'lights/'+input.id
@@ -268,8 +352,8 @@ function LiFXCheckState(requestId, agentId, input, success, failure) {
         }
         var rgbNew = hsb2rgb( lightSettings.color.hue, lightSettings.color.saturation, lightSettings.brightness );
         let color = 'hue:' + lightSettings.color.hue + ' saturation:' + lightSettings.color.saturation;
-        let obj = {color: color, brightness: lightSettings.brightness, power: lightSettings.power};      
-        if (!_.isEqual(rgb, rgbNew )) {
+        let obj = {color: color, brightness: lightSettings.brightness, power: lightSettings.power};
+        if (!_.isEqual(rgb, rgbNew)) {
           success({result: obj});
         }
         else
