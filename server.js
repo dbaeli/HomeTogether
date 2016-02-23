@@ -21,7 +21,7 @@ var sami = {
   CALL_BACK_URL: 'http://localhost:4444/auth/samihub/callback',
 }
 
-var currentSamiAccessToken = '';
+var samiToken;
 
 dotenv.load();
 
@@ -162,18 +162,19 @@ if (!_.isUndefined(process.env.ZIPABOX_USER)) {
   });
 }
 
-
 if (!_.isUndefined(process.env.SAMI_USER)) {
   sami.USER_ID = process.env.SAMI_USER;
   sami.CLIENT_ID = process.env.SAMI_CLIENT_ID;
   sami.CLIENT_SECRET = process.env.SAMI_CLIENT_SECRET;
 
-  passport.serializeUser(function(user, done) {
-    done(null, 'kiki');
+  passport.deserializeUser(function(id, done) {
+    // id => user
+    done(null, 'user');
   });
 
-  passport.deserializeUser(function(id, done) {
-     done(null, 'kiki');
+  passport.serializeUser(function(user, done) {
+    // user => id
+    done(null, 'user');
   });
 
   passport.use(new OAuth2Strategy({
@@ -184,12 +185,14 @@ if (!_.isUndefined(process.env.SAMI_USER)) {
       callbackURL: sami.CALL_BACK_URL
     },
     function(accessToken, refreshToken, profile, done) {
-      currentSamiAccessToken = accessToken;
-      return done(null, 'kiki');
+      // set user
+      samiToken = accessToken
+      return done(null, 'user');
     }
   ));
 
   app.get('/', function(req, res, next) {
+    // req.user
     res.redirect('/sami/auth');
   });
 
@@ -198,33 +201,60 @@ if (!_.isUndefined(process.env.SAMI_USER)) {
   );
 
   app.get('/sami/accessToken', function(req, res) {
-    console.log('sami.USER_ID ==', sami.USER_ID);
-    console.log('accessToken == ' + currentSamiAccessToken);
+    console.log('SAMI access token =', samiToken);
     res.status(200);
-    res.send({value: 'bearer+' + currentSamiAccessToken});
+    res.send({value: 'bearer+' + samiToken});
   });
 
-  app.get(sami.CALL_BACK_PATH,
-    passport.authenticate('oauth2', { failureRedirect: '/error', successRedirect: '/' })
-  );
-
-  app.get('/sami/users/self', function(req, res) {
+  app.put('/sami/:deviceId/token', function(req, res) {
     request({
-      url: sami.API_BASE_URL + '/users/self',
-      method: 'get',
+      method: 'put',
+      url: sami.API_BASE_URL + '/devices/' + req.params.deviceId + '/tokens',
       headers: {
-        'Authorization': 'Bearer ' + currentSamiAccessToken
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + samiToken
+      },
+      json: true,
+      body: {
+        'deviceID': req.params.deviceId
       }
     },
     function(error, response, body) {
+      console.log('response = ' + JSON.stringify(response));
       if (error) {
-        res.send({'error': '' + error});
+        res.status(500);
+        res.send({'status': 500, 'error': '' + error});
       }
       else {
         res.send(body);
       }
     });
   });
+
+  app.get('/sami/:deviceId/token', function(req, res) {
+    request({
+      method: 'get',
+      url: sami.API_BASE_URL + '/devices/' + req.params.deviceId + '/tokens',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + samiToken
+      }
+    },
+    function(error, response, body) {
+      console.log('response = ' + JSON.stringify(response));
+      if (error || (response.statusCode != 200)) {
+        res.status(500);
+        res.send({'status': 500, 'error': '' + error});
+      }
+      else {
+        res.send(body);
+      }
+    });
+  });
+
+  app.get(sami.CALL_BACK_PATH,
+    passport.authenticate('oauth2', { failureRedirect: '/error', successRedirect: '/' })
+  );
 
   app.get('/sami/message', function(req, res) {
     request({
@@ -240,11 +270,11 @@ if (!_.isUndefined(process.env.SAMI_USER)) {
       },
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + currentSamiAccessToken
+        'Authorization': 'Bearer ' + samiToken
       },
     },
     function(error, response, body) {
-      console.log('response ==' + JSON.stringify(response));
+      console.log('response =' + JSON.stringify(response));
       if (error || (response.statusCode != 200)) {
         res.status(500);
         res.send({'status': 500, 'error': '' + error});
@@ -260,7 +290,7 @@ if (!_.isUndefined(process.env.SAMI_USER)) {
       method: 'post',
       url: sami.API_BASE_URL + '/messages',
       headers: {
-        'Authorization': 'Bearer ' + currentSamiAccessToken,
+        'Authorization': 'Bearer ' + samiToken,
         'Content-Type': 'application/json'
       },
       json: true,
@@ -271,7 +301,7 @@ if (!_.isUndefined(process.env.SAMI_USER)) {
       }
     },
     function(error, response, body) {
-      console.log('response == ' + JSON.stringify(response));
+      console.log('response = ' + JSON.stringify(response));
       if (error || (response.statusCode != 200)) {
         res.status(500);
         res.send({'status': 500, 'error': '' + error});
@@ -285,9 +315,9 @@ if (!_.isUndefined(process.env.SAMI_USER)) {
   app.post('/sami/actions', function(req, res) {
     request({
       method: 'post',
-      url: sami.SAMI_API_BASE_URL + '/actions',
+      url: sami.API_BASE_URL + '/actions',
       headers: {
-        'Authorization': 'Bearer ' + currentSamiAccessToken,
+        'Authorization': 'Bearer ' + samiToken,
         'Content-Type': 'application/json'
       },
       json: true,
@@ -298,7 +328,7 @@ if (!_.isUndefined(process.env.SAMI_USER)) {
       }
     },
     function(error, response, body) {
-      console.log('response == ' + JSON.stringify(response));
+      console.log('response = ' + JSON.stringify(response));
       if (error) {
         res.status(500);
         res.send({'status': 500, 'error': '' + error});

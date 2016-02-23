@@ -1,9 +1,11 @@
-var util = require('util');
-var _ = require('lodash');
-var fetch = require('isomorphic-fetch');
+import format from 'string-format';
+import _ from 'lodash';
+import fetch from 'isomorphic-fetch';
 
-var sami = {
-  API_BASE_WS_URL: 'wss://api.samsungsami.io/v1.1',
+let ws;
+
+let sami = {
+  API_BASE_WS_URL: 'wss://api.samsungsami.io/v1.1/websocket',
   devices: {
     'tv': {
       'ID':  __SAMI_TV__,
@@ -55,8 +57,8 @@ var sami = {
 };
 
 function updateDeviceDataCache(deviceID, deviceData) {
-  console.log('deviceID =', deviceID, ', data =', JSON.stringify(deviceData) );
-  for (var device in sami.devices) {
+  console.log('SAMI updating device', deviceID, 'with data', deviceData);
+  for (let device in sami.devices) {
     if (sami.devices[device].ID === deviceID) {
       device = _.merge(sami.devices[device].data, deviceData);
       break;
@@ -65,42 +67,35 @@ function updateDeviceDataCache(deviceID, deviceData) {
 }
 
 function sendMessageToDevice(deviceName, messageContent) {
-  console.log('SAMI send message to device', sami.devices[deviceName].ID);
-  return fetch('/sami/message', {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      'message': messageContent,
-      'deviceID': sami.devices[deviceName].ID
-    })
-  })
-  .then(function(response) {
-    return response.json()
-  })
-  .then(function(json) {
-    return json;
-  })
-  .catch(function(ex) {
-    console.log('Error in function sendMessageToDevice:', ex);
-  })
+  console.log('SAMI sendMessageToDevice', deviceName, messageContent);
+  return new Promise((resolve, reject) => {
+    if (!_.isUndefined(ws)) {
+      let message = {
+                      sdid: sami.devices[deviceName].ID, 
+                      type: 'message',
+                      data: messageContent
+                    };
+      ws.send(JSON.stringify(message));
+      updateDeviceDataCache(sami.devices[deviceName].ID, messageContent)
+      console.log('SAMI WS push data:', messageContent, 'for device', deviceName);
+      return resolve();
+    }
+    else
+      return reject(Error('SAMI websocket not found'));
+  });
 }
 
-function createListenerWS(uid, sdids, refreshCallbacks) {
+function createListenerWS(refreshCallbacks) {
   return fetch('/sami/accessToken', {
     method: 'get'
   })
-  .then(function(response) {
+  .then(response => {
     return response.json();
   })
-  .then(function(json) {
-    var auth = json.value;
-    var sdids = _.reduce(sami.devices, function(res, val) {return (!_.isUndefined(val.ID) ? (res === '' ? res : res + ',') + val.ID : res)}, '');
-    var wsUrlRoute = util.format(sami.API_BASE_WS_URL + '/live?sdids=%s&uid=%s&Authorization=%s', sdids, uid, auth);
-    console.log('SAMI WS Connexion on', wsUrlRoute);
-    console.log('requesting WS connexion...');
-    var ws = new WebSocket(wsUrlRoute);
+  .then(json => {
+    let auth = json.value;
+    console.log('requesting WS connexion to SAMI...');
+    ws = new WebSocket(sami.API_BASE_WS_URL);
     ws.onmessage = function(evt) {
       var dataJSON = JSON.parse(evt.data);
       if (!_.isUndefined(dataJSON.sdid)) {
@@ -108,27 +103,50 @@ function createListenerWS(uid, sdids, refreshCallbacks) {
         _.forEach(refreshCallbacks, function(callback) {
           callback();
         })
-        console.log('SAMI WS Update data: ' + evt.data + ' on device ' + dataJSON.sdid );
+        console.log('SAMI WS pull data:', evt.data, 'for device', dataJSON.sdid );
       }
       else {
-        console.log('SAMI WS received message:' + evt.data);
+        console.log('SAMI WS received message:', evt.data);
       }
-      ws.send('Done');
+      // ws.send('Done');
     };
     ws.onopen = function() {
-      console.log('SAMI WS Connexion open', ws);
-      ws.send('socket open');
+      console.log('SAMI WS Connection open', ws);
+      Promise.all(
+        _.map(sami.devices, val => { 
+          if (!_.isUndefined(val.ID)) { 
+            return fetch(format('/sami/{deviceId}/token/',{deviceId:val.ID}), {
+              method: 'put'
+            })
+            .then(response => {
+              return response.json();
+            })
+            .then(json => {
+              console.log('device authenticated', json);
+              let message = {
+                              Authorization: 'bearer ' + json.data.accessToken,
+                              sdid: val.ID,
+                              type: 'register'
+                            };
+              return ws.send(JSON.stringify(message))
+            })
+            .catch(ex => {
+              console.log('Error in function createListenerWS:', ex);
+            })
+          }
+        })
+      );
     };
     ws.onclose = function() {
-      console.log('SAMI WS Connexion closed', ws);
+      console.log('SAMI WS Connection closed', ws);
     };
     ws.onerror = function(evt) {
-      console.log('SAMI WS Connexion error:' + evt.data, ws);
+      console.log('SAMI WS Connection error:', evt.data, ws);
     };
   })
-  .catch(function(ex) {
+  .catch(ex => {
     console.log('Error in function createListenerWS:', ex);
-  })
+  });
 }
 
 module.exports = sami;
