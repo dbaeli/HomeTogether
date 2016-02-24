@@ -109,10 +109,14 @@ export default React.createClass({
         return hue.init()
         .then(res => res.json())
         .then(addr => {
-          if (_.size(addr) === 0 || _.isUndefined(_.first(addr).internalipaddress)) {
-            console.log('no Hue bridge found');
+          if (!_.isUndefined(__HUE_BRIDGE_IP__)) {
+            hue.bridgeIpAddress = __HUE_BRIDGE_IP__;
+            return resolve(getHueUserId());
+          }
+          else if (_.size(addr) === 0 || _.isUndefined(_.first(addr).internalipaddress)) {
+              console.log('no Hue bridge found');
             _.map(hue.lights, (val, key) => val.id = undefined);
-            return resolve();
+          return true;
           }
           else {
             let bridge = _.find(addr, (v) => v.id === __HUE_PREFERRED_BRIDGE__);
