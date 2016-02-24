@@ -1,6 +1,6 @@
 import Reflux from 'reflux';
 import _ from 'lodash';
-import sami from '../lib/sami/samiHelper.js';
+import sami from '../lib/sami/samiHelper';
 
 export const devices = {
   updateLights : Reflux.createAction(),
@@ -25,8 +25,6 @@ export let ActionStore = Reflux.createStore({
   settings: {lights:lightBulbs, devices: {tv: {power: false}, light_sensor1: {state: 2.5}, presence: initPres}},
 
   onUpdateLights: function(id, color, brightness, power) {
-    if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices['light_bulb_'+id].ID))
-      sami.sendMessageToDevice('light_bulb_'+id, {color: color, brightness: brightness, power: power});
     this.settings.lights[id]={color: color, brightness: brightness, power: power};
     this.trigger(this.settings);
   },

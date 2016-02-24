@@ -103,31 +103,51 @@ export default React.createClass({
     return {instance:null, started:false, devices: ActionStore.getInitialState(), failure: false, playerPosition:''}
   },
   componentWillMount: function() {
-    if (!_.isUndefined(__SAMI_USER__))
-      sami.createListenerWS(__SAMI_USER__);
     this.n = 0;
-    hue.init()
-    .then(res => res.json())
-    .then(addr => {
-      if (!_.isUndefined(__HUE_BRIDGE_IP__)) {
-        hue.bridgeIpAddress = __HUE_BRIDGE_IP__;
-        return getHueUserId();
+    new Promise((resolve) => {
+      if (!_.isUndefined(__HUE_USER__)) {
+        return hue.init()
+        .then(res => res.json())
+        .then(addr => {
+          if (!_.isUndefined(__HUE_BRIDGE_IP__)) {
+            hue.bridgeIpAddress = __HUE_BRIDGE_IP__;
+            return resolve(getHueUserId());
+          }
+          else if (_.size(addr) === 0 || _.isUndefined(_.first(addr).internalipaddress)) {
+              console.log('no Hue bridge found');
+            _.map(hue.lights, (val, key) => val.id = undefined);
+          return true;
+          }
+          else {
+            let bridge = _.find(addr, (v) => v.id === __HUE_PREFERRED_BRIDGE__);
+            if (!_.isUndefined(bridge)) {
+              hue.bridgeIpAddress = bridge.internalipaddress;
+            }
+            else
+              hue.bridgeIpAddress = _.first(addr).internalipaddress;
+            return resolve(getHueUserId());
+          }
+        })
+        .catch(err => {
+          console.log('Error at Hue initialization, skipping this step\n', err);
+          return resolve()
+        });
       }
-      else if (_.size(addr) === 0 || _.isUndefined(_.first(addr).internalipaddress)) {
-        console.log('no Hue bridge found');
-        _.map(hue.lights, (val, key) => val.id = undefined);
-        return true;
-      }
-      else {
-        let bridge = _.find(addr, (v) => v.id === __HUE_PREFERRED_BRIDGE__);
-        if (!_.isUndefined(bridge)) {
-          hue.bridgeIpAddress = bridge.internalipaddress;
-        }
-        else
-          hue.bridgeIpAddress = _.first(addr).internalipaddress;
-        return getHueUserId();
-      }
+      else
+        return resolve();
     })
+    .then(() => new Promise((resolve) => {
+      if (!_.isUndefined(__SAMI_USER__)) {
+        sami.createListenerWS()
+        .then(() => resolve())
+        .catch(err => {
+          console.log('Error at SAMI initialization, skipping this step\n', err);
+          return resolve()
+        });
+      }
+      else
+        return resolve();
+    }))
     .then(() => craftai(craftConf, OccupantK))
     .then(instance => {
       this.setState( {instance: instance} );

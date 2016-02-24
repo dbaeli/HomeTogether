@@ -231,7 +231,7 @@ function LiFXSetState(requestId, agentId, input, success, failure) {
         return res;
       }, {});
       SetSamiDeviceValue(requestId, agentId, input, failure)
-      .then(res => {
+      .then(() => {
         MockLightSetState(requestId, agentId, input, failure);
         success();
       })
@@ -465,18 +465,10 @@ function SetZipatoDeviceValue(requestId, agentId, input, failure) {
 // SAMI functions: only available if a __SAMI_USER__ has been set in the environment variables
 
 function SetSamiDeviceValue(requestId, agentId, input, failure) {
-  let res = {} || input.message;
+  let res = input.message || {};
   if (!_.isUndefined(input.attribute) && !_.isUndefined(input.value))
     _.set(res, input.attribute, input.value);
   return sami.sendMessageToDevice(input.device, res)
-  .then(json => {
-    if (!_.isUndefined(json.data.mid)) {
-      return true;
-    }
-    else {
-      failure();
-    }
-  })
   .catch(ex => {
     console.log('action SetDeviceValue [' + requestId + '] failed:', ex);
     failure();
@@ -595,7 +587,7 @@ function SetDeviceValue(requestId, agentId, input, success, failure) {
     });
   else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
     SetSamiDeviceValue(requestId, agentId, input, failure)
-    .then(res => success())
+    .then(() => success())
     .catch(ex => {
       console.log('action SetDeviceValue [' + requestId + '] failed:', ex);
       failure();

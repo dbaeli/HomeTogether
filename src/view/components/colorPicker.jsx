@@ -4,6 +4,7 @@ import { Button, Row, Col, Input } from 'react-bootstrap';
 import {devices, ActionStore} from '../../actions/actionStore';
 import _ from 'lodash';
 import hue from '../../lib/hue/hueHelper';
+import sami from '../../lib/sami/samiHelper';
 
 function hexToRGB(hex) {
   var intColor = parseInt(hex.split('#')[1], 16);
@@ -52,22 +53,24 @@ export default React.createClass({
     return {setting:{color:{}, brightness:0.0}, location:'out'}
   },
   changeColor(val) {
-    if (loc !== 'out' && loc !== '')
-      if (loc !== '0' || _.isUndefined(__LIFX_TOKEN__)) {
-        let power = 'on';
-        if (this.state.setting.brightness === 0.0)
-          power = 'off';
-        devices.updateLights(loc, val, this.state.setting.brightness, power);
-      }
+    if (loc !== 'out' && loc !== '') {
+      let power = 'on';
+      if (this.state.setting.brightness === 0.0)
+        power = 'off';
+      devices.updateLights(loc, val, this.state.setting.brightness, power);
+      if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices['light_bulb_'+loc].ID))
+        sami.sendMessageToDevice('light_bulb_'+loc, {color: val, brightness: this.state.setting.brightness, power: power});
+    }
   },
   changeBrightness(val) {
-    if (loc !== 'out' && loc !== '')
-      if (loc !== '0' || _.isUndefined(__LIFX_TOKEN__)) {
-        let power = 'on';
-        if (val === 0.0)
-          power = 'off';
-        devices.updateLights(loc, this.state.setting.color, val, power);
-      }
+    if (loc !== 'out' && loc !== '') {
+      let power = 'on';
+      if (val === 0.0)
+        power = 'off';
+      devices.updateLights(loc, this.state.setting.color, val, power);
+      if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices['light_bulb_'+loc].ID))
+        sami.sendMessageToDevice('light_bulb_'+loc, {color: this.state.setting.color, brightness: val, power: power});
+    }
   },
   shouldComponentUpdate: function(nextProps, nextState) {
     loc = ActionStore.getPlayerLocation();
