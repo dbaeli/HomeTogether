@@ -51,6 +51,7 @@ module.exports = {
       __SAMI_PRESENCE__: JSON.stringify(process.env.SAMI_PRESENCE),
       __HUE_USER__: JSON.stringify(process.env.HUE_USER),
       __HUE_PREFERRED_BRIDGE__: JSON.stringify(process.env.HUE_PREFERRED_BRIDGE),
+      __HUE_BRIDGE_IP__: JSON.stringify(process.env.HUE_BRIDGE_IP),
       __HUE_BULB_0__: JSON.stringify(process.env.HUE_BULB_0),
       __HUE_BULB_1__: JSON.stringify(process.env.HUE_BULB_1),
       __HUE_BULB_2__: JSON.stringify(process.env.HUE_BULB_2),
