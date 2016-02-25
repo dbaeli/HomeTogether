@@ -224,7 +224,7 @@ function LiFXSetState(requestId, agentId, input, success, failure) {
   }
   else {
     let light = _.findKey(sami.devices, o => o.ID === input.id);
-    if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(light)) {
+    if (!_.isUndefined(__SAMI_CLIENT_ID__) && !_.isUndefined(light)) {
       input.device = light;
       input.message = _.reduce(['color', 'brightness', 'power'], (res, val) => {
         res[val] = input[val];
@@ -280,7 +280,7 @@ function LiFXGetState(requestId, agentId, input, success, failure) {
   else {
     let res = {};
     let light = _.findKey(sami.devices, o => o.ID === input.id);
-    if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(light)) {
+    if (!_.isUndefined(__SAMI_CLIENT_ID__) && !_.isUndefined(light)) {
       Promise.all(
         _.map(['color', 'brightness', 'power'], (key, val) => {
           input.device = light;
@@ -370,7 +370,7 @@ function LiFXCheckState(requestId, agentId, input, success, failure) {
     let res = {};
     let light = _.findKey(sami.devices, o => o.ID === input.id);
     let getLightState = function (input, success) {
-      if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(light)) {
+      if (!_.isUndefined(__SAMI_CLIENT_ID__) && !_.isUndefined(light)) {
         Promise.all(
           _.map(['color', 'brightness', 'power'], (val, key) => {
             input.device = light;
@@ -462,7 +462,7 @@ function SetZipatoDeviceValue(requestId, agentId, input, failure) {
   });
 }
 
-// SAMI functions: only available if a __SAMI_USER__ has been set in the environment variables
+// SAMI functions: only available if a __SAMI_CLIENT_ID__ has been set in the environment variables
 
 function SetSamiDeviceValue(requestId, agentId, input, failure) {
   let res = input.message || {};
@@ -521,7 +521,7 @@ function CheckDeviceValue(requestId, agentId, input, success, failure) {
     }
     getValue(input, success);
   }
-  else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID)) {
+  else if (!_.isUndefined(__SAMI_CLIENT_ID__) && !_.isUndefined(sami.devices[input.device].ID)) {
     let getValue = function (input, success) {
       GetSamiDeviceValue(requestId, agentId, input, failure)
       .then(res => {
@@ -549,7 +549,7 @@ function GetDeviceLogs(requestId, agentId, input, success, failure) {
       console.log('action GetDeviceLogs [' + requestId + '] failed:', ex);
       failure();
     });
-  else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
+  else if (!_.isUndefined(__SAMI_CLIENT_ID__) && !_.isUndefined(sami.devices[input.device].ID))
     GetSamiDeviceValue(requestId, agentId, input, failure)
     .then(res => success({result: res}))
     .catch(ex => {
@@ -567,7 +567,7 @@ function GetDeviceValue(requestId, agentId, input, success, failure) {
       console.log('action GetDeviceValue [' + requestId + '] failed:', ex);
       failure();
     });
-  else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
+  else if (!_.isUndefined(__SAMI_CLIENT_ID__) && !_.isUndefined(sami.devices[input.device].ID))
     GetSamiDeviceValue(requestId, agentId, input, failure)
     .then(res => success({result: res}))
     .catch(ex => {
@@ -585,7 +585,7 @@ function SetDeviceValue(requestId, agentId, input, success, failure) {
       console.log('action SetDeviceValue [' + requestId + '] failed:', ex);
       failure();
     });
-  else if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(sami.devices[input.device].ID))
+  else if (!_.isUndefined(__SAMI_CLIENT_ID__) && !_.isUndefined(sami.devices[input.device].ID))
     SetSamiDeviceValue(requestId, agentId, input, failure)
     .then(() => success())
     .catch(ex => {
@@ -646,7 +646,7 @@ function MockLightSetState(requestId, agentId, input, failure) {
 }
 
 function GetLightIntensity(requestId, agentId, input, success, failure) {
-  if (!_.isUndefined(__SAMI_USER__) || (!_.isUndefined(__ZIPABOX_USER__) && (!_.isUndefined(__ZIPABOX_LIGHT_SENSOR__))))
+  if (!_.isUndefined(__SAMI_CLIENT_ID__) || (!_.isUndefined(__ZIPABOX_USER__) && (!_.isUndefined(__ZIPABOX_LIGHT_SENSOR__))))
     CheckDeviceValue(requestId, agentId, input, success, failure);
   else {
     let getIntensity = function (input, success) {
@@ -665,7 +665,7 @@ function GetLightIntensity(requestId, agentId, input, success, failure) {
 }
 
 function TVSwitched(requestId, agentId, input, success, failure) {
-  if (!_.isUndefined(__SAMI_USER__) && !_.isUndefined(__SAMI_TV__)) {
+  if (!_.isUndefined(__SAMI_CLIENT_ID__) && !_.isUndefined(__SAMI_TV__)) {
     input.device = 'tv';
     input.attribute = 'power';
     if (!_.isUndefined(sami.devices[input.device]))

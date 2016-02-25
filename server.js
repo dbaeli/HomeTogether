@@ -162,8 +162,7 @@ if (!_.isUndefined(process.env.ZIPABOX_USER)) {
   });
 }
 
-if (!_.isUndefined(process.env.SAMI_USER)) {
-  sami.USER_ID = process.env.SAMI_USER;
+if (!_.isUndefined(process.env.SAMI_CLIENT_ID)) {
   sami.CLIENT_ID = process.env.SAMI_CLIENT_ID;
   sami.CLIENT_SECRET = process.env.SAMI_CLIENT_SECRET;
 
@@ -241,7 +240,7 @@ if (!_.isUndefined(process.env.SAMI_USER)) {
       }
     },
     function(error, response, body) {
-      console.log('response = ' + JSON.stringify(response));
+      console.log('response =', JSON.stringify(response));
       if (error || (response.statusCode != 200)) {
         res.status(500);
         res.send({'status': 500, 'error': '' + error});
@@ -256,25 +255,17 @@ if (!_.isUndefined(process.env.SAMI_USER)) {
     passport.authenticate('oauth2', { failureRedirect: '/error', successRedirect: '/' })
   );
 
-  app.get('/sami/message', function(req, res) {
+  app.get('/sami/user', function(req, res) {
     request({
       method: 'get',
-      url: sami.API_BASE_URL + '/messages',
-      qs: {
-        'count': 1,
-        'endDate': req.query.endDate,
-        'fieldPresence': req.query.deviceAttribute,
-        'order': 'desc',
-        'sdid': req.query.deviceID,
-        'startDate': req.query.startDate
-      },
+      url: sami.API_BASE_URL + '/users/self',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + samiToken
       },
     },
     function(error, response, body) {
-      console.log('response =' + JSON.stringify(response));
+      console.log('response =', JSON.stringify(response));
       if (error || (response.statusCode != 200)) {
         res.status(500);
         res.send({'status': 500, 'error': '' + error});
@@ -285,51 +276,46 @@ if (!_.isUndefined(process.env.SAMI_USER)) {
     });
   });
 
-  app.post('/sami/message', function(req, res) {
+  app.post('/sami/device', function(req, res) {
     request({
       method: 'post',
-      url: sami.API_BASE_URL + '/messages',
+      url: sami.API_BASE_URL + '/devices',
       headers: {
         'Authorization': 'Bearer ' + samiToken,
         'Content-Type': 'application/json'
       },
       json: true,
       body: {
-        'data':  req.body.message,
-        'sdid': req.body.deviceID,
-        'type': 'message'
+        'uid': req.body.user,
+        'dtid': req.body.deviceType,
+        'name': req.body.name,
+        'manifestVersionPolicy': 'LATEST'
       }
     },
     function(error, response, body) {
-      console.log('response = ' + JSON.stringify(response));
-      if (error || (response.statusCode != 200)) {
-        res.status(500);
-        res.send({'status': 500, 'error': '' + error});
-      }
-      else {
-        res.send(body);
-      }
-    });
-  });
-
-  app.post('/sami/actions', function(req, res) {
-    request({
-      method: 'post',
-      url: sami.API_BASE_URL + '/actions',
-      headers: {
-        'Authorization': 'Bearer ' + samiToken,
-        'Content-Type': 'application/json'
-      },
-      json: true,
-      body: {
-        "data": req.body.action,
-        "ddid": req.body.deviceID,
-        "type": "action"
-      }
-    },
-    function(error, response, body) {
-      console.log('response = ' + JSON.stringify(response));
+      console.log('response =', JSON.stringify(response));
       if (error) {
+        res.status(500);
+        res.send({'status': 500, 'error': '' + error});
+      }
+      else {
+        res.send(body);
+      }
+    });
+  });
+
+  app.delete('/sami/device/:deviceId', function(req, res) {
+    request({
+      method: 'delete',
+      url: sami.API_BASE_URL + '/devices/' + req.params.deviceId,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + samiToken
+      }
+    },
+    function(error, response, body) {
+      console.log('response =', JSON.stringify(response));
+      if (error || (response.statusCode != 200)) {
         res.status(500);
         res.send({'status': 500, 'error': '' + error});
       }

@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 
 import craftai from 'craft-ai';
+import onExit from 'craft-ai/lib/onExit';
 import {actionTable,setCurrentInstance} from '../actions/actions';
 import {ActionStore,devices} from '../actions/actionStore';
 import FloorMap from './components/floorMap';
@@ -91,6 +92,11 @@ function getHueUserId() {
   });
 }
 
+onExit(() => {
+  console.log('Destroying temporary devices before exiting...');
+  sami.deleteTemporaryDevices();
+});
+
 export default React.createClass({
   updateLight: function(val) {
     return this.state.instance.updateAgentKnowledge(0, {outsideLightIntensity: {value:val}}, 'merge');
@@ -137,9 +143,13 @@ export default React.createClass({
         return resolve();
     })
     .then(() => new Promise((resolve) => {
-      if (!_.isUndefined(__SAMI_USER__)) {
-        sami.createListenerWS()
-        .then(() => resolve())
+      if (!_.isUndefined(__SAMI_CLIENT_ID__)) {
+        sami.createDevices()
+        .then(() => sami.createListenerWS())
+        .then(() => {
+          console.log('SAMI initialization succeeded, connected devices are\n', sami.devices);
+          return resolve();
+        })
         .catch(err => {
           console.log('Error at SAMI initialization, skipping this step\n', err);
           return resolve()
@@ -154,12 +164,12 @@ export default React.createClass({
       setCurrentInstance(instance);
     })
     .then(() => this.state.instance.createAgent('src/decision/Home.bt', HomeK))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/LivingRoom.bt', _.assign(RoomK, {roomLightId: _.reduce([__SAMI_BULB_0__,hue.lights[0].id,__LIFX_BULB_0__], (res, val) => val || res, '') })))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/DiningRoom.bt', _.assign(RoomK, {roomLightId: _.reduce([__SAMI_BULB_1__,hue.lights[1].id,__LIFX_BULB_1__], (res, val) => val || res, '') })))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/Corridor.bt', _.assign(RoomK, {roomLightId: _.reduce([__SAMI_BULB_2__,hue.lights[2].id,__LIFX_BULB_2__], (res, val) => val || res, '') })))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/Bathroom.bt', _.assign(RoomK, {roomLightId: _.reduce([__SAMI_BULB_3__,hue.lights[3].id,__LIFX_BULB_3__], (res, val) => val || res, '') })))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/WaterCloset.bt',_.assign(RoomK, {roomLightId: _.reduce([__SAMI_BULB_4__,hue.lights[4].id,__LIFX_BULB_5__], (res, val) => val || res, '') })))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/Bedroom.bt', _.assign(RoomK, {roomLightId: _.reduce([__SAMI_BULB_5__,hue.lights[5].id,__LIFX_BULB_5__], (res, val) => val || res, '') })))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/LivingRoom.bt', _.assign(RoomK, {roomLightId: _.reduce([sami.devices.light_bulb_0.ID,hue.lights[0].id,__LIFX_BULB_0__], (res, val) => val || res, '') })))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/DiningRoom.bt', _.assign(RoomK, {roomLightId: _.reduce([sami.devices.light_bulb_1.ID,hue.lights[1].id,__LIFX_BULB_1__], (res, val) => val || res, '') })))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/Corridor.bt', _.assign(RoomK, {roomLightId: _.reduce([sami.devices.light_bulb_2.ID,hue.lights[2].id,__LIFX_BULB_2__], (res, val) => val || res, '') })))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/Bathroom.bt', _.assign(RoomK, {roomLightId: _.reduce([sami.devices.light_bulb_3.ID,hue.lights[3].id,__LIFX_BULB_3__], (res, val) => val || res, '') })))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/WaterCloset.bt',_.assign(RoomK, {roomLightId: _.reduce([sami.devices.light_bulb_4.ID,hue.lights[4].id,__LIFX_BULB_5__], (res, val) => val || res, '') })))
+    .then(() => this.state.instance.createAgent('src/decision/rooms/Bedroom.bt', _.assign(RoomK, {roomLightId: _.reduce([sami.devices.light_bulb_5.ID,hue.lights[5].id,__LIFX_BULB_5__], (res, val) => val || res, '') })))
     .then(() => registerActions(this.state.instance))
     .then(() => {
       this.state.instance.update(100);
