@@ -203,9 +203,7 @@ function createDevices() {
         }
         else {
           return getDeviceToken(val.ID)
-          .then(accessToken => {
-            val.token = accessToken;
-          })
+          .then(accessToken => val.token = accessToken)
           .catch(ex => {
             console.log('Error in function createDevices:', ex);
           });
@@ -213,6 +211,17 @@ function createDevices() {
       })
     );
   })
+  .then(() => {
+    return fetch('/sami/listDevices', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'devices': sami.devices
+      })
+    });
+  });
 }
 
 module.exports = sami;

@@ -12,6 +12,23 @@ var _ = require('lodash');
 var request = require('request');
 var util = require('util');
 var zipabox = require('./src/lib/avidsen/craft_zipabox');
+var syncRequest = require('sync-request');
+
+var NODE_PROCESS_EVENT = ['exit', 'unhandledRejection', 'uncaughtException', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGHUP'];
+
+function onProcessQuits(cb) {
+  var listener = function listener() {
+    cb();
+  };
+  _.map(NODE_PROCESS_EVENT, function (evt) {
+    return process.on(evt, listener);
+  });
+  return function () {
+    return _.map(NODE_PROCESS_EVENT, function (evt) {
+      return process.removeListener(evt, listener);
+    });
+  };
+}
 
 var sami = {
   AUTH_URL:'https://accounts.samsungsami.io/authorize',
@@ -323,6 +340,26 @@ if (!_.isUndefined(process.env.SAMI_CLIENT_ID)) {
         res.send(body);
       }
     });
+  });
+
+  app.post('/sami/listDevices', function(req, res) {
+    sami.devices = req.body.devices;
+    res.send('OK');
+  });
+
+  onProcessQuits(function() {
+    console.log('Destroying temporary devices before exiting...');
+    sami.devices = _.reduce(sami.devices, function(res, val, key) { 
+      if (!_.isUndefined(val.temporary) && val.temporary === true) {
+        syncRequest('delete', sami.API_BASE_URL + '/devices/' + val.ID, {
+          'headers': {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + samiToken
+          }
+        });
+        _.omit(res, key);
+      }
+    }, sami.devices);
   });
 }
 
