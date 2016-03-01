@@ -37,7 +37,7 @@ module.exports = {
       __LIFX_BULB_3__: JSON.stringify(process.env.LIFX_BULB_3),
       __LIFX_BULB_4__: JSON.stringify(process.env.LIFX_BULB_4),
       __LIFX_BULB_5__: JSON.stringify(process.env.LIFX_BULB_5),
-      __SAMI_USER__: JSON.stringify(process.env.SAMI_USER),
+      __SAMI_CLIENT_ID__: JSON.stringify(process.env.SAMI_CLIENT_ID),
       __SAMI_TV__: JSON.stringify(process.env.SAMI_TV),
       __SAMI_BLIND__: JSON.stringify(process.env.SAMI_BLIND),
       __SAMI_SHOWER_HEAD__: JSON.stringify(process.env.SAMI_SHOWER_HEAD),
