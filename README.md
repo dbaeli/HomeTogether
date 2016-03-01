@@ -40,6 +40,9 @@ In order to connect to the SAMI API and use the associated devices, you can set 
 - `SAMI_BULB_0` through `SAMI_BULB_5`: The **SAMI.IO** device ID for the bulbs of the rooms 0 through 5. Should instanciate a device type _craft ai bulb_ (dtid _dt6f3f2abffe33490695515a5ed26efd24_).
 
 Note that your **SAMI.IO** application must have the permissions for reading and writing on each of the device types instantiated by your **SAMI.IO** devices.
+If you define `SAMI_CLIENT_ID` and `SAMI_CLIENT_SECRET` in your environment, the application create temporary devices for all devices that do not have an ID set as environment variable. Those temporary devices will be deleted upon server or client termination.
+
+Moreover, you will need to log into your **Samsung** account through the application to grant it the required permissions. Simply go to <http://localhost:4444/sami/auth> once the server is running and sign in.
 
 #### Philips Hue ####
 
