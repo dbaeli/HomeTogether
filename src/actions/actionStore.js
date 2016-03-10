@@ -1,6 +1,7 @@
 import Reflux from 'reflux';
 import _ from 'lodash';
 import sami from '../lib/sami/samiHelper';
+import craft from '../lib/craft-ai/craft-ai';
 
 export const devices = {
   updateLights : Reflux.createAction(),
@@ -27,12 +28,25 @@ export let ActionStore = Reflux.createStore({
   onUpdateLights: function(id, color, brightness, power) {
     this.settings.lights[id]={color: color, brightness: brightness, power: power};
     this.trigger(this.settings);
+    if (id === 0) {
+      console.log('updating context');
+      let timestamp = Date.now()/1000;
+      let diff = {
+        lightbulbState: this.settings.lights[id]
+      }
+      craft.updateAgentContext(craft.agent, {timestamp: timestamp, diff: diff});
+    }
   },
   onUpdateLightIntensity: function(val) {
     if (!_.isUndefined(__SAMI_CLIENT_ID__) && !_.isUndefined(sami.devices.light_sensor1.ID))
       sami.sendMessageToDevice('light_sensor1', {state: val});
     this.settings.devices.light_sensor1.state = val;
     this.trigger(this.settings);
+    let timestamp = Date.now()/1000;
+    let diff = {
+      lightIntensity: val
+    }
+    craft.updateAgentContext(craft.agent, {timestamp: timestamp, diff: diff});
   },
   onUpdatePresence: function(entity, id) {
     if (!_.isUndefined(__SAMI_CLIENT_ID__) && !_.isUndefined(sami.devices.presence.ID)) {
@@ -43,11 +57,30 @@ export let ActionStore = Reflux.createStore({
     let obj = {};
     obj[entity]=true;
     let previous = _.findKey(this.settings.devices.presence, obj);
-    if (!_.isUndefined(previous) && !_.isUndefined(this.settings.devices.presence[previous]))
+    if (!_.isUndefined(previous) && !_.isUndefined(this.settings.devices.presence[previous])) {
       this.settings.devices.presence[previous][entity] = false;
+      if (previous === '0') {
+        console.log('updating context for room presence');
+        let timestamp = Date.now()/1000;
+        let diff = {
+          presence: {}
+        };
+        diff.presence[entity] = false;
+        craft.updateAgentContext(craft.agent, {timestamp: timestamp, diff: diff});
+      }
+    }
     if (_.isUndefined(this.settings.devices.presence[id]))
       this.settings.devices.presence[id] = {};
     this.settings.devices.presence[id][entity] = true;
+    if (id === '0') {
+      console.log('updating context for room presence');
+      let timestamp = Date.now()/1000;
+      let diff = {
+        presence: {}
+      };
+      diff.presence[entity] = true;
+      craft.updateAgentContext(craft.agent, {timestamp: timestamp, diff: diff});
+    }
     this.trigger(this.settings);
   },
   onUpdateTVState: function(val) {

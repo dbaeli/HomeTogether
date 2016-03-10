@@ -20,13 +20,7 @@ module.exports = {
       'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'
     }),
     new webpack.DefinePlugin({
-      __CRAFT_HTTP_API_URL__: JSON.stringify(process.env.CRAFT_HTTP_API_URL),
-      __CRAFT_WS_API_URL__: JSON.stringify(process.env.CRAFT_WS_API_URL),
-      __CRAFT_APP_ID__: JSON.stringify(process.env.CRAFT_APP_ID),
-      __CRAFT_APP_SECRET__: JSON.stringify(process.env.CRAFT_APP_SECRET),
-      __CRAFT_PROJECT_OWNER__: JSON.stringify(process.env.CRAFT_PROJECT_OWNER),
-      __CRAFT_PROJECT_NAME__: JSON.stringify(process.env.CRAFT_PROJECT_NAME),
-      __CRAFT_PROJECT_VERSION__: JSON.stringify(process.env.CRAFT_PROJECT_VERSION),
+      __CRAFT_TOKEN__: JSON.stringify(process.env.CRAFT_TOKEN),
       __ZIPABOX_USER__: JSON.stringify(process.env.ZIPABOX_USER),
       __ZIPABOX_LIGHT_SENSOR__:JSON.stringify(process.env.ZIPABOX_LIGHT_SENSOR_DEVICE_UUID),
       __ZIPABOX_BLIND__:JSON.stringify(process.env.ZIPABOX_BLIND_DEVICE_UUID),

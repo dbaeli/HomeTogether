@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 
-import craftai from 'craft-ai';
+import craft from '../lib/craft-ai/craft-ai';
 import onExit from 'craft-ai/lib/onExit';
 import {actionTable,setCurrentInstance} from '../actions/actions';
 import {ActionStore,devices} from '../actions/actionStore';
@@ -20,23 +20,26 @@ import HomeK from '../knowledge/home.json';
 import RoomK from '../knowledge/room.json';
 import OccupantK from '../knowledge/occupant.json';
 
-let craftConf = {
-  owner: __CRAFT_PROJECT_OWNER__,
-  name: __CRAFT_PROJECT_NAME__,
-  version: __CRAFT_PROJECT_VERSION__,
-  appId: __CRAFT_APP_ID__,
-  appSecret: __CRAFT_APP_SECRET__,
-  wsApiUrl: __CRAFT_WS_API_URL__,
-  httpApiUrl: __CRAFT_HTTP_API_URL__
+const AGENT_LIGHTBULB = {
+  knowledge: {
+    presence: {
+      player: {
+        type: 'boolean'
+      },
+      occupant: {
+        type: 'boolean'
+      }
+    },
+    lightIntensity:  {
+      type: 'continuous',
+      min: 0,
+      max: 2.5
+    },
+    lightbulbState: {
+      type: 'enum_output'
+    }
+  }
 };
-
-function registerActions(instance) {
-  return Promise.all(
-    _.map(actionTable, (obj, key)=>{
-      return instance.registerAction(key, obj.start, obj.cancel);
-    })
-  );
-}
 
 function getHueUserId() {
   return new Promise((resolve, reject) => {
@@ -99,11 +102,10 @@ onExit(() => {
 
 export default React.createClass({
   updateLight: function(val) {
-    return this.state.instance.updateAgentKnowledge(0, {outsideLightIntensity: {value:val}}, 'merge');
+    return devices.updateLightIntensity(val);
   },
   updateTV: function(val) {
-    devices.updateTVState(val);
-    return this.state.instance.updateInstanceKnowledge( {tvState:val}, 'merge' );
+    return devices.updateTVState(val);
   },
   getInitialState: function() {
     return {instance:null, started:false, devices: ActionStore.getInitialState(), failure: false, playerPosition:''}
@@ -158,22 +160,20 @@ export default React.createClass({
       else
         return resolve();
     }))
-    .then(() => craftai(craftConf, OccupantK))
-    .then(instance => {
-      this.setState( {instance: instance} );
-      setCurrentInstance(instance);
-    })
-    .then(() => this.state.instance.createAgent('src/decision/Home.bt', HomeK))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/LivingRoom.bt', _.assign(RoomK, {roomLightId: _.reduce([sami.devices.light_bulb_0.ID,hue.lights[0].id,__LIFX_BULB_0__], (res, val) => val || res, '') })))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/DiningRoom.bt', _.assign(RoomK, {roomLightId: _.reduce([sami.devices.light_bulb_1.ID,hue.lights[1].id,__LIFX_BULB_1__], (res, val) => val || res, '') })))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/Corridor.bt', _.assign(RoomK, {roomLightId: _.reduce([sami.devices.light_bulb_2.ID,hue.lights[2].id,__LIFX_BULB_2__], (res, val) => val || res, '') })))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/Bathroom.bt', _.assign(RoomK, {roomLightId: _.reduce([sami.devices.light_bulb_3.ID,hue.lights[3].id,__LIFX_BULB_3__], (res, val) => val || res, '') })))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/WaterCloset.bt',_.assign(RoomK, {roomLightId: _.reduce([sami.devices.light_bulb_4.ID,hue.lights[4].id,__LIFX_BULB_5__], (res, val) => val || res, '') })))
-    .then(() => this.state.instance.createAgent('src/decision/rooms/Bedroom.bt', _.assign(RoomK, {roomLightId: _.reduce([sami.devices.light_bulb_5.ID,hue.lights[5].id,__LIFX_BULB_5__], (res, val) => val || res, '') })))
-    .then(() => registerActions(this.state.instance))
-    .then(() => {
-      this.state.instance.update(100);
+    .then(() => craft.createAgent(AGENT_LIGHTBULB))
+    .then(agent => {
       this.setState({started: true});
+      console.log(`Agent '${agent.id}' successfully created.`);
+      craft.agent = agent.id;
+      let timestamp = Date.now()/1000;
+      let diff = {
+        presence: {
+          player: false,
+          occupant: false
+        },
+        lightIntensity:  2.5
+      }
+      return craft.updateAgentContext(craft.agent, {timestamp: timestamp, diff: diff})
     })
     .catch((err) => {
       console.log('Unexpected error:', err);
@@ -192,12 +192,12 @@ export default React.createClass({
             {this.state.failure === false ?
               <Col xs={4}>
                 <ProgressBar bsStyle='success' active now={this.n=this.n+50} style={{height:40, border:'2px solid #42348B'}} />
-                <h4 style={{fontWeight:'bolder',marginTop:-50}}>{this.state.instance === null ? 'Creating instance...' : 'Initializing agents...'}</h4>
+                <h4 style={{fontWeight:'bolder',marginTop:-50}}>Creating agent...</h4>
               </Col>
             :
               <Col xs={4}>
                 <ProgressBar bsStyle='danger' striped now={100} style={{height:40, border:'2px solid #42348B'}} />
-                <h4 style={{fontWeight:'bolder',marginTop:-50}}>Instance creation failed...</h4>
+                <h4 style={{fontWeight:'bolder',marginTop:-50}}>Agent creation failed...</h4>
               </Col>
             }
           </Row>
