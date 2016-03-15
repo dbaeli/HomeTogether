@@ -13,12 +13,8 @@ export const devices = {
 let initPres = {};
 let lightBulbs = {};
 _.map(['0', '1', '2', '3', '4', '5'], val =>{
-  let pres = {};
-  pres[val]={occupant: false, player:false};
-  _.assign(initPres, pres);
-  let light = {};
-  light[val]={color: '#000000', brightness: 0.0, power: 'off'};
-  _.assign(lightBulbs, light);
+  initPres[val]='';
+  lightBulbs[val]={color: '#000000', brightness: 0.0, power: 'off'};
 });
 
 export let ActionStore = Reflux.createStore({
@@ -27,26 +23,16 @@ export let ActionStore = Reflux.createStore({
 
   onUpdateLights: function(id, color, brightness, power) {
     this.settings.lights[id]={color: color, brightness: brightness, power: power};
+    if (id === '0')
+      craft.updateAgentContext(craft.agent, [{timestamp: Date.now()/1000, diff: {lightbulbBrightness: brightness}}]);
     this.trigger(this.settings);
-    if (id === 0) {
-      console.log('updating context');
-      let timestamp = Date.now()/1000;
-      let diff = {
-        lightbulbState: this.settings.lights[id]
-      }
-      craft.updateAgentContext(craft.agent, {timestamp: timestamp, diff: diff});
-    }
   },
   onUpdateLightIntensity: function(val) {
     if (!_.isUndefined(__SAMI_CLIENT_ID__) && !_.isUndefined(sami.devices.light_sensor1.ID))
       sami.sendMessageToDevice('light_sensor1', {state: val});
     this.settings.devices.light_sensor1.state = val;
+    craft.updateAgentContext(craft.agent, [{timestamp: Date.now()/1000, diff: {lightIntensity: val}}]);
     this.trigger(this.settings);
-    let timestamp = Date.now()/1000;
-    let diff = {
-      lightIntensity: val
-    }
-    craft.updateAgentContext(craft.agent, {timestamp: timestamp, diff: diff});
   },
   onUpdatePresence: function(entity, id) {
     if (!_.isUndefined(__SAMI_CLIENT_ID__) && !_.isUndefined(sami.devices.presence.ID)) {
@@ -54,33 +40,16 @@ export let ActionStore = Reflux.createStore({
       res[entity]=id;
       sami.sendMessageToDevice('presence', res);
     }
-    let obj = {};
-    obj[entity]=true;
-    let previous = _.findKey(this.settings.devices.presence, obj);
-    if (!_.isUndefined(previous) && !_.isUndefined(this.settings.devices.presence[previous])) {
-      this.settings.devices.presence[previous][entity] = false;
-      if (previous === '0') {
-        console.log('updating context for room presence');
-        let timestamp = Date.now()/1000;
-        let diff = {
-          presence: {}
-        };
-        diff.presence[entity] = false;
-        craft.updateAgentContext(craft.agent, {timestamp: timestamp, diff: diff});
-      }
-    }
-    if (_.isUndefined(this.settings.devices.presence[id]))
-      this.settings.devices.presence[id] = {};
-    this.settings.devices.presence[id][entity] = true;
-    if (id === '0') {
-      console.log('updating context for room presence');
-      let timestamp = Date.now()/1000;
-      let diff = {
-        presence: {}
-      };
-      diff.presence[entity] = true;
-      craft.updateAgentContext(craft.agent, {timestamp: timestamp, diff: diff});
-    }
+    this.settings.devices.presence = _.reduce(this.settings.devices.presence, (res, val, key) => {
+      let names = _.words(val);
+      if (key === id)
+        names.push(entity);
+      else
+        _.pull(names, entity);
+      res[key] =_.sortBy(names).join(' & ');
+      return res;
+    }, {})
+    craft.updateAgentContext(craft.agent, [{timestamp: Date.now()/1000, diff: {presence: this.settings.devices.presence[0]}}]);
     this.trigger(this.settings);
   },
   onUpdateTVState: function(val) {
@@ -99,7 +68,7 @@ export let ActionStore = Reflux.createStore({
     return this.settings.devices.tv.power;
   },
   getPlayerLocation: function() {
-    let loc = _.findKey(this.settings.devices.presence, {player: true}) || '';
+    let loc = _.findKey(this.settings.devices.presence, val => _.includes(_.words(val), 'player')) || '';
     return loc;
   },
   getLightIntensity: function() {

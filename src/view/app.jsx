@@ -20,22 +20,17 @@ import HomeK from '../knowledge/home.json';
 import RoomK from '../knowledge/room.json';
 import OccupantK from '../knowledge/occupant.json';
 
-const AGENT_LIGHTBULB = {
+const AGENT_BRIGHTNESS = {
   knowledge: {
     presence: {
-      player: {
-        type: 'boolean'
-      },
-      occupant: {
-        type: 'boolean'
-      }
+      type: 'enum'
     },
     lightIntensity:  {
       type: 'continuous',
       min: 0,
       max: 2.5
     },
-    lightbulbState: {
+    lightbulbBrightness: {
       type: 'enum_output'
     }
   }
@@ -160,20 +155,18 @@ export default React.createClass({
       else
         return resolve();
     }))
-    .then(() => craft.createAgent(AGENT_LIGHTBULB))
+    .then(() => craft.createAgent(AGENT_BRIGHTNESS))
     .then(agent => {
       this.setState({started: true});
       console.log(`Agent '${agent.id}' successfully created.`);
       craft.agent = agent.id;
       let timestamp = Date.now()/1000;
       let diff = {
-        presence: {
-          player: false,
-          occupant: false
-        },
-        lightIntensity:  2.5
+        presence: '',
+        lightIntensity: 2.5,
+        lightbulbBrightness: 0
       }
-      return craft.updateAgentContext(craft.agent, {timestamp: timestamp, diff: diff})
+      return craft.updateAgentContext(craft.agent, [{timestamp: timestamp, diff: diff}])
     })
     .catch((err) => {
       console.log('Unexpected error:', err);

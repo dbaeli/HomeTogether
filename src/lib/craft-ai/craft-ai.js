@@ -20,7 +20,6 @@ function craftRequest(r) {
   let owner = 'home_together';
 
   let url = base_url + '/' + owner + '/' + r.path + '?token=' + token + _.reduce(r.queries, (res, val, key) => res = res + '&' + key + '=' + val, '');
-  console.log('url =', url);
   return fetch(url, {
     method: r.method,
     headers:r.headers,
@@ -56,7 +55,6 @@ function createCraftAgent(model, id) {
 };
 
 function updateCraftAgentContext(agent, diffs) {
-  console.log('diff =', JSON.stringify(diffs));
   return craftRequest({
     method: 'POST',
     path: 'agents/' + agent + '/knowledge',
