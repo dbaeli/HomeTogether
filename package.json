@@ -19,7 +19,7 @@
     "isomorphic-fetch": "2.2.0",
     "json-file-db": "*",
     "json-loader": "0.5.4",
-    "lodash": "3.10.1",
+    "lodash": "4.6.1",
     "node-hue-api": "^2.1.1",
     "passport": "0.3.2",
     "passport-oauth": "1.0.0",

@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch';
 import _ from 'lodash';
 
 let token = __CRAFT_TOKEN__;
-console.log('token =', token);
 // craft ai functions
 
 function craftRequest(r) {
@@ -11,7 +10,8 @@ function craftRequest(r) {
     path: '',
     queries: {},
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
     },
     body: {}
   });
@@ -19,7 +19,7 @@ function craftRequest(r) {
   let base_url = 'https://labs-integration.craft.ai/api';
   let owner = 'home_together';
 
-  let url = base_url + '/' + owner + '/' + r.path + '?token=' + token + _.reduce(r.queries, (res, val, key) => res = res + '&' + key + '=' + val, '');
+  let url = base_url + '/' + owner + '/' + r.path + '?' + _.map(_.toPairs(r.queries), p => p.join('=')).join('&');
   return fetch(url, {
     method: r.method,
     headers:r.headers,
@@ -84,7 +84,7 @@ function getCraftAgentDecision(agent, context, ts) {
 };
 
 exports = module.exports = {
-  agent: undefined,
+  agents: {},
   createAgent: createCraftAgent,
   updateAgentContext: updateCraftAgentContext,
   getAgentDecision: getCraftAgentDecision

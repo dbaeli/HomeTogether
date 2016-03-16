@@ -23,15 +23,24 @@ export let ActionStore = Reflux.createStore({
 
   onUpdateLights: function(id, color, brightness, power) {
     this.settings.lights[id]={color: color, brightness: brightness, power: power};
-    if (id === '0')
-      craft.updateAgentContext(craft.agent, [{timestamp: Date.now()/1000, diff: {lightbulbBrightness: brightness}}]);
+    let ts = Date.now()/1000;
+    Promise.all(
+      _.map(_.range(6), v => Promise.all(
+        _.map(['brightness', 'color'], a => craft.updateAgentContext(craft.agents[[a,v].join('')], {timestamp: ts, diff: {lightbulbBrightness: brightness, lightbulbColor: color}}))
+      ))
+    );
     this.trigger(this.settings);
   },
   onUpdateLightIntensity: function(val) {
     if (!_.isUndefined(__SAMI_CLIENT_ID__) && !_.isUndefined(sami.devices.light_sensor1.ID))
       sami.sendMessageToDevice('light_sensor1', {state: val});
+    let ts = Date.now()/1000;
     this.settings.devices.light_sensor1.state = val;
-    craft.updateAgentContext(craft.agent, [{timestamp: Date.now()/1000, diff: {lightIntensity: val}}]);
+    Promise.all(
+      _.map(_.range(6), v => Promise.all(
+        _.map(['brightness', 'color'], a => craft.updateAgentContext(craft.agents[[a,v].join('')], {timestamp: ts, diff: {lightIntensity: val}}))
+      ))
+    );
     this.trigger(this.settings);
   },
   onUpdatePresence: function(entity, id) {
@@ -40,7 +49,7 @@ export let ActionStore = Reflux.createStore({
       res[entity]=id;
       sami.sendMessageToDevice('presence', res);
     }
-    this.settings.devices.presence = _.reduce(this.settings.devices.presence, (res, val, key) => {
+    let presence = _.reduce(this.settings.devices.presence, (res, val, key) => {
       let names = _.words(val);
       if (key === id)
         names.push(entity);
@@ -48,8 +57,24 @@ export let ActionStore = Reflux.createStore({
         _.pull(names, entity);
       res[key] =_.sortBy(names).join(' & ');
       return res;
-    }, {})
-    craft.updateAgentContext(craft.agent, [{timestamp: Date.now()/1000, diff: {presence: this.settings.devices.presence[0]}}]);
+    }, {});
+    let hasChanged = _.map(_.range(6), v => {
+      if (_.isEqual(presence[v], this.settings.devices.presence[v]))
+        return false;
+      return true;
+    });
+    console.log('hasChanged', hasChanged);
+    this.settings.devices.presence = presence;
+    let ts = Date.now()/1000;
+    Promise.all(
+      _.map(_.range(6), v => Promise.all(
+        _.map(['brightness', 'color'], a => {
+          if (hasChanged[v])
+            return craft.updateAgentContext(craft.agents[[a,v].join('')], {timestamp: ts, diff: {presence: this.settings.devices.presence[v]}})
+          return
+        })
+      ))
+    );
     this.trigger(this.settings);
   },
   onUpdateTVState: function(val) {

@@ -20,21 +20,44 @@ import HomeK from '../knowledge/home.json';
 import RoomK from '../knowledge/room.json';
 import OccupantK from '../knowledge/occupant.json';
 
-const AGENT_BRIGHTNESS = {
-  knowledge: {
-    presence: {
-      type: 'enum'
-    },
-    lightIntensity:  {
-      type: 'continuous',
-      min: 0,
-      max: 2.5
-    },
-    lightbulbBrightness: {
-      type: 'enum_output'
+const AGENTS = [
+  {
+    type: 'brightness',
+    model: {
+      knowledge: {
+        presence: {
+          type: 'enum'
+        },
+        lightIntensity:  {
+          type: 'continuous',
+          min: 0,
+          max: 2.5
+        },
+        lightbulbBrightness: {
+          type: 'enum_output'
+        }
+      }
+    }
+  },
+  {
+    type: 'color',
+    model: {
+      knowledge: {
+        presence: {
+          type: 'enum'
+        },
+        lightIntensity:  {
+          type: 'continuous',
+          min: 0,
+          max: 2.5
+        },
+        lightbulbColor: {
+          type: 'enum_output'
+        }
+      }
     }
   }
-};
+];
 
 function getHueUserId() {
   return new Promise((resolve, reject) => {
@@ -155,18 +178,26 @@ export default React.createClass({
       else
         return resolve();
     }))
-    .then(() => craft.createAgent(AGENT_BRIGHTNESS))
-    .then(agent => {
-      this.setState({started: true});
-      console.log(`Agent '${agent.id}' successfully created.`);
-      craft.agent = agent.id;
-      let timestamp = Date.now()/1000;
-      let diff = {
-        presence: '',
-        lightIntensity: 2.5,
-        lightbulbBrightness: 0
-      }
-      return craft.updateAgentContext(craft.agent, [{timestamp: timestamp, diff: diff}])
+    .then(() => Promise.all(
+      _.map(_.range(6), v => Promise.all(
+        _.map(AGENTS, a => craft.createAgent(a.model)
+          .then(agent => {
+            craft.agents[[a.type, v].join('')] = agent.id;
+            let timestamp = Date.now()/1000;
+            let diff = {
+              presence: '',
+              lightIntensity: 2.5,
+              lightbulbBrightness: 0,
+              lightbulbColor: '#000000'
+            }
+            return craft.updateAgentContext(agent.id, {timestamp: timestamp, diff: diff});
+          })
+        )
+      ))
+    ))
+    .then(() => {
+      console.log('Agents created:', craft.agents);
+      return this.setState({started: true});
     })
     .catch((err) => {
       console.log('Unexpected error:', err);
