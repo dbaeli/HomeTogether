@@ -1,0 +1,50 @@
+[
+  {
+    "timestamp": -100,
+    "diff": {
+      "presence": "occupant",
+      "lightIntensity": 0,
+      "lightbulbColor": "#ffffff"
+    }
+  },
+  {
+    "timestamp": -90,
+    "diff": {
+      "presence": "player",
+      "lightIntensity": 0,
+      "lightbulbColor": "#ffffff"
+    }
+  },
+  {
+    "timestamp": -80,
+    "diff": {
+      "presence": "occupant",
+      "lightIntensity": 2.5,
+      "lightbulbColor": "#ffffff"
+    }
+  },
+  {
+    "timestamp": -70,
+    "diff": {
+      "presence": "player",
+      "lightIntensity": 2.5,
+      "lightbulbColor": "#ffffff"
+    }
+  },
+  {
+    "timestamp": -60,
+    "diff": {
+      "presence": "none",
+      "lightIntensity": 0,
+      "lightbulbColor": "#ffffff"
+    }
+  },
+  {
+    "timestamp": -50,
+    "diff": {
+      "presence": "none",
+      "lightIntensity": 0,
+      "lightbulbColor": "#ffffff"
+    }
+  }
+]

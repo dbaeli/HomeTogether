@@ -1,0 +1,48 @@
+{
+  "locations": {
+    "living_room": {
+      "light": {
+        "color": "#ffffff",
+        "brightness": 0
+      },
+      "tv": false
+    },
+    "dining_room": {
+      "light": {
+        "color": "#ffffff",
+        "brightness": 0
+      }
+    },
+    "corridor": {
+      "light": {
+        "color": "#ffffff",
+        "brightness": 0
+      }
+    },
+    "bathroom": {
+      "light": {
+        "color": "#ffffff",
+        "brightness": 0
+      }
+    },
+    "water_closet": {
+      "light": {
+        "color": "#ffffff",
+        "brightness": 0
+      }
+    },
+    "bedroom": {
+      "light": {
+        "color": "#ffffff",
+        "brightness": 0
+      }
+    },
+    "outside": {
+      "lightIntensity": 0
+    }
+  },
+  "characters": {
+    "occupant": "dining_room",
+    "player": "outside"
+  }
+}

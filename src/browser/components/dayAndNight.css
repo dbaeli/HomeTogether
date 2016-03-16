@@ -1,0 +1,15 @@
+.icon
+{
+    pointer-events: none;
+    font-size: 2em;
+    position: absolute;
+    transition: 0.4s ease-in-out;
+}
+
+.icon.focus
+{
+    transform: scale(1.5);
+    -ms-transform: scale(1.5);
+    -webkit-transform: scale(1.5);
+    color: orange;
+}
