@@ -34,6 +34,7 @@ export default class Store extends EventEmitter {
     if (!is(nextState, this.state)) {
       console.log(`Turning ${val ? 'ON' : 'OFF'} the TV.`);
       this.emit('update', nextState);
+      this.emit('update_context', nextState);
       this.state = nextState;
     }
   }
@@ -42,6 +43,7 @@ export default class Store extends EventEmitter {
     if (!is(nextState, this.state)) {
       console.log(`Moving the ${character} to ${location}.`);
       this.emit('update', nextState);
+      this.emit('update_context', nextState);
       this.state = nextState;
     }
   }
@@ -50,6 +52,7 @@ export default class Store extends EventEmitter {
     if (!is(nextState, this.state)) {
       console.log(`Setting the outside light intensity to ${intensity}.`);
       this.emit('update', nextState);
+      this.emit('update_context', nextState);
       this.state = nextState;
     }
   }

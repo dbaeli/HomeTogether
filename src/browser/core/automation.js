@@ -36,6 +36,10 @@ const COLOR_AGENT_MODEL = {
 const INITIAL_BRIGHTNESS_HISTORY = require('./initialBrightnessHistory.json');
 const INITIAL_COLOR_HISTORY = require('./initialColorHistory.json');
 
+function timestamp() {
+  return Math.floor(Date.now()/1000);
+}
+
 function getPresence(state, location) {
   const presence = state.get('characters').reduce((presence, characterLocation, character) => {
     if (characterLocation === location) {
@@ -56,34 +60,42 @@ export default function startAutomation(store) {
   // Extract the room having a light
   const enlightenedRooms = store.get(['locations']).filter(location => location.has('light')).keySeq();
   // Initialize the agents list
+  const brightnessHistory = _.map(
+    INITIAL_BRIGHTNESS_HISTORY,
+    sample => {
+      _.set(sample, 'timestamp', timestamp() + sample.timestamp);
+      return sample;
+    }
+  );
+  const colorHistory = _.map(
+    INITIAL_COLOR_HISTORY,
+    sample => {
+      _.set(sample, 'timestamp', timestamp() + sample.timestamp);
+      return sample;
+    }
+  );
   let agents = enlightenedRooms.reduce((agents, roomName) => {
     agents[roomName] = {
       brightness: null,
       color: null,
-      brightnessHistory:  _.map(
-        INITIAL_BRIGHTNESS_HISTORY,
-        sample => _.set(sample, 'timestamp', Date.now()/1000 - sample.timestamp)
-      ),
-      colorHistory: _.map(
-        INITIAL_COLOR_HISTORY,
-        sample => _.set(sample, 'timestamp', Date.now()/1000 - sample.timestamp)
-      )
+      brightnessHistory: brightnessHistory,
+      colorHistory:colorHistory
     };
     return agents;
   },
   {});
 
-  let updateAgentsContextHistory = state => enlightenedRooms.map((roomName) => {
+  let updateAgentsContextHistory = state => _.forEach(enlightenedRooms.toJSON(), roomName => {
     agents[roomName].brightnessHistory.push({
-      timestamp: Date.now()/1000,
+      timestamp: timestamp(),
       diff: {
         presence: getPresence(state, roomName),
         lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity']),
         lightbulbBrightness: state.getIn(['locations', roomName, 'light', 'brightness'])
       }
     });
-    agents[roomName].brightnessHistory.color({
-      timestamp: Date.now()/1000,
+    agents[roomName].colorHistory.push({
+      timestamp: timestamp(),
       diff: {
         presence: getPresence(state, roomName),
         lightIntensity: store.get(['locations', 'outside', 'lightIntensity']),
@@ -128,14 +140,14 @@ export default function startAutomation(store) {
         getCraftAgentDecision(agents[roomName].brightness, {
           presence: getPresence(state, roomName),
           lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
-        }, Date.now()/1000)
+        }, timestamp())
         .then((brightnessDecision) => {
           store.setLocationLightBrightness(roomName, brightnessDecision.output.result);
         })
         .then(() => getCraftAgentDecision(agents[roomName].color, {
           presence: getPresence(state, roomName),
           lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
-        }, Date.now()/1000))
+        }, timestamp()))
         .then((colorDecision) => {
           store.setLocationLightColor(roomName, colorDecision.output.result);
         })
@@ -158,7 +170,7 @@ export default function startAutomation(store) {
   .then(() => sendAgentsContextHistory())
   .then(() => {
     console.log('learning initialization done!');
-    store.addListener('update', state => {
+    store.addListener('update_context', state => {
       updateAgentsContextHistory(state);
       debouncedTakeDecisions(state);
     });
