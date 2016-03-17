@@ -156,14 +156,22 @@ export default function startAutomation(store) {
     );
   };
 
-  let debouncedTakeDecisions = _.debounce(
+  let debouncedTakeDecisions = _.throttle(
     state => {
       takeDecisions(state);
     },
     1000,
     {
       leading: true,
-      trailing: false
+      trailing: true
+    });
+  let debouncedUpdateAgentsContextHistory = _.throttle(
+    state => {
+      updateAgentsContextHistory(state);
+    },
+    1000,
+    {
+      trailing: true
     });
   // Let's create the agents
   return createAgents()
@@ -171,9 +179,11 @@ export default function startAutomation(store) {
   .then(() => {
     console.log('learning initialization done!');
     store.addListener('update_context', state => {
-      updateAgentsContextHistory(state);
       debouncedTakeDecisions(state);
     });
-    setInterval(sendAgentsContextHistory, 2000);
+    store.addListener('update', state => {
+      debouncedUpdateAgentsContextHistory(state);
+    });
+    setInterval(sendAgentsContextHistory, 5000);
   });
 }
