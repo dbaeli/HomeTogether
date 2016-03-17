@@ -19,7 +19,7 @@
     "timestamp": -80,
     "diff": {
       "presence": "occupant",
-      "lightIntensity": 2.5,
+      "lightIntensity": 1,
       "lightbulbColor": "#ffffff"
     }
   },
@@ -27,7 +27,7 @@
     "timestamp": -70,
     "diff": {
       "presence": "player",
-      "lightIntensity": 2.5,
+      "lightIntensity": 1,
       "lightbulbColor": "#ffffff"
     }
   },

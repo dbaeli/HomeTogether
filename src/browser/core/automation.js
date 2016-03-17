@@ -106,39 +106,51 @@ export default function startAutomation(store) {
     ).toJSON()
   );
 
-  let sendAgentsContextHistory = () => Promise.all(
-    enlightenedRooms.map((roomName) =>
-      agents[roomName].brightnessHistory.length && updateCraftAgentContext(agents[roomName].brightness, agents[roomName].brightnessHistory)
-      .then(() => agents[roomName].brightnessHistory = [])
-      .then(() => agents[roomName].colorHistory.length && updateCraftAgentContext(agents[roomName].color, agents[roomName].colorHistory))
-      .then(() => agents[roomName].colorHistory = [])
-      .catch(err => console.log(`Error while updating the context history for ${roomName}`, err))
-    ).toJSON()
-  );
+  let sendAgentsContextHistory = () => {
+    console.log('Sending agent context history...');
+    return Promise.all(
+      enlightenedRooms.map((roomName) =>
+        agents[roomName].brightnessHistory.length && updateCraftAgentContext(agents[roomName].brightness, agents[roomName].brightnessHistory)
+        .then(() => agents[roomName].brightnessHistory = [])
+        .then(() => agents[roomName].colorHistory.length && updateCraftAgentContext(agents[roomName].color, agents[roomName].colorHistory))
+        .then(() => agents[roomName].colorHistory = [])
+        .catch(err => console.log(`Error while updating the context history for ${roomName}`, err))
+      ).toJSON()
+    );
+  };
 
-  let takeDecisions = state => Promise.all(
-    enlightenedRooms.map((roomName) =>
-      getCraftAgentDecision(agents[roomName].brightness, {
-        presence: getPresence(state, roomName),
-        lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
-      }, Date.now()/1000)
-      .then((brightnessDecision) => {
-        store.setLocationLightBrightness(roomName, brightnessDecision.output.result);
-      })
-      .then(() => getCraftAgentDecision(agents[roomName].color, {
-        presence: getPresence(state, roomName),
-        lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
-      }, Date.now()/1000))
-      .then((colorDecision) => {
-        store.setLocationLightColor(roomName, colorDecision.output.result);
-      })
-      .catch(err => console.log(`Error while taking decision for ${roomName}`, err))
-    ).toJSON()
-  );
+  let takeDecisions = state => {
+    console.log('Taking a decision...');
+    return Promise.all(
+      enlightenedRooms.map((roomName) =>
+        getCraftAgentDecision(agents[roomName].brightness, {
+          presence: getPresence(state, roomName),
+          lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
+        }, Date.now()/1000)
+        .then((brightnessDecision) => {
+          store.setLocationLightBrightness(roomName, brightnessDecision.output.result);
+        })
+        .then(() => getCraftAgentDecision(agents[roomName].color, {
+          presence: getPresence(state, roomName),
+          lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
+        }, Date.now()/1000))
+        .then((colorDecision) => {
+          store.setLocationLightColor(roomName, colorDecision.output.result);
+        })
+        .catch(err => console.log(`Error while taking decision for ${roomName}`, err))
+      ).toJSON()
+    );
+  };
 
-  let debouncedTakeDecisions = _.debounce(state => {
-    takeDecisions(state);
-  }, 1000);
+  let debouncedTakeDecisions = _.debounce(
+    state => {
+      takeDecisions(state);
+    },
+    1000,
+    {
+      leading: true,
+      trailing: false
+    });
   // Let's create the agents
   return createAgents()
   .then(() => sendAgentsContextHistory())
