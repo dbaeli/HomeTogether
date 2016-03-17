@@ -8,7 +8,7 @@ var config = require('../webpack.config');
 
 dotenv.load();
 
-const FRONT_PORT = process.env.CRAFT_HOME_TOGETHER_PORT || 8080;
+const FRONT_PORT = process.env.CRAFT_HOME_TOGETHER_PORT || 4444;
 
 let compiler = webpack(config);
 let app = express();

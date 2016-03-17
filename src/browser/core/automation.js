@@ -96,10 +96,12 @@ export default function startAutomation(store) {
     enlightenedRooms.map((roomName) =>
       createCraftAgent(BRIGHTNESS_AGENT_MODEL)
       .then(agent => {
+        console.log(`Agent ${agent.id} created for ${roomName} brightness`);
         agents[roomName].brightness = agent.id;
       })
       .then(() => createCraftAgent(COLOR_AGENT_MODEL))
       .then(agent => {
+        console.log(`Agent ${agent.id} created for ${roomName} color`);
         agents[roomName].color = agent.id;
       })
       .catch(err => console.log(`Error while creating agent for ${roomName}`, err))
