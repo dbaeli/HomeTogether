@@ -3,39 +3,15 @@
     "timestamp": -100,
     "diff": {
       "presence": "occupant",
-      "lightIntensity": 0,
-      "lightbulbColor": "#ffffff"
-    }
-  },
-  {
-    "timestamp": -90,
-    "diff": {
-      "presence": "player",
-      "lightIntensity": 0,
-      "lightbulbColor": "#ffffff"
-    }
-  },
-  {
-    "timestamp": -80,
-    "diff": {
-      "presence": "occupant",
       "lightIntensity": 1,
       "lightbulbColor": "#ffffff"
     }
   },
   {
-    "timestamp": -70,
+    "timestamp": -75,
     "diff": {
       "presence": "player",
-      "lightIntensity": 1,
-      "lightbulbColor": "#ffffff"
-    }
-  },
-  {
-    "timestamp": -60,
-    "diff": {
-      "presence": "none",
-      "lightIntensity": 0,
+      "lightIntensity": 0.5,
       "lightbulbColor": "#ffffff"
     }
   },
@@ -43,6 +19,14 @@
     "timestamp": -50,
     "diff": {
       "presence": "none",
+      "lightIntensity": 0,
+      "lightbulbColor": "#ffffff"
+    }
+  },
+  {
+    "timestamp": -25,
+    "diff": {
+      "presence": "occupant+player",
       "lightIntensity": 0,
       "lightbulbColor": "#ffffff"
     }

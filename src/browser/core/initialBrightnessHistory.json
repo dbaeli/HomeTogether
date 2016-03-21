@@ -8,11 +8,27 @@
     }
   },
   {
+    "timestamp": -95,
+    "diff": {
+      "presence": "occupant",
+      "lightIntensity": 0.5,
+      "lightbulbBrightness": "0.5"
+    }
+  },
+  {
     "timestamp": -90,
     "diff": {
       "presence": "player",
       "lightIntensity": 0,
       "lightbulbBrightness": "1"
+    }
+  },
+  {
+    "timestamp": -85,
+    "diff": {
+      "presence": "player",
+      "lightIntensity": 0.5,
+      "lightbulbBrightness": "0.5"
     }
   },
   {
@@ -40,10 +56,18 @@
     }
   },
   {
-    "timestamp": -50,
+    "timestamp": -30,
     "diff": {
       "presence": "none",
-      "lightIntensity": 0,
+      "lightIntensity": 0.5,
+      "lightbulbBrightness": "0"
+    }
+  },
+  {
+    "timestamp": -15,
+    "diff": {
+      "presence": "none",
+      "lightIntensity": 1,
       "lightbulbBrightness": "0"
     }
   }
