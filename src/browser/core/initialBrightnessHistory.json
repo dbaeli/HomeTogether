@@ -4,7 +4,7 @@
     "diff": {
       "presence": "occupant",
       "lightIntensity": 0,
-      "lightbulbBrightness": 1
+      "lightbulbBrightness": "1"
     }
   },
   {
@@ -12,7 +12,7 @@
     "diff": {
       "presence": "player",
       "lightIntensity": 0,
-      "lightbulbBrightness": 1
+      "lightbulbBrightness": "1"
     }
   },
   {
@@ -20,7 +20,7 @@
     "diff": {
       "presence": "occupant",
       "lightIntensity": 1,
-      "lightbulbBrightness": 0
+      "lightbulbBrightness": "0"
     }
   },
   {
@@ -28,7 +28,7 @@
     "diff": {
       "presence": "player",
       "lightIntensity": 1,
-      "lightbulbBrightness": 0
+      "lightbulbBrightness": "0"
     }
   },
   {
@@ -36,7 +36,7 @@
     "diff": {
       "presence": "none",
       "lightIntensity": 0,
-      "lightbulbBrightness": 0
+      "lightbulbBrightness": "0"
     }
   },
   {
@@ -44,7 +44,7 @@
     "diff": {
       "presence": "none",
       "lightIntensity": 0,
-      "lightbulbBrightness": 0
+      "lightbulbBrightness": "0"
     }
   }
 ]

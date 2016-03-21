@@ -120,7 +120,7 @@ export default function startAutomation(store) {
         agents[location].brightnessHistory.push({
           timestamp: timestamp(),
           diff: {
-            lightbulbBrightness: brightness
+            lightbulbBrightness: `${brightness}`
           }
         });
       }
