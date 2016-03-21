@@ -56,7 +56,7 @@ export default class Store extends EventEmitter {
       this.state = nextState;
     }
   }
-  get(path) {
-    return this.state.getIn(path);
+  getState() {
+    return this.state;
   }
 }

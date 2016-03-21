@@ -57,7 +57,7 @@ function computeNextLocation(currentLocation, playerLocation) {
 export default function startOccupantBehavior(store) {
   let wander;
   wander = function() {
-    const nextLocation = computeNextLocation(store.get(['characters', 'occupant']), store.get(['characters', 'player']));
+    const nextLocation = computeNextLocation(store.getState().getIn(['characters', 'occupant']), store.getState().getIn(['characters', 'player']));
     store.setCharacterLocation('occupant', nextLocation);
     setTimeout(wander, _.random(6,12)*1000);
   };

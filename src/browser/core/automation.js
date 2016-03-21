@@ -180,6 +180,7 @@ export default function startAutomation(store) {
     console.log('learning initialization done!');
     store.addListener('update_context', state => {
       debouncedTakeDecisions(state);
+    takeDecisions(store.getState(), enlightenedRooms.toJSON());
     });
     store.addListener('update', state => {
       debouncedUpdateAgentsContextHistory(state);
