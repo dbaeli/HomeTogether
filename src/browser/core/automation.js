@@ -2,38 +2,8 @@ import { createCraftAgent, updateCraftAgentContext, getCraftAgentDecision } from
 import _ from 'lodash';
 import { getPresence } from './store';
 
-const BRIGHTNESS_AGENT_MODEL = {
-  knowledge: {
-    presence: {
-      type: 'enum'
-    },
-    lightIntensity:  {
-      type: 'continuous',
-      min: 0,
-      max: 2.5
-    },
-    lightbulbBrightness: {
-      type: 'enum_output'
-    }
-  }
-};
-
-const COLOR_AGENT_MODEL = {
-  knowledge: {
-    presence: {
-      type: 'enum'
-    },
-    lightIntensity:  {
-      type: 'continuous',
-      min: 0,
-      max: 2.5
-    },
-    lightbulbColor: {
-      type: 'enum_output'
-    }
-  }
-};
-
+const BRIGHTNESS_AGENT_MODEL = require('./brightnessModel.json');
+const COLOR_AGENT_MODEL = require('./colorModel.json');
 const INITIAL_BRIGHTNESS_HISTORY = require('./initialBrightnessHistory.json');
 const INITIAL_COLOR_HISTORY = require('./initialColorHistory.json');
 

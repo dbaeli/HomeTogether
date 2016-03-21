@@ -4,6 +4,8 @@ import _ from 'lodash';
 const CRAFT_TOKEN = __CRAFT_TOKEN__;
 const CRAFT_URL = __CRAFT_URL__;
 
+const OWNER = 'home_together';
+
 function craftRequest(r) {
   r = _.defaults(r || {}, {
     method: 'GET',
@@ -16,9 +18,7 @@ function craftRequest(r) {
     body: {}
   });
 
-  let owner = 'home_together';
-
-  let url = CRAFT_URL + '/api/' + owner + '/' + r.path + '?' + _.map(_.toPairs(r.queries), p => p.join('=')).join('&');
+  let url = CRAFT_URL + '/api/' + OWNER + '/' + r.path + '?' + _.map(_.toPairs(r.queries), p => p.join('=')).join('&');
   return fetch(url, {
     method: r.method,
     headers:r.headers,
@@ -46,6 +46,10 @@ export function createCraftAgent(model) {
     path: 'agents',
     body: JSON.stringify({model: model})
   })
+  .then(agent => {
+    console.log(`Agent '${agent.id}' created, inspect at ${CRAFT_URL}/inspector?token=${CRAFT_TOKEN}&owner=${OWNER}&agent=${agent.id}`);
+    return agent;
+  })
   .catch(err => {
     const msg = 'Agent creation failed:\n' + err;
     console.log(msg);
@@ -56,7 +60,7 @@ export function createCraftAgent(model) {
 export function updateCraftAgentContext(agent, diffs) {
   return craftRequest({
     method: 'POST',
-    path: 'agents/' + agent + '/knowledge',
+    path: 'agents/' + agent + '/context',
     body: JSON.stringify(diffs)
   })
   .catch(err => {
