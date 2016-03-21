@@ -81,18 +81,18 @@ export default function startAutomation(store) {
   let takeDecisions = (state, rooms) => {
     console.log(`Taking a decision for rooms ${rooms.join(', ')}...`);
     return Promise.all(_.map(rooms, (roomName) =>
-      getCraftAgentDecision(agents[roomName].brightness, {
-        presence: strFromPresence(getPresence(state, roomName)),
-        lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
-      }, timestamp())
-      .then((brightnessDecision) => {
+      Promise.all([
+        getCraftAgentDecision(agents[roomName].brightness, {
+          presence: strFromPresence(getPresence(state, roomName)),
+          lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
+        }, timestamp()),
+        getCraftAgentDecision(agents[roomName].color, {
+          presence: strFromPresence(getPresence(state, roomName)),
+          lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
+        }, timestamp())
+      ])
+      .then(([brightnessDecision, colorDecision]) => {
         store.setLocationLightBrightness(roomName, brightnessDecision.output.result);
-      })
-      .then(() => getCraftAgentDecision(agents[roomName].color, {
-        presence: strFromPresence(getPresence(state, roomName)),
-        lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
-      }, timestamp()))
-      .then((colorDecision) => {
         store.setLocationLightColor(roomName, colorDecision.output.result);
       })
       .catch(err => console.log(`Error while taking decision for ${roomName}`, err))
