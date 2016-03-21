@@ -1,5 +1,6 @@
 import { createCraftAgent, updateCraftAgentContext, getCraftAgentDecision } from './craft-ai';
 import _ from 'lodash';
+import { getPresence } from './store';
 
 const BRIGHTNESS_AGENT_MODEL = {
   knowledge: {
@@ -40,14 +41,7 @@ function timestamp() {
   return Math.floor(Date.now()/1000);
 }
 
-function getPresence(state, location) {
-  const presence = state.get('characters').reduce((presence, characterLocation, character) => {
-    if (characterLocation === location) {
-      presence.push(character);
-    }
-    return presence;
-  },
-  []);
+function strFromPresence(presence) {
   if (presence.length == 0) {
     return 'none';
   }
@@ -58,7 +52,7 @@ function getPresence(state, location) {
 
 export default function startAutomation(store) {
   // Extract the room having a light
-  const enlightenedRooms = store.get(['locations']).filter(location => location.has('light')).keySeq();
+  const enlightenedRooms = store.getState().getIn(['locations']).filter(location => location.has('light')).keySeq();
   // Initialize the agents list
   const brightnessHistory = _.map(
     INITIAL_BRIGHTNESS_HISTORY,
@@ -84,25 +78,6 @@ export default function startAutomation(store) {
     return agents;
   },
   {});
-
-  let updateAgentsContextHistory = state => _.forEach(enlightenedRooms.toJSON(), roomName => {
-    agents[roomName].brightnessHistory.push({
-      timestamp: timestamp(),
-      diff: {
-        presence: getPresence(state, roomName),
-        lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity']),
-        lightbulbBrightness: state.getIn(['locations', roomName, 'light', 'brightness'])
-      }
-    });
-    agents[roomName].colorHistory.push({
-      timestamp: timestamp(),
-      diff: {
-        presence: getPresence(state, roomName),
-        lightIntensity: store.get(['locations', 'outside', 'lightIntensity']),
-        lightbulbColor: store.get(['locations', roomName, 'light', 'color'])
-      }
-    });
-  });
 
   let createAgents = () => Promise.all(
     enlightenedRooms.map((roomName) =>
@@ -133,57 +108,103 @@ export default function startAutomation(store) {
     );
   };
 
-  let takeDecisions = state => {
-    console.log('Taking a decision...');
-    return Promise.all(
-      enlightenedRooms.map((roomName) =>
-        getCraftAgentDecision(agents[roomName].brightness, {
-          presence: getPresence(state, roomName),
-          lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
-        }, timestamp())
-        .then((brightnessDecision) => {
-          store.setLocationLightBrightness(roomName, brightnessDecision.output.result);
-        })
-        .then(() => getCraftAgentDecision(agents[roomName].color, {
-          presence: getPresence(state, roomName),
-          lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
-        }, timestamp()))
-        .then((colorDecision) => {
-          store.setLocationLightColor(roomName, colorDecision.output.result);
-        })
-        .catch(err => console.log(`Error while taking decision for ${roomName}`, err))
-      ).toJSON()
-    );
+  let takeDecisions = (state, rooms) => {
+    console.log(`Taking a decision for rooms ${rooms.join(', ')}...`);
+    return Promise.all(_.map(rooms, (roomName) =>
+      getCraftAgentDecision(agents[roomName].brightness, {
+        presence: strFromPresence(getPresence(state, roomName)),
+        lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
+      }, timestamp())
+      .then((brightnessDecision) => {
+        store.setLocationLightBrightness(roomName, brightnessDecision.output.result);
+      })
+      .then(() => getCraftAgentDecision(agents[roomName].color, {
+        presence: strFromPresence(getPresence(state, roomName)),
+        lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
+      }, timestamp()))
+      .then((colorDecision) => {
+        store.setLocationLightColor(roomName, colorDecision.output.result);
+      })
+      .catch(err => console.log(`Error while taking decision for ${roomName}`, err))
+    ));
   };
 
-  let debouncedTakeDecisions = _.throttle(
-    state => {
-      takeDecisions(state);
-    },
-    1000,
-    {
-      leading: true,
-      trailing: true
-    });
-  let debouncedUpdateAgentsContextHistory = _.throttle(
-    state => {
-      updateAgentsContextHistory(state);
-    },
-    1000,
-    {
-      trailing: true
-    });
   // Let's create the agents
   return createAgents()
   .then(() => sendAgentsContextHistory())
   .then(() => {
     console.log('learning initialization done!');
-    store.addListener('update_context', state => {
-      debouncedTakeDecisions(state);
     takeDecisions(store.getState(), enlightenedRooms.toJSON());
+    store.addListener('update_light_color', (state, location, color) => {
+      if (_.has(agents, location)) {
+        agents[location].colorHistory.push({
+          timestamp: timestamp(),
+          diff: {
+            lightbulbColor: color
+          }
+        });
+      }
     });
-    store.addListener('update', state => {
-      debouncedUpdateAgentsContextHistory(state);
+    store.addListener('update_light_brightness', (state, location, brightness) => {
+      if (_.has(agents, location)) {
+        agents[location].brightnessHistory.push({
+          timestamp: timestamp(),
+          diff: {
+            lightbulbBrightness: brightness
+          }
+        });
+      }
+    });
+    store.addListener('update_tv_state', (state, location, tvState) => {
+      if (_.has(agents, location)) {
+        agents[location].brightnessHistory.push({
+          timestamp: timestamp(),
+          diff: {
+            tv: state
+          }
+        });
+        agents[location].colorHistory.push({
+          timestamp: timestamp(),
+          diff: {
+            tv: state
+          }
+        });
+        takeDecisions(state, [location]);
+      }
+    });
+    store.addListener('update_presence', (state, location, presence) => {
+      if (_.has(agents, location)) {
+        agents[location].brightnessHistory.push({
+          timestamp: timestamp(),
+          diff: {
+            presence: strFromPresence(presence)
+          }
+        });
+        agents[location].colorHistory.push({
+          timestamp: timestamp(),
+          diff: {
+            presence: strFromPresence(presence)
+          }
+        });
+        takeDecisions(state, [location]);
+      }
+    });
+    store.addListener('update_light_intensity', (state, location, intensity) => {
+      _.forEach(enlightenedRooms.toJSON(), roomName => {
+        agents[roomName].brightnessHistory.push({
+          timestamp: timestamp(),
+          diff: {
+            lightIntensity: intensity
+          }
+        });
+        agents[roomName].colorHistory.push({
+          timestamp: timestamp(),
+          diff: {
+            lightIntensity: intensity
+          }
+        });
+      });
+      takeDecisions(state, enlightenedRooms.toJSON());
     });
     setInterval(sendAgentsContextHistory, 5000);
   });
