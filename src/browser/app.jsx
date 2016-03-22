@@ -6,7 +6,7 @@ import Player from './components/player';
 import DayAndNight from './components/dayAndNight';
 import ColorPicker from './components/colorPicker';
 import React from 'react';
-import { getInitialState } from './core/store';
+import { getInitialState, getCharacterLocation } from './core/store';
 
 import 'font-awesome/css/font-awesome.min.css';
 
@@ -29,18 +29,18 @@ export default React.createClass({
     this.storeListener = undefined;
   },
   render: function() {
-    const tvState = this.state.house.getIn(['locations', 'living_room', 'tv']);
-    const playerLocation = this.state.house.getIn(['characters', 'player']);
-    const occupantLocation = this.state.house.getIn(['characters', 'occupant']);
-    const lights = this.state.house.getIn(['locations'])
+    const tvState = this.state.house.getIn(['living_room', 'tv']);
+    const playerLocation = getCharacterLocation(this.state.house, 'player');
+    const occupantLocation = getCharacterLocation(this.state.house, 'occupant');
+    const lights = this.state.house
     .filter(location => location.has('light'))
     .map(location => ({
       color: location.getIn(['light', 'color']),
       brightness: location.getIn(['light', 'brightness']),
-      simulated: true
+      visible: true
     })).toJSON();
     const playerLocationLight = lights[playerLocation];
-    const outsideLightIntensity = this.state.house.getIn(['locations', 'outside', 'lightIntensity']);
+    const outsideLightIntensity = this.state.house.getIn(['outside', 'lightIntensity']);
     return (
       <Grid>
         <Row>
@@ -61,7 +61,7 @@ export default React.createClass({
               light={outsideLightIntensity}
               onUpdateLight={(val) => this.props.store.setOutsideLightIntensity(val)}/>
             {
-              playerLocationLight && playerLocationLight.simulated ?
+              playerLocationLight && playerLocationLight.visible ?
               (
                 <ColorPicker
                   label={playerLocation}

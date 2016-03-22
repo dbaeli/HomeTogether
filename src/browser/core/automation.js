@@ -1,6 +1,5 @@
 import { createCraftAgent, updateCraftAgentContext, getCraftAgentDecision } from './craft-ai';
 import _ from 'lodash';
-import { getPresence } from './store';
 
 const BRIGHTNESS_AGENT_MODEL = require('./brightnessModel.json');
 const COLOR_AGENT_MODEL = require('./colorModel.json');
@@ -12,17 +11,17 @@ function timestamp() {
 }
 
 function strFromPresence(presence) {
-  if (presence.length == 0) {
+  if (presence.size == 0) {
     return 'none';
   }
   else {
-    return presence.join('+');
+    return presence.sort().join('+');
   }
 }
 
 export default function startAutomation(store) {
   // Extract the room having a light
-  const enlightenedRooms = store.getState().getIn(['locations']).filter(location => location.has('light')).keySeq();
+  const enlightenedRooms = store.getState().filter(location => location.has('light')).keySeq();
   // Initialize the agents list
   const brightnessHistory = _.map(
     INITIAL_BRIGHTNESS_HISTORY,
@@ -83,12 +82,12 @@ export default function startAutomation(store) {
     return Promise.all(_.map(rooms, (roomName) =>
       Promise.all([
         getCraftAgentDecision(agents[roomName].brightness, {
-          presence: strFromPresence(getPresence(state, roomName)),
-          lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
+          presence: strFromPresence(state.getIn([roomName, 'presence'])),
+          lightIntensity: state.getIn(['outside', 'lightIntensity'])
         }, timestamp()),
         getCraftAgentDecision(agents[roomName].color, {
-          presence: strFromPresence(getPresence(state, roomName)),
-          lightIntensity: state.getIn(['locations', 'outside', 'lightIntensity'])
+          presence: strFromPresence(state.getIn([roomName, 'presence'])),
+          lightIntensity: state.getIn(['outside', 'lightIntensity'])
         }, timestamp())
       ])
       .then(([brightnessDecision, colorDecision]) => {
@@ -103,7 +102,7 @@ export default function startAutomation(store) {
   return createAgents()
   .then(() => sendAgentsContextHistory())
   .then(() => {
-    console.log('learning initialization done!');
+    console.log('Learning initialization done!');
     takeDecisions(store.getState(), enlightenedRooms.toJSON());
     store.addListener('update_light_color', (state, location, color) => {
       if (_.has(agents, location)) {

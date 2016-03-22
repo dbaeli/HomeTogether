@@ -16,7 +16,7 @@ export default React.createClass({
     return (
       <div id='lights'>
         {
-          _.map(this.props.lights, (light, room) => light.simulated ?
+          _.map(this.props.lights, (light, room) => light.visible ?
             (
               <Bulb
                 key={ room }

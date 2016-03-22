@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { getCharacterLocation } from './store';
 
 function computeNextLocation(currentLocation, playerLocation) {
   if (playerLocation === 'living_room' || playerLocation === 'dining_room') {
@@ -57,7 +58,9 @@ function computeNextLocation(currentLocation, playerLocation) {
 export default function startOccupantBehavior(store) {
   let wander;
   wander = function() {
-    const nextLocation = computeNextLocation(store.getState().getIn(['characters', 'occupant']), store.getState().getIn(['characters', 'player']));
+    const nextLocation = computeNextLocation(
+      getCharacterLocation(store.getState(), 'occupant'),
+      getCharacterLocation(store.getState(), 'player'));
     store.setCharacterLocation('occupant', nextLocation);
     setTimeout(wander, _.random(6,12)*1000);
   };
