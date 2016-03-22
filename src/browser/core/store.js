@@ -1,5 +1,6 @@
+import _ from 'lodash';
 import { EventEmitter } from 'events';
-import { is, fromJS, List } from 'immutable';
+import { is, fromJS } from 'immutable';
 
 import house from './house.json';
 
@@ -8,7 +9,8 @@ export function getInitialState() {
 }
 
 export function getCharacterLocation(state, character) {
-  return state.findEntry(room => room.has('presence') && room.get('presence').includes(character))[0];
+  const entry = state.findEntry(room => room.get('presence').includes(character));
+  return _.isUndefined(entry) ? 'outside' : entry[0];
 }
 
 export default class Store extends EventEmitter {
@@ -49,12 +51,12 @@ export default class Store extends EventEmitter {
     const previousLocation = getCharacterLocation(this.state, character);
     const nextState = this.state
       .updateIn([previousLocation, 'presence'], presence => presence.filterNot(c => c === character))
-      .updateIn([location, 'presence'], presence => (presence || new List()).push(character));
+      .updateIn([location, 'presence'], presence => presence.push(character));
     if (!is(nextState, this.state)) {
       console.log(`Moving the ${character} to ${location}.`);
       this.emit('update', nextState);
-      this.emit('update_presence', nextState, location, nextState.getIn([location, 'presence']) || new List());
-      this.emit('update_presence', nextState, previousLocation, nextState.getIn([previousLocation, 'presence']) || new List());
+      this.emit('update_presence', nextState, location, nextState.getIn([location, 'presence']));
+      this.emit('update_presence', nextState, previousLocation, nextState.getIn([previousLocation, 'presence']));
       this.state = nextState;
     }
   }

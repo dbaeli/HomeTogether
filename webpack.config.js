@@ -16,8 +16,9 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
+      __CRAFT_URL__: JSON.stringify(process.env.CRAFT_URL),
       __CRAFT_TOKEN__: JSON.stringify(process.env.CRAFT_TOKEN),
-      __CRAFT_URL__: JSON.stringify(process.env.CRAFT_URL)
+      __SERVER_SIDE_DEVICES__: JSON.stringify(process.env.SERVER_SIDE_DEVICES)
     })
   ],
   resolve: {
