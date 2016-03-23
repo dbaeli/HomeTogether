@@ -49,7 +49,7 @@ function HueInit(bridgeName, bridgeIp, userName) {
     }
   })
   .catch(err => {
-    console.log('Error at Hue initialization, skipping this step\n', err);
+    console.log('Error at Hue initialization, Hue API won\'t be used\n' + err);
   });
 }
 
@@ -83,15 +83,16 @@ function getHueUserId(bridgeIp, userName) {
       .then(res => res.json())
       .then(json => {
         let r = _.first(json);
-        if (!_.isUndefined(r.success)) {
+        if (!_.isUndefined(r.success) && !_.isUndefined(r.success.username)) {
           return Promise.resolve(r.success.username);
         }
         else {
-          console.log(r.error.description);
-          window.setTimeout(() => 
-            getHueUserId(hue.bridgeIp, userName)
-            .then(r => Promise.resolve(r))
-            , 5000);
+          if (!_.isUndefined(r.error) && !_.isUndefined(r.error.type) && r.error.type === 101) {
+            console.log(r.error.description);
+            setTimeout(() => getHueUserId(hue.bridgeIp, userName),5000);
+          }
+          else
+            return Promise.reject(r.error.description);
         }
       })
     }
@@ -102,7 +103,7 @@ function getHueUserId(bridgeIp, userName) {
     return hue.userName;
   })
   .catch((err) => {
-    console.log('error while retrieving Hue userId, skipping this step\n', err);
+    console.log('Error while retrieving Hue userId, Hue API won\'t be used\n' + err);
     Promise.reject();
   });
 }
