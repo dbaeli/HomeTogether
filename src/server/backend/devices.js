@@ -1,32 +1,28 @@
-export function createLight(name) {
+export function createLight(color, brightness) {
   return {
-    name: name,
     type: 'light',
-    color: '#ffffff',
-    brightness: 0
+    color: color || '#ffffff',
+    brightness: brightness || 0
   };
 }
 
-export function createTv(name) {
+export function createTv(state) {
   return {
-    name: name,
     type: 'tv',
-    state: false
+    state: state || false
   };
 }
 
-export function createPresenceDetector(name) {
+export function createPresenceDetector(detected) {
   return {
-    name: name,
     type: 'presenceDetector',
-    detected: []
+    detected: detected || []
   };
 }
 
-export function createLightSensor(name) {
+export function createLightSensor(brightness) {
   return {
-    name: name,
     type: 'lightSensor',
-    brightness: 0
+    brightness: brightness || 0
   };
 }

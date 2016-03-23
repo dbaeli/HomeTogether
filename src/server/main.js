@@ -5,8 +5,8 @@ import express from 'express';
 import path from 'path';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
-import { createLight, createTv, createPresenceDetector, createLightSensor } from './backend/devices';
 import createSimulatedBackend from './backend/simulated';
+import createHueBackend from './backend/hue';
 
 var config = require('../webpack.config');
 
@@ -32,25 +32,10 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(express.static(path.join(__dirname, 'static')));
 
 // Let's create some backends
-let simulatedBackend = createSimulatedBackend([
-  createPresenceDetector('living_room+presence'),
-  createLight('living_room+light'),
-  createTv('living_room+tv'),
-  createPresenceDetector('dining_room+presence'),
-  createLight('dining_room+light'),
-  createPresenceDetector('corridor+presence'),
-  createLight('corridor+light'),
-  createPresenceDetector('bathroom+presence'),
-  createLight('bathroom+light'),
-  createPresenceDetector('water_closet+presence'),
-  createLight('water_closet+light'),
-  createPresenceDetector('bedroom+presence'),
-  createLight('bedroom+light'),
-  createPresenceDetector('outside+presence'),
-  createLightSensor('outside+lightSensor')
-]);
+let simulatedBackend = createSimulatedBackend();
+let hueBackend = createHueBackend();
 
-app.use('/devices', devices([simulatedBackend]));
+app.use('/devices', devices([hueBackend, simulatedBackend]));
 
 let server = app.listen(FRONT_PORT, () => {
   let port = server.address().port;
