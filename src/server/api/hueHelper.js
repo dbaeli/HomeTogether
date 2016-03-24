@@ -49,7 +49,9 @@ function HueInit(bridgeName, bridgeIp, userName) {
     }
   })
   .catch(err => {
-    console.log('Error at Hue initialization, Hue API won\'t be used\n' + err);
+    let msg = 'Error while retrieving Hue userId, Hue API won\'t be used\n' + err;
+    console.log(msg);
+    throw new Error(msg);
   });
 }
 
@@ -102,10 +104,7 @@ function getHueUserId(bridgeIp, userName) {
     console.log('Hue user name =', hue.userName);
     return hue.userName;
   })
-  .catch((err) => {
-    console.log('Error while retrieving Hue userId, Hue API won\'t be used\n' + err);
-    Promise.reject();
-  });
+  .catch(err => Promise.reject());
 }
 
 module.exports = hue;

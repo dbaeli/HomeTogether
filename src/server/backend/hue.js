@@ -53,6 +53,7 @@ export default function createSimulatedBackend() {
     )
   })
   .catch(ex => {
+    devices = {};
     throw new Error(`Initializing Hue bulbs failed:\n'${ex}'`)
   });
   return {
