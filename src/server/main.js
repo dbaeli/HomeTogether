@@ -1,5 +1,6 @@
 import bodyParser from 'body-parser';
 import devices from './devices';
+import auth from './auth';
 import dotenv from 'dotenv';
 import express from 'express';
 import path from 'path';
@@ -7,6 +8,7 @@ import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import createSimulatedBackend from './backend/simulated';
 import createHueBackend from './backend/hue';
+import createSamiBackend from './backend/sami';
 
 var config = require('../webpack.config');
 
@@ -33,9 +35,11 @@ app.use(express.static(path.join(__dirname, 'static')));
 
 // Let's create some backends
 let simulatedBackend = createSimulatedBackend();
-let hueBackend = createHueBackend();
+// let hueBackend = createHueBackend();
+let samiBackend = createSamiBackend();
 
-app.use('/devices', devices([hueBackend, simulatedBackend]));
+app.use('/auth', auth([samiBackend]));
+app.use('/devices', devices([samiBackend, simulatedBackend]));
 
 let server = app.listen(FRONT_PORT, () => {
   let port = server.address().port;
