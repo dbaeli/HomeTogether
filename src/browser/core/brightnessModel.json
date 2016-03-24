@@ -12,5 +12,6 @@
       "type": "enum"
     }
   },
-  "output": ["lightbulbBrightness"]
+  "output": ["lightbulbBrightness"],
+  "time_quantum": 2
 }

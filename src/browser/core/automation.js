@@ -91,8 +91,8 @@ export default function startAutomation(store) {
         }, timestamp())
       ])
       .then(([brightnessDecision, colorDecision]) => {
-        store.setLocationLightBrightness(roomName, brightnessDecision.output.result);
-        store.setLocationLightColor(roomName, colorDecision.output.result);
+        store.setLocationLightBrightness(roomName, brightnessDecision.result);
+        store.setLocationLightColor(roomName, colorDecision.result);
       })
       .catch(err => console.log(`Error while taking decision for ${roomName}`, err))
     ));
