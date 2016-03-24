@@ -57,6 +57,7 @@ export default function createSimulatedBackend() {
     throw new Error(`Initializing Hue bulbs failed:\n'${ex}'`)
   });
   return {
+    name: 'hue',
     list: () => _.keys(devices),
     has: deviceName => _.has(devices, deviceName),
     get: deviceName => {

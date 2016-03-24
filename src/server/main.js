@@ -9,6 +9,7 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
 import createSimulatedBackend from './backend/simulated';
 import createHueBackend from './backend/hue';
 import createSamiBackend from './backend/sami';
+import _ from 'lodash';
 
 var config = require('../webpack.config');
 
@@ -33,13 +34,16 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use(express.static(path.join(__dirname, 'static')));
 
-// Let's create some backends
-let simulatedBackend = createSimulatedBackend();
-// let hueBackend = createHueBackend();
-let samiBackend = createSamiBackend();
+let backends = [createSimulatedBackend()];
 
-app.use('/auth', auth([samiBackend]));
-app.use('/devices', devices([samiBackend, simulatedBackend]));
+// Let's create some backends
+if (!_.isUndefined(process.env.HUE_USER))
+  backends = _.union([createHueBackend()], backends);
+if (!_.isUndefined(process.env.SAMI_USER))
+  backends = _.union([createSamiBackend()], backends);
+
+app.use('/auth', auth(backends));
+app.use('/devices', devices(backends));
 
 let server = app.listen(FRONT_PORT, () => {
   let port = server.address().port;

@@ -6,17 +6,19 @@ import OAuth2Strategy from 'passport-oauth2/lib/strategy';
 
 export default function createMiddleware(backends){
   let router = express.Router();
-  router.use(passport.initialize());
-  router.use(passport.session());
-  
-  // Enable SAMI calls
-  if (!_.isUndefined(process.env.SAMI_USER)) {
+
+  let samiBackend = _.find(backends, b => b.name === 'sami');
+
+  if (!_.isUndefined(samiBackend)) {
     const CLIENT_ID = process.env.SAMI_CLIENT_ID;
     const CLIENT_SECRET = process.env.SAMI_CLIENT_SECRET;
     const AUTH_URL ='https://accounts.samsungsami.io/authorize';
     const TOKEN_URL = 'https://accounts.samsungsami.io/token';
     const CALL_BACK_URL = 'http://localhost:4444/auth/sami/callback';
     const CALL_BACK_PATH = '/sami/callback';
+
+    router.use(passport.initialize());
+    router.use(passport.session());
 
     passport.deserializeUser((id, done) => {
       done(null, 'user');
@@ -32,7 +34,7 @@ export default function createMiddleware(backends){
         callbackURL: CALL_BACK_URL
       },
       (accessToken, refreshToken, profile, done) => {
-        backends[0].init(accessToken);
+        samiBackend.init(accessToken);
         return done(null, 'user');
       }
     ));

@@ -5,8 +5,6 @@ import colorHelper from 'node-hue-api/hue-api/rgb.js';
 let hue = {
   request: HueRequest,
   init: HueInit,
-  convertRGBtoXY: colorHelper.convertRGBtoXY,
-  convertXYtoRGB: colorHelper.convertXYtoRGB,
   convertXYtoHex: convertXYtoHex,
   convertHextoXY: convertHextoXY
 };

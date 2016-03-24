@@ -121,6 +121,7 @@ export default function createSimulatedBackend() {
   };
   
   return {
+    name: 'sami',
     init: samiToken => createListenerWS(samiToken),
     list: () => token ? _.keys(devices) : {},
     has: deviceName => token ? _.has(devices, deviceName) : {},

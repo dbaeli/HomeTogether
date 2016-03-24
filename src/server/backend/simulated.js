@@ -23,6 +23,7 @@ const INITIAL_DEVICES = {
 export default function createSimulatedBackend() {
   let devices = _.cloneDeep(INITIAL_DEVICES);
   return {
+    name: 'simulated',
     list: () => _.keys(devices),
     has: deviceName => _.has(devices, deviceName),
     get: deviceName => new Promise((resolve, reject) => {
