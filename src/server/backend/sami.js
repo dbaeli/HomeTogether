@@ -3,15 +3,6 @@ import Promise from 'bluebird';
 import WebSocket from 'ws';
 import { createLight, createTv, createPresenceDetector, createLightSensor } from './devices';
 
-const INITIAL_DEVICES = {
-  'living_room+presence': createPresenceDetector(),
-  'dining_room+presence': createPresenceDetector(),
-  'corridor+presence': createPresenceDetector(),
-  'bathroom+presence': createPresenceDetector(),
-  'water_closet+presence': createPresenceDetector(),
-  'bedroom+presence': createPresenceDetector(),
-  'outside+presence': createPresenceDetector()
-}
 const API_BASE_WS_URL = 'wss://api.samsungsami.io/v1.1/websocket';
 
 export default function createSimulatedBackend() {
@@ -23,11 +14,6 @@ export default function createSimulatedBackend() {
       deviceType: 'dt3fdf857d42f943919d103aa3e0316052',
       state: createTv()
     },
-    // blind1: { //TODO add blind in model
-    //   id: process.env.SAMI_BLIND_ID,
-    //   deviceType: 'dt1b8e051f028f4b95a35452238c3684c4',
-    //   state: {}
-    // },
     'outside+lightSensor': {
       id: process.env.SAMI_LIGHT_SENSOR_ID,
       deviceType: 'dt793c92541dcf4e99a79ded0444244168',
@@ -62,18 +48,13 @@ export default function createSimulatedBackend() {
       id: process.env.SAMI_BULB_5_ID,
       deviceType: 'dt6f3f2abffe33490695515a5ed26efd24',
       state: createLight()
-    // },
-    // 'living_room+presence': { //TODO for all rooms
-    //   id: process.env.SAMI_PRESENCE_ID,
-    //   deviceType: 'dtff8e26eaa7f04047ace3b5ff542a9696',
-    //   state: createPresenceDetector()
     }
   };
 
   function updateSamiDeviceState(deviceName, deviceState) {
     console.log('SAMI updating device', deviceName, 'with state', deviceState);
     if (_.has(devices, deviceName))
-      devices[deviceName].state = _.extend(devices[deviceName].state, deviceState);
+      return devices[deviceName].state = _.extend(devices[deviceName].state, deviceState);
   };
 
   function sendMessageToDevice(deviceName, messageContent, type='message') {
@@ -87,8 +68,6 @@ export default function createSimulatedBackend() {
                       };
         ws.send(JSON.stringify(message));
         console.log('SAMI WS push', type, messageContent, 'for device', deviceName);
-        if (type === 'message')
-          updateSamiDeviceState(deviceName, messageContent);
         return resolve();
       }
       else
@@ -106,31 +85,6 @@ export default function createSimulatedBackend() {
           if (!_.isUndefined(dataJSON.sdid) && dataJSON.type === 'message') {
             updateSamiDeviceState(_.findKey(devices, d => d.id === dataJSON.sdid), dataJSON.data);
           };
-          // if (!_.isUndefined(dataJSON.ddid) && dataJSON.type === 'action') {
-          //   let hueId = _.parseInt(_.split(_.findKey(devices, o => o.id === dataJSON.ddid),'_')[2]);
-          //   if (!_.isUndefined(hue.userId) && !_.isUndefined(hue.lights[hueId].id)) {
-          //     let r = _.reduce(dataJSON.data.actions, (res, val) => {
-          //       if (val.name === 'setColor') {
-          //         res.xy = hue.convertRGBtoXY([val.parameters.colorRGB.r, val.parameters.colorRGB.g, val.parameters.colorRGB.b]);
-          //       }
-          //       else if (val.name === 'setBrightness') {
-          //         res.bri = val.parameters.brightness
-          //       }
-          //       else if (val.name === 'setOn')
-          //         res.on = true;
-          //       else if (val.name === 'setOff')
-          //         res.on = false;
-          //       return res;
-          //     }, {});
-          //     r.bri = _.isUndefined(r.bri) ? 127 : parseInt(Math.max(Math.min(r.bri*255, 254),1))
-          //     return hue.request({
-          //       method: 'PUT',
-          //       path: hue.userId+'/lights/'+ hue.lights[hueId].id +'/state',
-          //       body: JSON.stringify( r )
-          //     })
-          //     .catch(ex => console.log('updating Hue state failed:', ex));
-          //   }
-          // }
         }
       });
       ws.on('open', () => {
@@ -151,8 +105,6 @@ export default function createSimulatedBackend() {
         .then(() => {
           token = samiToken;
           return;
-          // if (!_.isUndefined(hue.userId))
-          //   createHueListener(hue.lights);
         });
       });
       ws.on('close', () => {
@@ -169,13 +121,13 @@ export default function createSimulatedBackend() {
   };
   
   return {
-    init: (samiToken) => createListenerWS(samiToken),
+    init: samiToken => createListenerWS(samiToken),
     list: () => token ? _.keys(devices) : {},
     has: deviceName => token ? _.has(devices, deviceName) : {},
     get: deviceName => new Promise((resolve, reject) => {
       console.log(`Retrieving device '${deviceName}' state.`);
       if (_.has(devices, deviceName)) {
-        resolve(devices[deviceName]);
+        resolve(devices[deviceName].state);
       }
       else {
         reject(new Error(`Device '${deviceName}' is unknown.`));
@@ -184,7 +136,8 @@ export default function createSimulatedBackend() {
     update: (deviceName, state) => new Promise((resolve, reject) => {
       console.log(`Updating device '${deviceName}' state.`);
       if (_.has(devices, deviceName)) {
-        resolve(sendMessageToDevice(deviceName, state));
+        sendMessageToDevice(deviceName, state);
+        resolve(updateSamiDeviceState(deviceName, state));
       }
       else {
         reject(new Error(`Device '${deviceName}' is unknown.`));
