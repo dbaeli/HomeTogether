@@ -20,9 +20,9 @@ export function createPresenceDetector(detected) {
   };
 }
 
-export function createLightSensor(brightness) {
+export function createLightSensor(intensity) {
   return {
     type: 'lightSensor',
-    brightness: brightness || 0
+    intensity: intensity || 0
   };
 }

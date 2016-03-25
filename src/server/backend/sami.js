@@ -1,60 +1,70 @@
 import _ from 'lodash';
 import Promise from 'bluebird';
 import WebSocket from 'ws';
+import {hexToRGB,RGBtoHex} from '../lib/colorHelper';
 import { createLight, createTv, createPresenceDetector, createLightSensor } from './devices';
 
-const API_BASE_WS_URL = 'wss://api.samsungsami.io/v1.1/websocket';
+const API_BASE_WS_URL = 'wss://api.samsungsami.io/v1.1/';
 
 export default function createSimulatedBackend() {
   let ws;
   let token;
+
   let devices = {
     'living_room+tv': {
-      id:  process.env.SAMI_TV_ID,
+      id: process.env.SAMI_TV_ID,
+      token: process.env.SAMI_TV_TOKEN,
       deviceType: 'dt3fdf857d42f943919d103aa3e0316052',
       state: createTv()
     },
     'outside+lightSensor': {
       id: process.env.SAMI_LIGHT_SENSOR_ID,
+      token: process.env.SAMI_LIGHT_SENSOR_TOKEN,
       deviceType: 'dt793c92541dcf4e99a79ded0444244168',
       state: createLightSensor()
     },
     'living_room+light': {
-      id: process.env.SAMI_BULB_0_ID,
+      id: process.env.SAMI_LIVINGROOM_ID,
+      token: process.env.SAMI_LIVINGROOM_TOKEN,
       deviceType: 'dt6f3f2abffe33490695515a5ed26efd24',
       state: createLight()
     },
     'dining_room+light': {
-      id: process.env.SAMI_BULB_1_ID,
+      id: process.env.SAMI_DININGROOM_ID,
+      token: process.env.SAMI_DININGROOM_TOKEN,
       deviceType: 'dt6f3f2abffe33490695515a5ed26efd24',
       state: createLight()
     },
     'corridor+light': {
-      id: process.env.SAMI_BULB_2_ID,
+      id: process.env.SAMI_CORRIDOR_ID,
+      token: process.env.SAMI_CORRIDOR_TOKEN,
       deviceType: 'dt6f3f2abffe33490695515a5ed26efd24',
       state: createLight()
     },
     'bathroom+light': {
-      id: process.env.SAMI_BULB_3_ID,
+      id: process.env.SAMI_BATHROOM_ID,
+      token: process.env.SAMI_BATHROOM_TOKEN,
       deviceType: 'dt6f3f2abffe33490695515a5ed26efd24',
       state: createLight()
     },
     'water_closet+light': {
-      id: process.env.SAMI_BULB_4_ID,
+      id: process.env.SAMI_WC_ID,
+      token: process.env.SAMI_WC_TOKEN,
       deviceType: 'dt6f3f2abffe33490695515a5ed26efd24',
       state: createLight()
     },
     'bedroom+light': {
-      id: process.env.SAMI_BULB_5_ID,
+      id: process.env.SAMI_BEDROOM_ID,
+      token: process.env.SAMI_BEDROOM_TOKEN,
       deviceType: 'dt6f3f2abffe33490695515a5ed26efd24',
       state: createLight()
     }
   };
 
   function updateSamiDeviceState(deviceName, deviceState) {
-    console.log('SAMI updating device', deviceName, 'with state', deviceState);
-    if (_.has(devices, deviceName))
-      return devices[deviceName].state = _.extend(devices[deviceName].state, deviceState);
+    if (_.has(devices, deviceName) && !_.isEqual(devices[deviceName].state, deviceState))
+      devices[deviceName].state = _.extend(devices[deviceName].state, deviceState);
+      return devices[deviceName].state;
   };
 
   function sendMessageToDevice(deviceName, messageContent, type='message') {
@@ -67,7 +77,6 @@ export default function createSimulatedBackend() {
                         data: messageContent
                       };
         ws.send(JSON.stringify(message));
-        console.log('SAMI WS push', type, messageContent, 'for device', deviceName);
         return resolve();
       }
       else
@@ -78,17 +87,16 @@ export default function createSimulatedBackend() {
   function sendActionsToDevice(deviceName, deviceState) {
     let actions = [];
     if (!_.isUndefined(deviceState.color)) {
-      let rgb = convertHextoRGB(deviceState.color);
-      actions = _.union([{
-          name: 'setColorRGB',
-          parameters: {
-            colorRGB: rgb
-          }
-        }], actions);
+      actions.push({
+        name: 'setColorRGB',
+        parameters: {
+          colorRGB: hexToRGB(deviceState.color)
+        }
+      });
     }
     if (!_.isUndefined(deviceState.brightness)) {
       if (deviceState.brightness == 0)
-        actions = _.union({name: 'setOff'}, actions);
+        actions.push({name: 'setOff'});
       else
         actions = _.union([{name: 'setOn'},{
           name: 'setBrightness',
@@ -97,21 +105,43 @@ export default function createSimulatedBackend() {
           }
         }], actions);
     }
-    console.log('actions to send =', actions);
     if (_.size(actions) > 0)
-      sendMessageToDevice(deviceName, actions, 'action');
+      sendMessageToDevice(deviceName, {actions: actions}, 'action')
+      .then(() => Promise.resolve());
+    else
+      return Promise.resolve();
   };
 
   function createListenerWS(samiToken) {
     return new Promise((resolve, reject) => {
       console.log('requesting WS connexion to SAMI...');
-      ws = new WebSocket(API_BASE_WS_URL);
+      let wsUrl = API_BASE_WS_URL + 'websocket';
+      ws = new WebSocket(wsUrl);
       ws.on('message', evt => {
-        if (!_.isUndefined(evt.data)) {
-          let dataJSON = JSON.parse(evt.data);
-          if (!_.isUndefined(dataJSON.sdid) && dataJSON.type === 'message') {
-            console.log('*'.repeat(70),'message received','*'.repeat(70));
-            updateSamiDeviceState(_.findKey(devices, d => d.id === dataJSON.sdid), dataJSON.data);
+        let evtJSON = JSON.parse(evt);
+        if (!_.isUndefined(evtJSON)) {
+          if (evtJSON.type === 'action') {
+            let deviceName = _.findKey(devices, d => d.id === evtJSON.ddid);
+            let deviceState = _.reduce(evtJSON.data.actions, (r,v,k) => {
+              switch (v.name) {
+                case 'setColorRGB':
+                  r.color = RGBtoHex(v.parameters.colorRGB);
+                  break;
+                case 'setBrightness':
+                  r.brightness = v.parameters.brightness / 100;
+                  break;
+                case 'setOff':
+                  r.brightness = 0;
+                  break;
+                case 'setOn':
+                  r.brightness = r.brightness || 1 ;
+                  break;
+              };
+              return r;
+            }, {});
+            deviceState.brightness = deviceState.brightness.toFixed(1);
+            updateSamiDeviceState(deviceName, deviceState);
+            sendMessageToDevice(deviceName, deviceState);
           };
         }
       });
@@ -121,12 +151,13 @@ export default function createSimulatedBackend() {
           _.map(devices, (val, key) => {
             if (!_.isUndefined(val.id)) {
               let message = {
-                              Authorization: 'bearer ' + samiToken,
+                              Authorization: 'bearer ' + val.token,
                               sdid: val.id,
                               type: 'register'
                             };
               console.log('Registering SAMI device', key);
-              return resolve(ws.send(JSON.stringify(message)));
+              return Promise.resolve(ws.send(JSON.stringify(message)))
+              .then(() => sendActionsToDevice(key, val.state));
             }
           })
         )
@@ -151,10 +182,10 @@ export default function createSimulatedBackend() {
   return {
     name: 'sami',
     init: samiToken => createListenerWS(samiToken),
-    list: () => token ? _.keys(devices) : {},
-    has: deviceName => token ? _.has(devices, deviceName) : {},
+    list: () => token ? _.keys(devices) : [],
+    has: deviceName => token ? _.has(devices, deviceName) : false,
     get: deviceName => new Promise((resolve, reject) => {
-      console.log(`Retrieving device '${deviceName}' state.`);
+      // console.log(`Retrieving device '${deviceName}' state.`);
       if (_.has(devices, deviceName)) {
         resolve(devices[deviceName].state);
       }
@@ -163,11 +194,11 @@ export default function createSimulatedBackend() {
       }
     }),
     update: (deviceName, state) => new Promise((resolve, reject) => {
-      console.log(`Updating device '${deviceName}' state.`);
-      console.log('state =', state);;
+      // console.log(`Updating device '${deviceName}' state.`);
       if (_.has(devices, deviceName)) {
-        sendActionsToDevice(deviceName, state);
-        resolve(updateSamiDeviceState(deviceName, state));
+        let newState = updateSamiDeviceState(deviceName, state)
+        sendActionsToDevice(deviceName, newState);
+        resolve(newState);
       }
       else {
         reject(new Error(`Device '${deviceName}' is unknown.`));

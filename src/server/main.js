@@ -39,8 +39,8 @@ let backends = [createSimulatedBackend()];
 // Let's create some backends
 if (!_.isUndefined(process.env.HUE_USER))
   backends = _.union([createHueBackend()], backends);
-// if (!_.isUndefined(process.env.SAMI_USER))
-//   backends = _.union([createSamiBackend()], backends);
+if (!_.isUndefined(process.env.SAMI_USER))
+  backends = _.union([createSamiBackend()], backends);
 
 app.use('/auth', auth(backends));
 app.use('/devices', devices(backends));
