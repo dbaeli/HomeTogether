@@ -13,8 +13,8 @@
     "build_server": "babel ./src/server --out-dir ./bin",
     "build_browser": "webpack",
     "build": "npm run build_static && npm run build_server && npm run build_browser",
-    "watch_start": "cross-env NODE_ENV=development npm run build_static && npm run build_server && node ./bin/main.js",
-    "watch": "nodemon --exec 'npm run watch_start'",
+    "dev": "cross-env NODE_ENV=development npm run build_static && npm run build_server && node ./bin/main.js",
+    "watch": "nodemon --exec 'npm run dev'",
     "lint": "eslint ."
   },
   "license": "BSD-3-Clause",

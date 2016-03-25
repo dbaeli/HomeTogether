@@ -75,6 +75,33 @@ export default function createSimulatedBackend() {
     });
   };
 
+  function sendActionsToDevice(deviceName, deviceState) {
+    let actions = [];
+    if (!_.isUndefined(deviceState.color)) {
+      let rgb = convertHextoRGB(deviceState.color);
+      actions = _.union([{
+          name: 'setColorRGB',
+          parameters: {
+            colorRGB: rgb
+          }
+        }], actions);
+    }
+    if (!_.isUndefined(deviceState.brightness)) {
+      if (deviceState.brightness == 0)
+        actions = _.union({name: 'setOff'}, actions);
+      else
+        actions = _.union([{name: 'setOn'},{
+          name: 'setBrightness',
+          parameters: {
+            brightness: parseFloat(deviceState.brightness) * 100
+          }
+        }], actions);
+    }
+    console.log('actions to send =', actions);
+    if (_.size(actions) > 0)
+      sendMessageToDevice(deviceName, actions, 'action');
+  };
+
   function createListenerWS(samiToken) {
     return new Promise((resolve, reject) => {
       console.log('requesting WS connexion to SAMI...');
@@ -83,6 +110,7 @@ export default function createSimulatedBackend() {
         if (!_.isUndefined(evt.data)) {
           let dataJSON = JSON.parse(evt.data);
           if (!_.isUndefined(dataJSON.sdid) && dataJSON.type === 'message') {
+            console.log('*'.repeat(70),'message received','*'.repeat(70));
             updateSamiDeviceState(_.findKey(devices, d => d.id === dataJSON.sdid), dataJSON.data);
           };
         }
@@ -136,8 +164,9 @@ export default function createSimulatedBackend() {
     }),
     update: (deviceName, state) => new Promise((resolve, reject) => {
       console.log(`Updating device '${deviceName}' state.`);
+      console.log('state =', state);;
       if (_.has(devices, deviceName)) {
-        sendMessageToDevice(deviceName, state);
+        sendActionsToDevice(deviceName, state);
         resolve(updateSamiDeviceState(deviceName, state));
       }
       else {
