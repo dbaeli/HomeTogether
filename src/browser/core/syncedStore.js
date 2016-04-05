@@ -148,6 +148,17 @@ export default class Store extends EventEmitter {
       this.state = nextState;
     }
   }
+  setAgentsId(location, colorAgent, brightnessAgent) {
+    const nextState = this.state
+      .updateIn([location, 'agent', 'color'], () => colorAgent)
+      .updateIn([location, 'agent', 'brightness'], () => brightnessAgent);
+    if (!is(nextState, this.state)) {
+      console.log(`Setting the agent name for ${location} to '${colorAgent}' (color) and '${brightnessAgent}' (bright).`);
+      this.emit('update', nextState);
+      this.emit('update_agents', nextState, location, colorAgent, brightnessAgent);
+      this.state = nextState;
+    }
+  }
   syncFromServer(){
     getDevicesState()
     .then(devices => {

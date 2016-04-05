@@ -1,16 +1,27 @@
+import _ from 'lodash';
+import { CRAFT_TOKEN, CRAFT_URL, OWNER } from './constants';
+import { getInitialState, getCharacterLocation } from './core/store';
 import { Grid, Row, Col } from 'react-bootstrap';
+import ColorPicker from './components/colorPicker';
+import DayAndNight from './components/dayAndNight';
 import FloorMap from './components/floorMap';
 import Lights from './components/lights';
 import Occupant from './components/occupant';
 import Player from './components/player';
-import DayAndNight from './components/dayAndNight';
-import ColorPicker from './components/colorPicker';
 import React from 'react';
-import { getInitialState, getCharacterLocation } from './core/store';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/css/bootstrap-theme.min.css';
 import 'font-awesome/css/font-awesome.min.css';
+
+function createAgentInspectorUrl(agent) {
+  if (_.isUndefined(agent)) {
+    return undefined;
+  }
+  else {
+    return `${CRAFT_URL}/inspector?owner=${OWNER}&agent=${agent}&token=${CRAFT_TOKEN}`;
+  }
+}
 
 export default React.createClass({
   getInitialState: function() {
@@ -43,6 +54,8 @@ export default React.createClass({
     })).toJSON();
     const playerLocationLight = lights[playerLocation];
     const outsideLightIntensity = this.state.house.getIn(['outside', 'lightIntensity']);
+    const colorAgentUrl = createAgentInspectorUrl(this.state.house.getIn([playerLocation, 'agent', 'color']));
+    const brightnessAgentUrl =  createAgentInspectorUrl(this.state.house.getIn([playerLocation, 'agent', 'brightness']));
     return (
       <Grid>
         <Row>
@@ -66,6 +79,8 @@ export default React.createClass({
                   label={playerLocation}
                   color={playerLocationLight.color}
                   brightness={playerLocationLight.brightness}
+                  colorAgentUrl={colorAgentUrl}
+                  brightnessAgentUrl={brightnessAgentUrl}
                   onUpdateColor={color => this.props.store.setLocationLightColor(playerLocation, color)}
                   onUpdateBrightness={brightness => this.props.store.setLocationLightBrightness(playerLocation, brightness)}/>
               ) : (

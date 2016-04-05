@@ -1,10 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import _ from 'lodash';
-
-const CRAFT_TOKEN = __CRAFT_TOKEN__;
-const CRAFT_URL = __CRAFT_URL__;
-
-const OWNER = 'home_together';
+import { CRAFT_TOKEN, CRAFT_URL, OWNER } from '../constants';
 
 function craftRequest(r) {
   r = _.defaults(r || {}, {

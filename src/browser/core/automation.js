@@ -59,6 +59,9 @@ export default function startAutomation(store) {
       .then(agent => {
         console.log(`Agent ${agent.id} created for ${roomName} color`);
         agents[roomName].color = agent.id;
+
+        // Providing the agent ids to the store.
+        store.setAgentsId(roomName, agents[roomName].color, agents[roomName].brightness);
       })
       .catch(err => console.log(`Error while creating agent for ${roomName}`, err))
     ).toJSON()

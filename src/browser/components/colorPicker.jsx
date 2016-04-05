@@ -20,8 +20,8 @@ export default React.createClass({
       <div style={{marginTop:50}}>
         <h4>{_.startCase(this.props.label)}</h4>
         <div>
-          <ColorPicker color={this.props.color} onChange={this.handleColorChange} />
-          <BrightnessPicker brightness={this.props.brightness} onChange={this.handleBrightnessChange} />
+          <ColorPicker color={this.props.color} agentUrl={this.props.colorAgentUrl} onChange={this.handleColorChange} />
+          <BrightnessPicker brightness={this.props.brightness} agentUrl={this.props.brightnessAgentUrl} onChange={this.handleBrightnessChange} />
         </div>
       </div>
     );
@@ -43,7 +43,7 @@ let ColorPicker = React.createClass({
   render: function() {
     return(
       <div>
-        <h5>Color</h5>
+        <h5>Color <small><a href={this.props.agentUrl} target='_blank'>inspect agent</a></small></h5>
         <div>
         {
           _.map(COLOR_PALETTE, color => (
@@ -72,7 +72,7 @@ let BrightnessPicker = React.createClass({
   render: function() {
     return(
       <div>
-        <h5>Brightness</h5>
+        <h5>Brightness <small><a href={this.props.agentUrl} target='_blank'>inspect agent</a></small></h5>
         <div>
         {
           _.map(BRIGHTNESS_PALETTE, brightness => {
