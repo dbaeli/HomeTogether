@@ -35,10 +35,10 @@ export default React.createClass({
         house: state
       });
     };
-    this.props.store.addListener('update', this.storeListener);
+    this.props.store.on('update', this.storeListener);
   },
   componentWillUnmount: function() {
-    this.props.store.removeListener('update', this.storeListener);
+    this.props.store.off('update', this.storeListener);
     this.storeListener = undefined;
   },
   render: function() {

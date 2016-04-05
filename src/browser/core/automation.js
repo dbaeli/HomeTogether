@@ -70,13 +70,23 @@ export default function startAutomation(store) {
   let sendAgentsContextHistory = () => {
     console.log('Sending agent context history...');
     return Promise.all(
-      enlightenedRooms.map((roomName) =>
-        agents[roomName].brightnessHistory.length && updateCraftAgentContext(agents[roomName].brightness, agents[roomName].brightnessHistory)
-        .then(() => agents[roomName].brightnessHistory = [])
-        .then(() => agents[roomName].colorHistory.length && updateCraftAgentContext(agents[roomName].color, agents[roomName].colorHistory))
-        .then(() => agents[roomName].colorHistory = [])
-        .catch(err => console.log(`Error while updating the context history for ${roomName}`, err))
-      ).toJSON()
+      enlightenedRooms.map((roomName) => {
+        const brightnessHistoryLength = agents[roomName].brightnessHistory.length;
+        const colorHistoryLength = agents[roomName].colorHistory.length;
+        let promises = [];
+        if (brightnessHistoryLength > 0) {
+          promises.push(
+            updateCraftAgentContext(agents[roomName].brightness, agents[roomName].brightnessHistory)
+            .then(() => agents[roomName].brightnessHistory = _.drop(agents[roomName].brightnessHistory, brightnessHistoryLength)));
+        }
+        if (colorHistoryLength > 0) {
+          promises.push(
+            updateCraftAgentContext(agents[roomName].color, agents[roomName].colorHistory)
+            .then(() => agents[roomName].colorHistory = _.drop(agents[roomName].colorHistory, colorHistoryLength)));
+        }
+        return Promise.all(promises)
+          .catch(err => console.log(`Error while updating the context history for ${roomName}`, err));
+      }).toJSON()
     );
   };
 
@@ -107,7 +117,7 @@ export default function startAutomation(store) {
   .then(() => {
     console.log('Learning initialization done!');
     takeDecisions(store.getState(), enlightenedRooms.toJSON());
-    store.addListener('update_light_color', (state, location, color) => {
+    store.on('update_light_color', (state, location, color) => {
       if (_.has(agents, location)) {
         agents[location].colorHistory.push({
           timestamp: timestamp(),
@@ -117,7 +127,7 @@ export default function startAutomation(store) {
         });
       }
     });
-    store.addListener('update_light_brightness', (state, location, brightness) => {
+    store.on('update_light_brightness', (state, location, brightness) => {
       if (_.has(agents, location)) {
         agents[location].brightnessHistory.push({
           timestamp: timestamp(),
@@ -127,7 +137,7 @@ export default function startAutomation(store) {
         });
       }
     });
-    store.addListener('update_tv_state', (state, location, tvState) => {
+    store.on('update_tv_state', (state, location, tvState) => {
       if (_.has(agents, location)) {
         agents[location].brightnessHistory.push({
           timestamp: timestamp(),
@@ -144,7 +154,7 @@ export default function startAutomation(store) {
         takeDecisions(state, [location]);
       }
     });
-    store.addListener('update_presence', (state, location, presence) => {
+    store.on('update_presence', (state, location, presence) => {
       if (_.has(agents, location)) {
         agents[location].brightnessHistory.push({
           timestamp: timestamp(),
@@ -161,7 +171,7 @@ export default function startAutomation(store) {
         takeDecisions(state, [location]);
       }
     });
-    store.addListener('update_light_intensity', (state, location, intensity) => {
+    store.on('update_light_intensity', (state, location, intensity) => {
       _.forEach(enlightenedRooms.toJSON(), roomName => {
         agents[roomName].brightnessHistory.push({
           timestamp: timestamp(),
