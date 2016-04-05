@@ -43,7 +43,7 @@ export default class Store extends EventEmitter {
     if (!is(nextState, this.state)) {
       console.log(`Turning ${val ? 'ON' : 'OFF'} the TV.`);
       this.emit('update', nextState);
-      this.emit('update_tv_state', 'living_room', nextState, val);
+      this.emit('update_tv_state', nextState, 'living_room', val);
       this.state = nextState;
     }
   }

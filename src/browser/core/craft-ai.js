@@ -42,10 +42,6 @@ export function createCraftAgent(model) {
     path: 'agents',
     body: JSON.stringify({model: model})
   })
-  .then(agent => {
-    console.log(`Agent '${agent.id}' created, inspect at ${CRAFT_URL}/inspector?token=${CRAFT_TOKEN}&owner=${OWNER}&agent=${agent.id}`);
-    return agent;
-  })
   .catch(err => {
     const msg = 'Agent creation failed:\n' + err;
     console.log(msg);

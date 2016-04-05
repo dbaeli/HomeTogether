@@ -1,10 +1,41 @@
 import { createCraftAgent, updateCraftAgentContext, getCraftAgentDecision } from './craft-ai';
 import _ from 'lodash';
 
-const BRIGHTNESS_AGENT_MODEL = require('./brightnessModel.json');
-const COLOR_AGENT_MODEL = require('./colorModel.json');
-const INITIAL_BRIGHTNESS_HISTORY = require('./initialBrightnessHistory.json');
-const INITIAL_COLOR_HISTORY = require('./initialColorHistory.json');
+const INITIAL_BRIGHTNESS_HISTORY_FROM_LOCATION = {
+  'living_room': require('./tvInitialBrightnessHistory.json'),
+  'dining_room': require('./initialBrightnessHistory.json'),
+  'corridor': require('./initialBrightnessHistory.json'),
+  'bathroom': require('./initialBrightnessHistory.json'),
+  'water_closet': require('./initialBrightnessHistory.json'),
+  'bedroom': require('./initialBrightnessHistory.json')
+};
+
+const INITIAL_COLOR_HISTORY_FROM_LOCATION = {
+  'living_room': require('./tvInitialColorHistory.json'),
+  'dining_room': require('./initialColorHistory.json'),
+  'corridor': require('./initialColorHistory.json'),
+  'bathroom': require('./initialColorHistory.json'),
+  'water_closet': require('./initialColorHistory.json'),
+  'bedroom': require('./initialColorHistory.json')
+};
+
+const BRIGHTNESS_MODEL_FROM_LOCATION = {
+  'living_room': require('./tvBrightnessModel.json'),
+  'dining_room': require('./brightnessModel.json'),
+  'corridor': require('./brightnessModel.json'),
+  'bathroom': require('./brightnessModel.json'),
+  'water_closet': require('./brightnessModel.json'),
+  'bedroom': require('./brightnessModel.json')
+};
+
+const COLOR_MODEL_FROM_LOCATION = {
+  'living_room': require('./tvColorModel.json'),
+  'dining_room': require('./colorModel.json'),
+  'corridor': require('./colorModel.json'),
+  'bathroom': require('./colorModel.json'),
+  'water_closet': require('./colorModel.json'),
+  'bedroom': require('./colorModel.json')
+};
 
 function timestamp() {
   return Math.floor(Date.now()/1000);
@@ -22,27 +53,19 @@ function strFromPresence(presence) {
 export default function startAutomation(store) {
   // Extract the room having a light
   const enlightenedRooms = store.getState().filter(location => location.has('light')).keySeq();
-  // Initialize the agents list
-  const brightnessHistory = _.map(
-    INITIAL_BRIGHTNESS_HISTORY,
-    sample => {
-      _.set(sample, 'timestamp', timestamp() + sample.timestamp);
-      return sample;
-    }
-  );
-  const colorHistory = _.map(
-    INITIAL_COLOR_HISTORY,
-    sample => {
-      _.set(sample, 'timestamp', timestamp() + sample.timestamp);
-      return sample;
-    }
-  );
+  const initialTimestamp = timestamp();
   let agents = enlightenedRooms.reduce((agents, roomName) => {
     agents[roomName] = {
       brightness: null,
       color: null,
-      brightnessHistory: brightnessHistory,
-      colorHistory:colorHistory
+      brightnessHistory: _.map(
+        INITIAL_BRIGHTNESS_HISTORY_FROM_LOCATION[roomName],
+        sample => _.set(_.clone(sample), 'timestamp', initialTimestamp + sample.timestamp)
+      ),
+      colorHistory:_.map(
+        INITIAL_COLOR_HISTORY_FROM_LOCATION[roomName],
+        sample => _.set(_.clone(sample), 'timestamp', initialTimestamp + sample.timestamp)
+      )
     };
     return agents;
   },
@@ -50,12 +73,12 @@ export default function startAutomation(store) {
 
   let createAgents = () => Promise.all(
     enlightenedRooms.map((roomName) =>
-      createCraftAgent(BRIGHTNESS_AGENT_MODEL)
+      createCraftAgent(BRIGHTNESS_MODEL_FROM_LOCATION[roomName])
       .then(agent => {
         console.log(`Agent ${agent.id} created for ${roomName} brightness`);
         agents[roomName].brightness = agent.id;
       })
-      .then(() => createCraftAgent(COLOR_AGENT_MODEL))
+      .then(() => createCraftAgent(COLOR_MODEL_FROM_LOCATION[roomName]))
       .then(agent => {
         console.log(`Agent ${agent.id} created for ${roomName} color`);
         agents[roomName].color = agent.id;
@@ -96,10 +119,12 @@ export default function startAutomation(store) {
       Promise.all([
         getCraftAgentDecision(agents[roomName].brightness, {
           presence: strFromPresence(state.getIn([roomName, 'presence'])),
+          tv: state.getIn([roomName, 'tv']) ? 'on' : 'off',
           lightIntensity: state.getIn(['outside', 'lightIntensity'])
         }, timestamp()),
         getCraftAgentDecision(agents[roomName].color, {
           presence: strFromPresence(state.getIn([roomName, 'presence'])),
+          tv: state.getIn([roomName, 'tv']) ? 'on' : 'off',
           lightIntensity: state.getIn(['outside', 'lightIntensity'])
         }, timestamp())
       ])
@@ -142,15 +167,16 @@ export default function startAutomation(store) {
         agents[location].brightnessHistory.push({
           timestamp: timestamp(),
           diff: {
-            tv: state
+            tv: state ? 'on' : 'off'
           }
         });
         agents[location].colorHistory.push({
           timestamp: timestamp(),
           diff: {
-            tv: state
+            tv: state ? 'on' : 'off'
           }
         });
+        console.log('update_tv_state');
         takeDecisions(state, [location]);
       }
     });
@@ -188,6 +214,6 @@ export default function startAutomation(store) {
       });
       takeDecisions(state, enlightenedRooms.toJSON());
     });
-    setInterval(sendAgentsContextHistory, 5000);
+    //setInterval(sendAgentsContextHistory, 5000);
   });
 }

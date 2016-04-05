@@ -1,0 +1,118 @@
+[
+  {
+    "timestamp": -130,
+    "diff": {
+      "presence": "occupant",
+      "lightIntensity": 0,
+      "tv": "off",
+      "lightbulbBrightness": "1"
+    }
+  },
+  {
+    "timestamp": -120,
+    "diff": {
+      "presence": "occupant",
+      "lightIntensity": 0.5,
+      "tv": "on",
+      "lightbulbBrightness": "0"
+    }
+  },
+  {
+    "timestamp": -110,
+    "diff": {
+      "presence": "occupant",
+      "lightIntensity": 0.5,
+      "tv": "off",
+      "lightbulbBrightness": "0.8"
+    }
+  },
+  {
+    "timestamp": -100,
+    "diff": {
+      "presence": "occupant",
+      "lightIntensity": 0,
+      "tv": "on",
+      "lightbulbBrightness": "0"
+    }
+  },
+  {
+    "timestamp": -90,
+    "diff": {
+      "presence": "player",
+      "lightIntensity": 0,
+      "tv": "on",
+      "lightbulbBrightness": "0"
+    }
+  },
+  {
+    "timestamp": -80,
+    "diff": {
+      "presence": "player",
+      "lightIntensity": 0,
+      "tv": "off",
+      "lightbulbBrightness": "1"
+    }
+  },
+  {
+    "timestamp": -70,
+    "diff": {
+      "presence": "player",
+      "lightIntensity": 0.5,
+      "tv": "on",
+      "lightbulbBrightness": "0"
+    }
+  },
+  {
+    "timestamp": -60,
+    "diff": {
+      "presence": "player",
+      "lightIntensity": 0.5,
+      "tv": "off",
+      "lightbulbBrightness": "0.8"
+    }
+  },
+  {
+    "timestamp": -50,
+    "diff": {
+      "presence": "occupant",
+      "lightIntensity": 1,
+      "tv": "off",
+      "lightbulbBrightness": "0"
+    }
+  },
+  {
+    "timestamp": -40,
+    "diff": {
+      "presence": "player",
+      "lightIntensity": 1,
+      "lightbulbBrightness": "0"
+    }
+  },
+  {
+    "timestamp": -30,
+    "diff": {
+      "presence": "none",
+      "lightIntensity": 0,
+      "tv": "off",
+      "lightbulbBrightness": "0"
+    }
+  },
+  {
+    "timestamp": -20,
+    "diff": {
+      "presence": "none",
+      "lightIntensity": 0.5,
+      "tv": "off",
+      "lightbulbBrightness": "0"
+    }
+  },
+  {
+    "timestamp": -10,
+    "diff": {
+      "presence": "none",
+      "lightIntensity": 1,
+      "tv": "off",
+      "lightbulbBrightness": "0"
+    }
+  }
+]
