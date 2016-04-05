@@ -8,6 +8,8 @@ import ColorPicker from './components/colorPicker';
 import React from 'react';
 import { getInitialState, getCharacterLocation } from './core/store';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap-theme.min.css';
 import 'font-awesome/css/font-awesome.min.css';
 
 export default React.createClass({
@@ -44,7 +46,7 @@ export default React.createClass({
     return (
       <Grid>
         <Row>
-          <Col sm={12}>
+          <Col xs={12} lg={8}>
             <FloorMap
               tv={tvState}
               onUpdateTV={val => this.props.store.setTvState(val)}
@@ -53,11 +55,8 @@ export default React.createClass({
             <Occupant location={occupantLocation} />
             <Lights lights={lights} />
           </Col>
-        </Row>
-        <Row style={{marginTop:'20px'}}>
-          <Col sm={12}>
+          <Col xs={12} lg={4} style={{paddingTop:'100px', paddingBottom:'100px'}}>
             <DayAndNight
-              style={{marginTop:'10px'}}
               light={outsideLightIntensity}
               onUpdateLight={(val) => this.props.store.setOutsideLightIntensity(val)}/>
             {

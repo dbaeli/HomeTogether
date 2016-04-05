@@ -17,15 +17,13 @@ export default React.createClass({
   },
   render: function() {
     return (
-      <Row style={{marginTop:20}}>
-        <h4 style={{display:'inline-block',verticalAlign:'top',margin:35}}>
-          Room&nbsp;{this.props.label}<br/>settings
-        </h4>
-        <div style={{display:'inline-block'}}>
+      <div style={{marginTop:50}}>
+        <h4>{_.startCase(this.props.label)}</h4>
+        <div>
           <ColorPicker color={this.props.color} onChange={this.handleColorChange} />
           <BrightnessPicker brightness={this.props.brightness} onChange={this.handleBrightnessChange} />
         </div>
-      </Row>
+      </div>
     );
   }
 });
@@ -45,7 +43,7 @@ let ColorPicker = React.createClass({
   render: function() {
     return(
       <div>
-        <span style={{fontWeight:600}}>Color:</span>
+        <h5>Color</h5>
         <div>
         {
           _.map(COLOR_PALETTE, color => (
@@ -74,7 +72,7 @@ let BrightnessPicker = React.createClass({
   render: function() {
     return(
       <div>
-        <span style={{fontWeight:600}}>Brightness:</span>
+        <h5>Brightness</h5>
         <div>
         {
           _.map(BRIGHTNESS_PALETTE, brightness => {
