@@ -8,20 +8,25 @@ export default function createSimulatedBackend() {
   let hueUserName;
   let hueBridgeIp;
 
-  let devices = {
-    'living_room+light': {
+  let devices = {};
+  if (process.env.HUE_BULB_0) {
+    devices['living_room+light'] = {
       id: process.env.HUE_BULB_0,
       state: createLight()
-    },
-    'dining_room+light': {
+    };
+  }
+  if (process.env.HUE_BULB_1) {
+    devices['dining_room+light'] = {
       id: process.env.HUE_BULB_1,
       state: createLight()
-    },
-    'corridor+light': {
+    };
+  }
+  if (process.env.HUE_BULB_2) {
+    devices['corridor+light'] = {
       id: process.env.HUE_BULB_2,
       state: createLight()
-    }
-  };
+    };
+  }
 
   function hueInit(bridgeName, bridgeIp, userName) {
     return fetch('https://www.meethue.com/api/nupnp', {method: 'GET'})
@@ -95,7 +100,6 @@ export default function createSimulatedBackend() {
     .catch(err => Promise.reject());
   }
   function updateHueState(deviceName, state) {
-    console.log(`Updating device '${deviceName}' state.`);
     if (_.has(devices, deviceName)) {
       let r = {};
       if (!_.isUndefined(state.color)) {
@@ -115,12 +119,12 @@ export default function createSimulatedBackend() {
         return devices[deviceName].state;
       })
       .catch(ex => {
-        throw new Error(`Updating '${deviceName}' state through Hue API failed:\n'${ex}'`)
+        throw new Error(`Updating '${deviceName}' state through Hue API failed:\n'${ex}'`);
       });
     }
     else
       return Promise.reject(new Error(`Device '${deviceName}' is unknown.`));
-  };
+  }
 
   hueInit(process.env.HUE_PREFERRED_BRIDGE, process.env.HUE_BRIDGE_IP, process.env.HUE_USER)
   .then(name => {
@@ -135,14 +139,13 @@ export default function createSimulatedBackend() {
   })
   .catch(ex => {
     devices = {};
-    throw new Error(`Initializing Hue bulbs failed:\n'${ex}'`)
+    throw new Error(`Initializing Hue bulbs failed:\n'${ex}'`);
   });
   return {
     name: 'hue',
     list: () => hueUserName ? _.keys(devices) : [],
     has: deviceName => hueUserName ? _.has(devices, deviceName) : false,
     get: deviceName => {
-      console.log(`Retrieving device '${deviceName}' state.`);
       if (_.has(devices, deviceName)) {
         return hueRequest({
           path: hueUserName+'/lights/'+devices[deviceName].id

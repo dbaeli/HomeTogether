@@ -100,7 +100,7 @@ export default class Store extends EventEmitter {
     let nextState = this.state.setIn([location, 'tv'], deviceState.state);
     if (!is(nextState, this.state)) {
       this.emit('update', nextState);
-      this.emit('update_tv_state', location, nextState, deviceState.state);
+      this.emit('update_tv_state', nextState, location, deviceState.state);
       this.state = nextState;
     }
   }

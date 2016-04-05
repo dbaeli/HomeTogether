@@ -27,7 +27,6 @@ export default function createSimulatedBackend() {
     list: () => _.keys(devices),
     has: deviceName => _.has(devices, deviceName),
     get: deviceName => new Promise((resolve, reject) => {
-      // console.log(`Retrieving device '${deviceName}' state.`);
       if (_.has(devices, deviceName)) {
         resolve(devices[deviceName]);
       }
@@ -36,9 +35,7 @@ export default function createSimulatedBackend() {
       }
     }),
     update: (deviceName, state) => new Promise((resolve, reject) => {
-      // console.log(`Updating device '${deviceName}' state.`);
       if (_.has(devices, deviceName)) {
-        console.log('state =', state);
         devices[deviceName] = _.extend(devices[deviceName], state);
         resolve(devices[deviceName]);
       }

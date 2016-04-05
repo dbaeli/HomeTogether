@@ -1,15 +1,16 @@
-import bodyParser from 'body-parser';
-import devices from './devices';
+import _ from 'lodash';
 import auth from './auth';
+import bodyParser from 'body-parser';
+import createHueBackend from './backend/hue';
+import createSamiBackend from './backend/sami';
+import createSimulatedBackend from './backend/simulated';
+import devices from './devices';
 import dotenv from 'dotenv';
 import express from 'express';
+import morgan from 'morgan';
 import path from 'path';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
-import createSimulatedBackend from './backend/simulated';
-import createHueBackend from './backend/hue';
-import createSamiBackend from './backend/sami';
-import _ from 'lodash';
 
 var config = require('../webpack.config');
 
@@ -19,6 +20,8 @@ const FRONT_PORT = process.env.CRAFT_HOME_TOGETHER_PORT || 4444;
 
 let compiler = webpack(config);
 let app = express();
+
+app.use(morgan('dev'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -38,9 +41,9 @@ let backends = [createSimulatedBackend()];
 
 // Let's create some backends
 if (!_.isUndefined(process.env.HUE_USER))
-  backends = _.union([createHueBackend()], backends);
+  backends = [createHueBackend()].concat(backends);
 if (!_.isUndefined(process.env.SAMI_USER))
-  backends = _.union([createSamiBackend()], backends);
+  backends = [createSamiBackend()].concat(backends);
 
 app.use('/auth', auth(backends));
 app.use('/devices', devices(backends));

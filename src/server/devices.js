@@ -10,9 +10,9 @@ export default function createMiddleware(backends){
       backends,
       (devicesPromise, backend) => devicesPromise
         .then(devices => Promise.all(_.map(
-          backend.list(),
-          deviceName => backend.get(deviceName)
-        ))
+            backend.list(),
+            deviceName => backend.get(deviceName).then(device => _.set(device, 'name', deviceName))
+          ))
           .then(deviceArray => _.reduce(
             deviceArray,
             (devices, device) => _.set(devices, device.name, device),
