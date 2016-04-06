@@ -50,6 +50,10 @@ function strFromPresence(presence) {
   }
 }
 
+function strFromTvState(state) {
+  return _.isUndefined(state) ? undefined : (state ? 'on' : 'off');
+}
+
 export default function startAutomation(store) {
   // Extract the room having a light
   const enlightenedRooms = store.getState().filter(location => location.has('light')).keySeq();
@@ -119,12 +123,12 @@ export default function startAutomation(store) {
       Promise.all([
         getCraftAgentDecision(agents[roomName].brightness, {
           presence: strFromPresence(state.getIn([roomName, 'presence'])),
-          tv: state.getIn([roomName, 'tv']) ? 'on' : 'off',
+          tv: strFromTvState(state.getIn([roomName, 'tv'])),
           lightIntensity: state.getIn(['outside', 'lightIntensity'])
         }, timestamp()),
         getCraftAgentDecision(agents[roomName].color, {
           presence: strFromPresence(state.getIn([roomName, 'presence'])),
-          tv: state.getIn([roomName, 'tv']) ? 'on' : 'off',
+          tv: strFromTvState(state.getIn([roomName, 'tv'])),
           lightIntensity: state.getIn(['outside', 'lightIntensity'])
         }, timestamp())
       ])
@@ -167,13 +171,13 @@ export default function startAutomation(store) {
         agents[location].brightnessHistory.push({
           timestamp: timestamp(),
           diff: {
-            tv: state ? 'on' : 'off'
+            tv: strFromTvState(tvState)
           }
         });
         agents[location].colorHistory.push({
           timestamp: timestamp(),
           diff: {
-            tv: state ? 'on' : 'off'
+            tv: strFromTvState(tvState)
           }
         });
         console.log('update_tv_state');
@@ -214,6 +218,6 @@ export default function startAutomation(store) {
       });
       takeDecisions(state, enlightenedRooms.toJSON());
     });
-    //setInterval(sendAgentsContextHistory, 5000);
+    setInterval(sendAgentsContextHistory, 5000);
   });
 }
