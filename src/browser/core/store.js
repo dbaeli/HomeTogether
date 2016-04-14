@@ -18,55 +18,87 @@ export default class Store extends EventEmitter {
     super();
     this.state = getInitialState();
   }
+  onLightUpdate(location, lightState) {
+    let nextState = this.state.mergeIn([location, 'light'], fromJS(lightState));
+    if (this.state.getIn([location, 'light', 'color']) !== lightState.color) {
+      this.emit('update_light_color', nextState, location, lightState.color);
+    }
+    if (this.state.getIn([location, 'light', 'brightness']) !== lightState.brightness) {
+      this.emit('update_light_brightness', nextState, location, lightState.brightness);
+    }
+    if (!is(nextState, this.state)) {
+      this.emit('update', nextState);
+      this.state = nextState;
+    }
+  }
   setLocationLightColor(location, color) {
     color = color.toLowerCase();
-    const nextState = this.state.setIn([location, 'light', 'color'], color);
-    if (!is(nextState, this.state)) {
+    const currentLightState = this.state.getIn([location, 'light']).toJSON();
+    if (color !== currentLightState.color) {
       console.log(`Setting ${location} light color to ${color}.`);
-      this.emit('update', nextState);
-      this.emit('update_light_color', nextState, location, color);
-      this.state = nextState;
+      this.onLightUpdate(location, {
+        color: color
+      });
     }
   }
   setLocationLightBrightness(location, brightness) {
     brightness = parseFloat(brightness);
-    const nextState = this.state.setIn([location, 'light', 'brightness'], brightness);
-    if (!is(nextState, this.state)) {
+    const currentLightState = this.state.getIn([location, 'light']).toJSON();
+    if (brightness !== currentLightState.brightness) {
       console.log(`Setting ${location} light brightness to ${brightness}.`);
+      this.onLightUpdate(location, {
+        brightness: brightness
+      });
+    }
+  }
+  onTvUpdate(location, tvState) {
+    let nextState = this.state.setIn([location, 'tv'], tvState);
+    if (!is(nextState, this.state)) {
       this.emit('update', nextState);
-      this.emit('update_light_brightness', nextState, location, brightness);
+      this.emit('update_tv_state', nextState, location, tvState);
       this.state = nextState;
     }
   }
   setTvState(val) {
-    const nextState = this.state.updateIn(['living_room', 'tv'], () => val);
-    if (!is(nextState, this.state)) {
+    const currentTvState = this.state.getIn(['living_room', 'tv']);
+    if (val !== currentTvState) {
       console.log(`Turning ${val ? 'ON' : 'OFF'} the TV.`);
+      this.onTvUpdate('living_room', val);
+    }
+  }
+  onPresenceUpdate(location, presenceState) {
+    const nextState = this.state.setIn([location, 'presence'], fromJS(presenceState));
+    if (!is(nextState, this.state)) {
       this.emit('update', nextState);
-      this.emit('update_tv_state', nextState, 'living_room', val);
+      this.emit('update_presence', nextState, location, nextState.getIn([location, 'presence']));
       this.state = nextState;
     }
   }
   setCharacterLocation(character, location) {
-    const previousLocation = getCharacterLocation(this.state, character);
-    const nextState = this.state
-      .updateIn([previousLocation, 'presence'], presence => presence.filterNot(c => c === character))
-      .updateIn([location, 'presence'], presence => presence.push(character));
+    const originLocation = getCharacterLocation(this.state, character);
+    if (originLocation !== location) {
+      console.log(`Moving the ${character} to ${location} from ${originLocation}.`);
+
+      const destinationPresenceState = this.state.getIn([location, 'presence']).push(character).sort().toJSON();
+      this.onPresenceUpdate(location, destinationPresenceState);
+
+      const originPresenceState = this.state.getIn([originLocation, 'presence']).filterNot(c => c === character).toJSON();
+      this.onPresenceUpdate(originLocation, originPresenceState);
+    }
+  }
+  onLightSensorUpdate(location, lightSensorState) {
+    let nextState = this.state.setIn([location, 'lightIntensity'], lightSensorState);
     if (!is(nextState, this.state)) {
-      console.log(`Moving the ${character} to ${location}.`);
       this.emit('update', nextState);
-      this.emit('update_presence', nextState, location, nextState.getIn([location, 'presence']));
-      this.emit('update_presence', nextState, previousLocation, nextState.getIn([previousLocation, 'presence']));
+      this.emit('update_light_intensity', nextState, location, lightSensorState);
       this.state = nextState;
     }
   }
   setOutsideLightIntensity(intensity) {
-    const nextState = this.state.updateIn(['outside', 'lightIntensity'], () => intensity);
-    if (!is(nextState, this.state)) {
+    const currentLightIntensity = this.state.getIn(['outside', 'lightIntensity']);
+    if (intensity != currentLightIntensity) {
       console.log(`Setting the outside light intensity to ${intensity}.`);
-      this.emit('update', nextState);
-      this.emit('update_light_intensity', nextState, 'outside', intensity);
-      this.state = nextState;
+      this.onLightSensorUpdate('outside', intensity);
     }
   }
   setAgentsId(location, colorAgent, brightnessAgent) {

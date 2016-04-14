@@ -1,9 +1,7 @@
 import _ from 'lodash';
-import { EventEmitter } from 'events';
-import { is, fromJS } from 'immutable';
-import { getInitialState, getCharacterLocation } from './store';
-
 import fetch from 'isomorphic-fetch';
+import Promise from 'bluebird';
+import Store from './store';
 
 function getDevicesState() {
   return fetch('/devices')
@@ -47,120 +45,41 @@ function updateDeviceState(room, device, state) {
   });
 }
 
-export default class Store extends EventEmitter {
+export default class SyncedStore extends Store {
   constructor() {
     super();
-    this.state = getInitialState();
+    this.currentRequest = Promise.resolve();
     setInterval(() => this.syncFromServer(), 2000);
   }
-  setLocationLightColor(location, color) {
-    color = color.toLowerCase();
-    if (color !== this.state.getIn([location, 'light', 'color'])) {
-      console.log(`Setting ${location} light color to ${color}.`);
-      updateDeviceState(location, 'light', {
-        color: color
-      })
-      .then(deviceState => this.onLightUpdate(location, deviceState));
-    }
+  onLightUpdate(location, lightState) {
+    this.currentRequest = this.currentRequest
+    .then(() => updateDeviceState(location, 'light', lightState))
+    .then(device => super.onLightUpdate(location, device));
   }
-  setLocationLightBrightness(location, brightness) {
-    if (brightness !== this.state.getIn([location, 'light', 'brightness'])) {
-      console.log(`Setting ${location} light brightness to ${brightness}.`);
-      updateDeviceState(location, 'light', {
-        brightness: brightness
-      })
-      .then(deviceState => this.onLightUpdate(location, deviceState));
-    }
+  onTvUpdate(location, tvState) {
+    this.currentRequest = this.currentRequest
+    .then(() => updateDeviceState(location, 'tv', {
+      state: tvState
+    }))
+    .then(device => super.onTvUpdate(location, device.state));
   }
-  onLightUpdate(location, deviceState) {
-    let nextState = this.state
-      .setIn([location, 'light', 'color'], deviceState.color)
-      .setIn([location, 'light', 'brightness'], deviceState.brightness);
-    if (this.state.getIn([location, 'light', 'color']) !== deviceState.color) {
-      this.emit('update_light_color', nextState, location, deviceState.color);
-    }
-    if (this.state.getIn([location, 'light', 'brightness']) !== deviceState.brightness) {
-      this.emit('update_light_brightness', nextState, location, deviceState.brightness);
-    }
-    if (!is(nextState, this.state)) {
-      this.emit('update', nextState);
-      this.state = nextState;
-    }
+  onPresenceUpdate(location, presenceState) {
+    this.currentRequest = this.currentRequest
+    .then(() => updateDeviceState(location, 'presence', {
+      detected: presenceState
+    }))
+    .then(device => super.onPresenceUpdate(location, device.detected));
   }
-  setTvState(val) {
-    if (val !== this.state.getIn(['living_room', 'tv'])) {
-      console.log(`Turning ${val ? 'ON' : 'OFF'} the TV.`);
-      updateDeviceState('living_room', 'tv', {
-        state: val
-      })
-      .then(deviceState => this.onTvUpdate('living_room', deviceState));
-    }
-  }
-  onTvUpdate(location, deviceState) {
-    let nextState = this.state.setIn([location, 'tv'], deviceState.state);
-    if (!is(nextState, this.state)) {
-      this.emit('update', nextState);
-      this.emit('update_tv_state', nextState, location, deviceState.state);
-      this.state = nextState;
-    }
-  }
-  setCharacterLocation(character, location) {
-    const previousLocation = getCharacterLocation(this.state, character);
-    if (previousLocation !== location) {
-      console.log(`Moving the ${character} to ${location}.`);
-      Promise.all([
-        updateDeviceState(location, 'presence', {
-          detected: this.state.getIn([location, 'presence']).push(character).toJSON()
-        }),
-        updateDeviceState(previousLocation, 'presence', {
-          detected: this.state.getIn([previousLocation, 'presence']).filterNot(c => c === character).toJSON()
-        })
-      ])
-      .then(([locationPresenceDetectorState, previousLocationPresenceDetectorState]) => {
-        this.onPresenceUpdate(location, locationPresenceDetectorState);
-        this.onPresenceUpdate(previousLocation, previousLocationPresenceDetectorState);
-      });
-    }
-  }
-  onPresenceUpdate(location, deviceState) {
-    const immutablePresence = fromJS(deviceState.detected || []);
-    const nextState = this.state.setIn([location, 'presence'], immutablePresence);
-    if (!is(nextState, this.state)) {
-      this.emit('update', nextState);
-      this.emit('update_presence', nextState, location, immutablePresence);
-      this.state = nextState;
-    }
-  }
-  setOutsideLightIntensity(intensity) {
-    if (intensity !== this.state.getIn(['outside', 'lightIntensity'])) {
-      console.log(`Setting the outside light intensity to ${intensity}.`);
-      updateDeviceState('outside', 'lightSensor', {
-        brightness: intensity
-      })
-      .then(deviceState => this.onLightSensorUpdate('outside', deviceState));
-    }
-  }
-  onLightSensorUpdate(location, deviceState) {
-    let nextState = this.state.setIn(['outside', 'lightIntensity'], deviceState.brightness);
-    if (!is(nextState, this.state)) {
-      this.emit('update', nextState);
-      this.emit('update_light_intensity', nextState, 'outside', deviceState.brightness);
-      this.state = nextState;
-    }
-  }
-  setAgentsId(location, colorAgent, brightnessAgent) {
-    const nextState = this.state
-      .updateIn([location, 'agent', 'color'], () => colorAgent)
-      .updateIn([location, 'agent', 'brightness'], () => brightnessAgent);
-    if (!is(nextState, this.state)) {
-      console.log(`Setting the agent name for ${location} to '${colorAgent}' (color) and '${brightnessAgent}' (bright).`);
-      this.emit('update', nextState);
-      this.emit('update_agents', nextState, location, colorAgent, brightnessAgent);
-      this.state = nextState;
-    }
+  onLightSensorUpdate(location, lightSensorState) {
+    this.currentRequest = this.currentRequest
+    .then(() => updateDeviceState(location, 'lightIntensity', {
+      intensity: lightSensorState
+    }))
+    .then(device => super.onLightSensorUpdate(location, device.intensity));
   }
   syncFromServer(){
-    getDevicesState()
+    this.currentRequest = this.currentRequest
+    .then(() => getDevicesState())
     .then(devices => {
       _.forEach(
         devices,
@@ -168,23 +87,20 @@ export default class Store extends EventEmitter {
           let room = _.split(deviceName, '+')[0];
           switch (device.type) {
             case 'light':
-              this.onLightUpdate(room, device);
+              super.onLightUpdate(room, device);
               break;
             case 'tv':
-              this.onTvUpdate(room, device);
+              super.onTvUpdate(room, device.state);
               break;
             case 'lightSensor':
-              this.onLightSensorUpdate(room, device);
+              super.onLightSensorUpdate(room, device.intensity);
               break;
             default:
             case 'presenceDetector':
-              this.onPresenceUpdate(room, device);
+              super.onPresenceUpdate(room, device.detected);
               break;
           }
         });
     });
-  }
-  getState() {
-    return this.state;
   }
 }
