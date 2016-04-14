@@ -18,10 +18,11 @@ To begin with you'll need to do to the following:
 1. Download & install [Node.js v4.X](https://nodejs.org/en/download/);
 2. Install dependencies running `npm install`.
 3. Create a new `.env` file, it'll be used to define environment variable.
-4. In this file, enter the following (replace the values by the one that were provided to you):
+4. In this file, enter the following:
 
-        CRAFT_URL=https://craft_ai_learning_url.ai
-        CRAFT_TOKEN=abcde.fghij.klmn
+        CRAFT_URL=https://beta.craft.ai/
+        # Replace the following value by the token you were provided with.
+        CRAFT_TOKEN=abcde.fghij.klmnopqr
 
 ### Fully Simulated ###
 
