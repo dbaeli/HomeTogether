@@ -40,10 +40,12 @@ app.use(express.static(path.join(__dirname, 'static')));
 let backends = [createSimulatedBackend()];
 
 // Let's create some backends
-if (!_.isUndefined(process.env.HUE_USER))
+if (!_.isUndefined(process.env.HUE_USER)) {
   backends = [createHueBackend()].concat(backends);
-if (!_.isUndefined(process.env.SAMI_USER))
+}
+if (!_.isUndefined(process.env.SAMI_USER)) {
   backends = [createSamiBackend()].concat(backends);
+}
 
 app.use('/auth', auth(backends));
 app.use('/devices', devices(backends));
