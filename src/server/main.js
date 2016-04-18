@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import auth from './auth';
+import sami from './sami';
 import bodyParser from 'body-parser';
 import createHueBackend from './backend/hue';
 import createSamiBackend from './backend/sami';
@@ -8,6 +8,7 @@ import devices from './devices';
 import dotenv from 'dotenv';
 import express from 'express';
 import morgan from 'morgan';
+import passport from 'passport';
 import path from 'path';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
@@ -25,6 +26,19 @@ app.use(morgan('dev'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Only memory based user storage.
+let users = {};
+passport.serializeUser((user, done) => {
+  users[user.id] = user;
+  done(null, user.id);
+});
+passport.deserializeUser((id, done) => {
+  done(null, users[id]);
+});
 
 if (process.env.NODE_ENV !== 'production') {
   app.use(webpackDevMiddleware(compiler, {
@@ -44,10 +58,11 @@ if (!_.isUndefined(process.env.HUE_USER)) {
   backends = [createHueBackend()].concat(backends);
 }
 if (!_.isUndefined(process.env.SAMI_USER)) {
-  backends = [createSamiBackend()].concat(backends);
+  const samiBackend = createSamiBackend();
+  backends = [samiBackend].concat(backends);
+  app.use('/sami', samiBackend.router);
 }
 
-app.use('/auth', auth(backends));
 app.use('/devices', devices(backends));
 
 let server = app.listen(FRONT_PORT, () => {

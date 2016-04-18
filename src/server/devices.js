@@ -20,7 +20,9 @@ export default function createMiddleware(backends){
       ),
       Promise.resolve({})
     )
-    .then(devices => res.send(devices))
+    .then(devices => {
+      res.send(devices);
+    })
     .catch(err => {
       res.status(500).send({
         message: `Error while retrieving the state of all devices: ${err}.`
