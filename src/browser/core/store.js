@@ -20,10 +20,10 @@ export default class Store extends EventEmitter {
   }
   onLightUpdate(location, lightState) {
     let nextState = this.state.mergeIn([location, 'light'], fromJS(lightState));
-    if (this.state.getIn([location, 'light', 'color']) !== lightState.color) {
+    if (this.state.getIn([location, 'light', 'color']) !== nextState.getIn([location, 'light', 'color'])) {
       this.emit('update_light_color', nextState, location, lightState.color);
     }
-    if (this.state.getIn([location, 'light', 'brightness']) !== lightState.brightness) {
+    if (this.state.getIn([location, 'light', 'brightness']) !== nextState.getIn([location, 'light', 'brightness'])) {
       this.emit('update_light_brightness', nextState, location, lightState.brightness);
     }
     if (!is(nextState, this.state)) {
