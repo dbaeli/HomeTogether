@@ -1,4 +1,7 @@
 # Home Together #
+
+[![Build](https://img.shields.io/travis/craft-ai/HomeTogether/master.svg?style=flat-square)](https://travis-ci.org/craft-ai/HomeTogether)
+
 ## Autonomous Home powered by **craft ai** ##
 
 **HomeTogether** showcases the **craft ai** AI platform in a SmartHome context,
@@ -54,11 +57,15 @@ These options differs based on the API used to connect to the devices.
 
 - Your _Hue_ username (if not set the _Hue_ integration won't be enabled),
 
-      HUE_USER=yourHueUser
+```
+HUE_USER=yourHueUser
+```
 
 - Optionally, the ID of your _Hue_ bridge (if not set the first found on the network is used),
 
-      HUE_PREFERRED_BRIDGE_ID=0123456789abcd
+```
+HUE_PREFERRED_BRIDGE_ID=0123456789abcd
+```
 
 - Optionally, the internal ip address of the _Hue_ bridge to use (if not set the ip is retrieved from the web),
 
@@ -66,12 +73,14 @@ These options differs based on the API used to connect to the devices.
 
 - The mapping between the scenario bulbs and the id of your bulbs (mapping that are not set are not used).
 
-    HUE_LIVING_ROOM_LIGHT_ID=1
-    HUE_DINING_ROOM_LIGHT_ID=2
-    HUE_CORRIDOR_LIGHT_ID=3
-    HUE_BATHROOM_LIGHT_ID=4
-    HUE_WATER_CLOSET_LIGHT_ID=5
-    HUE_BEDROOM_LIGHT_ID=6
+```
+HUE_LIVING_ROOM_LIGHT_ID=1
+HUE_DINING_ROOM_LIGHT_ID=2
+HUE_CORRIDOR_LIGHT_ID=3
+HUE_BATHROOM_LIGHT_ID=4
+HUE_WATER_CLOSET_LIGHT_ID=5
+HUE_BEDROOM_LIGHT_ID=6
+```
 
 ## Play ##
 
