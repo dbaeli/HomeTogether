@@ -5,7 +5,7 @@
       "brightness": 0
     },
     "tv": false,
-    "presence": ["occupant"]
+    "presence": ["gisele"]
   },
   "dining_room": {
     "light": {
@@ -44,6 +44,6 @@
   },
   "outside": {
     "lightIntensity": 0,
-    "presence": ["player"]
+    "presence": ["robert"]
   }
 }

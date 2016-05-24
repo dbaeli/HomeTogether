@@ -2,7 +2,7 @@ import _ from 'lodash';
 import Character from './character';
 import React from 'react';
 
-import player from './player.png';
+import robert from './robert.png';
 
 const POSITION_FROM_ROOM = {
   living_room: {
@@ -42,7 +42,7 @@ export default React.createClass({
     }
     else {
       return (
-        <Character x={position.x} y={position.y} image={player}/>
+        <Character x={position.x} y={position.y} image={robert}/>
       );
     }
   }

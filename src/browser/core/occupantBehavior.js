@@ -59,9 +59,9 @@ export default function startOccupantBehavior(store) {
   let wander;
   wander = function() {
     const nextLocation = computeNextLocation(
-      getCharacterLocation(store.getState(), 'occupant'),
-      getCharacterLocation(store.getState(), 'player'));
-    store.setCharacterLocation('occupant', nextLocation);
+      getCharacterLocation(store.getState(), 'gisele'),
+      getCharacterLocation(store.getState(), 'robert'));
+    store.setCharacterLocation('gisele', nextLocation);
     setTimeout(wander, _.random(6,12)*1000);
   };
   wander();

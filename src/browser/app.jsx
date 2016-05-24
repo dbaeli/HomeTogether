@@ -6,8 +6,8 @@ import ColorPicker from './components/colorPicker';
 import DayAndNight from './components/dayAndNight';
 import FloorMap from './components/floorMap';
 import Lights from './components/lights';
-import Occupant from './components/occupant';
-import Player from './components/player';
+import Gisele from './components/gisele';
+import Robert from './components/robert';
 import React from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -43,8 +43,8 @@ export default React.createClass({
   },
   render: function() {
     const tvState = this.state.house.getIn(['living_room', 'tv']);
-    const playerLocation = getCharacterLocation(this.state.house, 'player');
-    const occupantLocation = getCharacterLocation(this.state.house, 'occupant');
+    const robertLocation = getCharacterLocation(this.state.house, 'robert');
+    const giseleLocation = getCharacterLocation(this.state.house, 'gisele');
     const lights = this.state.house
     .filter(location => location.has('light'))
     .map(location => ({
@@ -52,10 +52,10 @@ export default React.createClass({
       brightness: location.getIn(['light', 'brightness']),
       visible: true
     })).toJSON();
-    const playerLocationLight = lights[playerLocation];
+    const robertLocationLight = lights[robertLocation];
     const outsideLightIntensity = this.state.house.getIn(['outside', 'lightIntensity']);
-    const colorAgentUrl = createAgentInspectorUrl(this.state.house.getIn([playerLocation, 'agent', 'color']));
-    const brightnessAgentUrl =  createAgentInspectorUrl(this.state.house.getIn([playerLocation, 'agent', 'brightness']));
+    const colorAgentUrl = createAgentInspectorUrl(this.state.house.getIn([robertLocation, 'agent', 'color']));
+    const brightnessAgentUrl =  createAgentInspectorUrl(this.state.house.getIn([robertLocation, 'agent', 'brightness']));
     return (
       <Grid>
         <Row>
@@ -63,9 +63,9 @@ export default React.createClass({
             <FloorMap
               tv={tvState}
               onUpdateTV={val => this.props.store.setTvState(val)}
-              onMovePlayer={location => this.props.store.setCharacterLocation('player', location)} />
-            <Player location={playerLocation} />
-            <Occupant location={occupantLocation} />
+              onMovePlayer={location => this.props.store.setCharacterLocation('robert', location)} />
+            <Robert location={robertLocation} />
+            <Gisele location={giseleLocation} />
             <Lights lights={lights} />
           </Col>
           <Col xs={12} lg={4} style={{paddingTop:'100px', paddingBottom:'100px'}}>
@@ -73,16 +73,16 @@ export default React.createClass({
               light={outsideLightIntensity}
               onUpdateLight={(val) => this.props.store.setOutsideLightIntensity(val)}/>
             {
-              playerLocationLight && playerLocationLight.visible ?
+              robertLocationLight && robertLocationLight.visible ?
               (
                 <ColorPicker
-                  label={playerLocation}
-                  color={playerLocationLight.color}
-                  brightness={playerLocationLight.brightness}
+                  label={robertLocation}
+                  color={robertLocationLight.color}
+                  brightness={robertLocationLight.brightness}
                   colorAgentUrl={colorAgentUrl}
                   brightnessAgentUrl={brightnessAgentUrl}
-                  onUpdateColor={color => this.props.store.setLocationLightColor(playerLocation, color)}
-                  onUpdateBrightness={brightness => this.props.store.setLocationLightBrightness(playerLocation, brightness)}/>
+                  onUpdateColor={color => this.props.store.setLocationLightColor(robertLocation, color)}
+                  onUpdateBrightness={brightness => this.props.store.setLocationLightBrightness(robertLocation, brightness)}/>
               ) : (
                 void 0
               )

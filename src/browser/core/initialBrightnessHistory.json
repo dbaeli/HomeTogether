@@ -2,7 +2,7 @@
   {
     "timestamp": -100,
     "diff": {
-      "presence": "occupant",
+      "presence": "gisele",
       "lightIntensity": 0,
       "lightbulbBrightness": "1"
     }
@@ -10,7 +10,7 @@
   {
     "timestamp": -95,
     "diff": {
-      "presence": "occupant",
+      "presence": "gisele",
       "lightIntensity": 0.5,
       "lightbulbBrightness": "0.8"
     }
@@ -18,7 +18,7 @@
   {
     "timestamp": -90,
     "diff": {
-      "presence": "player",
+      "presence": "robert",
       "lightIntensity": 0,
       "lightbulbBrightness": "1"
     }
@@ -26,7 +26,7 @@
   {
     "timestamp": -85,
     "diff": {
-      "presence": "player",
+      "presence": "robert",
       "lightIntensity": 0.5,
       "lightbulbBrightness": "0.8"
     }
@@ -34,7 +34,7 @@
   {
     "timestamp": -80,
     "diff": {
-      "presence": "occupant",
+      "presence": "gisele",
       "lightIntensity": 1,
       "lightbulbBrightness": "0"
     }
@@ -42,7 +42,7 @@
   {
     "timestamp": -70,
     "diff": {
-      "presence": "player",
+      "presence": "robert",
       "lightIntensity": 1,
       "lightbulbBrightness": "0"
     }

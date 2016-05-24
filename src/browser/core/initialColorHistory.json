@@ -2,7 +2,7 @@
   {
     "timestamp": -100,
     "diff": {
-      "presence": "occupant",
+      "presence": "gisele",
       "lightIntensity": 1,
       "lightbulbColor": "#ffffff"
     }
@@ -10,7 +10,7 @@
   {
     "timestamp": -75,
     "diff": {
-      "presence": "player",
+      "presence": "robert",
       "lightIntensity": 0.5,
       "lightbulbColor": "#ffffff"
     }
@@ -26,7 +26,7 @@
   {
     "timestamp": -25,
     "diff": {
-      "presence": "occupant+player",
+      "presence": "gisele+robert",
       "lightIntensity": 0,
       "lightbulbColor": "#ffffff"
     }
