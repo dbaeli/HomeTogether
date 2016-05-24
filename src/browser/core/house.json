@@ -1,0 +1,49 @@
+{
+  "living_room": {
+    "light": {
+      "color": "#ffffff",
+      "brightness": 0
+    },
+    "tv": false,
+    "presence": ["gisele"]
+  },
+  "dining_room": {
+    "light": {
+      "color": "#ffffff",
+      "brightness": 0
+    },
+    "presence": []
+  },
+  "corridor": {
+    "light": {
+      "color": "#ffffff",
+      "brightness": 0
+    },
+    "presence": []
+  },
+  "bathroom": {
+    "light": {
+      "color": "#ffffff",
+      "brightness": 0
+    },
+    "presence": []
+  },
+  "water_closet": {
+    "light": {
+      "color": "#ffffff",
+      "brightness": 0
+    },
+    "presence": []
+  },
+  "bedroom": {
+    "light": {
+      "color": "#ffffff",
+      "brightness": 0
+    },
+    "presence": []
+  },
+  "outside": {
+    "lightIntensity": 0,
+    "presence": ["robert"]
+  }
+}

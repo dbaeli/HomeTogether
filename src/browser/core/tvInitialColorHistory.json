@@ -1,0 +1,47 @@
+[
+  {
+    "timestamp": -100,
+    "diff": {
+      "presence": "gisele",
+      "lightIntensity": 1,
+      "tv": "off",
+      "lightbulbColor": "#ffffff"
+    }
+  },
+  {
+    "timestamp": -100,
+    "diff": {
+      "presence": "gisele",
+      "lightIntensity": 1,
+      "tv": "on",
+      "lightbulbColor": "#ffffff"
+    }
+  },
+  {
+    "timestamp": -75,
+    "diff": {
+      "presence": "robert",
+      "lightIntensity": 0.5,
+      "tv": "off",
+      "lightbulbColor": "#ffffff"
+    }
+  },
+  {
+    "timestamp": -50,
+    "diff": {
+      "presence": "none",
+      "lightIntensity": 0,
+      "tv": "off",
+      "lightbulbColor": "#ffffff"
+    }
+  },
+  {
+    "timestamp": -25,
+    "diff": {
+      "presence": "gisele+robert",
+      "lightIntensity": 0,
+      "tv": "off",
+      "lightbulbColor": "#ffffff"
+    }
+  }
+]

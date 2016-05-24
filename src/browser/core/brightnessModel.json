@@ -1,0 +1,17 @@
+{
+  "context": {
+    "presence": {
+      "type": "enum"
+    },
+    "lightIntensity":  {
+      "type": "continuous",
+      "min": 0,
+      "max": 2.5
+    },
+    "lightbulbBrightness": {
+      "type": "enum"
+    }
+  },
+  "output": ["lightbulbBrightness"],
+  "time_quantum": 2
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "timestamp": -100,
+    "diff": {
+      "presence": "gisele",
+      "lightIntensity": 1,
+      "lightbulbColor": "#ffffff"
+    }
+  },
+  {
+    "timestamp": -75,
+    "diff": {
+      "presence": "robert",
+      "lightIntensity": 0.5,
+      "lightbulbColor": "#ffffff"
+    }
+  },
+  {
+    "timestamp": -50,
+    "diff": {
+      "presence": "none",
+      "lightIntensity": 0,
+      "lightbulbColor": "#ffffff"
+    }
+  },
+  {
+    "timestamp": -25,
+    "diff": {
+      "presence": "gisele+robert",
+      "lightIntensity": 0,
+      "lightbulbColor": "#ffffff"
+    }
+  }
+]
